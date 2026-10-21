@@ -732,6 +732,10 @@ figcaption var { font-size: 1.05em; }
 .deep-newton-end { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .deep-outline { fill: none; stroke: var(--gold); stroke-width: 2; }
 .deep-zplane { max-width: 28rem; margin: 0 auto; }
+/* The rebasing figure: the plane of z and the close-up beside it, or below it on a phone. */
+.deep-views { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1rem 1.5rem; }
+.deep-views .deep-zplane { flex: 1 1 18rem; margin: 0; }
+.deep-closeup { flex: 0 1 12rem; }
 .multiplier-silhouette { fill: var(--line-strong); opacity: .7; }
 .multiplier-cardioid { fill: none; stroke: var(--accent); stroke-width: 2; }
 .multiplier-two { fill: none; stroke: var(--gold); stroke-width: 2; }

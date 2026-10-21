@@ -103,7 +103,9 @@
   // Draws text labels for points of a drawing. `items` are {x, y, text,
   // className} in drawing units, most important first. Labels of the same
   // point are joined ("z² + c = z₂") in the first one's class; each sits a
-  // little beyond its point, away from `center`.
+  // little beyond its point, away from `center`. A label that would stick out
+  // of the drawing goes to the other side of its point, and is moved inside if
+  // it still does not fit.
   function placeLabels(layer, items, center, distance = 20) {
     const groups = [];
     for (const item of items) {
@@ -115,11 +117,32 @@
       const length = Math.hypot(x - center.x, y - center.y);
       const dx = length > 1 ? (x - center.x) / length : .7;
       const dy = length > 1 ? (y - center.y) / length : -.7;
-      svg('text', {
-        x: x + dx * distance, y: y + dy * distance + 6, class: className,
-        'text-anchor': dx < -.3 ? 'end' : dx > .3 ? 'start' : 'middle',
-      }, layer).textContent = texts.join(' = ');
+      const label = svg('text', {class: className}, layer);
+      label.textContent = texts.join(' = ');
+      const put = (sx, sy) => {
+        label.setAttribute('x', x + sx * dx * distance);
+        label.setAttribute('y', y + sy * dy * distance + 6);
+        label.setAttribute('text-anchor', sx * dx < -.3 ? 'end' : sx * dx > .3 ? 'start' : 'middle');
+      };
+      put(1, 1);
+      const out = overflow(label);
+      if (out.x || out.y) put(out.x ? -1 : 1, out.y ? -1 : 1);
+      const still = overflow(label);
+      if (still.x) label.setAttribute('x', Number(label.getAttribute('x')) + still.x);
+      if (still.y) label.setAttribute('y', Number(label.getAttribute('y')) + still.y);
     }
+  }
+
+  // How far a text element must move to lie within its drawing's viewBox,
+  // with a small margin. It must be displayed to be measured, which setUp
+  // ensures; otherwise nothing is moved.
+  function overflow(text, margin = 4) {
+    const view = text.ownerSVGElement?.viewBox.baseVal;
+    const box = text.getBBox();
+    if (!view || !view.width || !box.width) return {x: 0, y: 0};
+    const shift = (low, size, start, length) =>
+      Math.max(0, start + margin - low) - Math.max(0, low + size - (start + length - margin));
+    return {x: shift(box.x, box.width, view.x, view.width), y: shift(box.y, box.height, view.y, view.height)};
   }
 
   // Lets the pointer drag an SVG element. `onDrag` receives the pointer
@@ -369,12 +392,19 @@
 
   let instances = 0;
 
-  // Builds every figure with data-widget="name", then reveals it. `build`
-  // receives the figure and a prefix that keeps its ids unique on the page.
+  // Builds every figure with data-widget="name". `build` receives the figure
+  // and a prefix that keeps its ids unique on the page. The figure is revealed
+  // first, so that its drawings can be measured while they are built (nothing
+  // is painted before the build ends), and hidden again if the build fails.
   function setUp(name, build) {
     for (const figure of document.querySelectorAll(`[data-widget="${name}"]`)) {
-      build(figure, `${name}-${++instances}`);
       figure.hidden = false;
+      try {
+        build(figure, `${name}-${++instances}`);
+      } catch (error) {
+        figure.hidden = true;
+        throw error;
+      }
     }
   }
 

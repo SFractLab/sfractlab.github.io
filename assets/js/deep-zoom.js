@@ -251,6 +251,7 @@
   ];
   const STEPS = 800;  // steps followed
   const Z_SIZE = 360;
+  const CLOSE_SIZE = 200;  // the close-up around the pixel
 
   // Perturbation of one pixel around a reference orbit, with or without rebasing. A reference
   // that returns to 0, a nucleus, is stored for one period only: at its end the pixel restarts it
@@ -351,6 +352,20 @@
     const scaleLabel = kit.svg('text', {x: Z_SIZE - 8, y: Z_SIZE - 10, 'text-anchor': 'end', class: 'plane-tick'}, drawing);
     const orbitLayer = kit.svg('g', {class: 'plane-helper'}, drawing);
     const layer = kit.svg('g', {}, drawing);
+
+    // The close-up: the pixel's value z in the middle, at a scale that holds δ in both modes, so
+    // that switching modes moves only the reference value and the arrow δ.
+    const closeBox = element('div', 'deep-closeup');
+    const close = kit.svg('svg', {viewBox: `0 0 ${CLOSE_SIZE} ${CLOSE_SIZE}`, class: 'widget-plane', 'aria-hidden': 'true'});
+    closeBox.append(element('p', 'widget-pane-title', 'Close-up around the pixel'), close);
+    const closeMarker = kit.svg('marker', {id: `${id}-close-arrow`, viewBox: '0 0 10 10', refX: 9, refY: 5,
+      markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse', class: 'arrow arrow-z'}, kit.svg('defs', {}, close));
+    kit.svg('path', {d: 'M 0 0 L 10 5 L 0 10 z'}, closeMarker);
+    const closeGrid = kit.svg('g', {class: 'plane-grid'}, close);
+    const closeScale = kit.svg('text', {x: CLOSE_SIZE - 6, y: CLOSE_SIZE - 8, 'text-anchor': 'end', class: 'plane-tick'}, close);
+    const closeLayer = kit.svg('g', {}, close);
+    const views = element('div', 'deep-views');
+    views.append(drawing, closeBox);
     const readout = element('div', 'widget-readout');
     readout.setAttribute('aria-live', 'polite');
 
@@ -400,8 +415,45 @@
         {...reference, text: `Z${kit.subscript(s.m)}`, className: 'plane-label plane-helper'},
         {...pixel, text: `z${kit.subscript(s.n)}`, className: 'plane-label plane-w'},
       ], origin, 16);
+      const other = state.runs[state.rebase ? 'off' : 'on'].steps[state.n];
+      drawCloseUp(s, Math.max(delta, other ? Math.hypot(other.dr, other.di) : 0));
       figure.dataset.step = String(state.n);
       readout.innerHTML = describe(run, s);
+    }
+
+    // `reach` is the larger |δ| of the two modes at this step.
+    function drawCloseUp(s, reach) {
+      closeGrid.replaceChildren();
+      closeLayer.replaceChildren();
+      const middle = {x: CLOSE_SIZE / 2, y: CLOSE_SIZE / 2};
+      if (!(reach > 0)) {
+        closeScale.textContent = 'δ = 0';
+        kit.svg('circle', {cx: middle.x, cy: middle.y, r: 5.5, class: 'plane-dot plane-w'}, closeLayer);
+        return;
+      }
+      const half = 2.2 * reach;
+      const plane = new kit.Plane({left: s.zr - half, top: s.zi + half, width: 2 * half, height: 2 * half},
+        CLOSE_SIZE, CLOSE_SIZE);
+      closeScale.textContent = `width ${scientific(2 * half).replace(/<[^>]+>/g, '')}`;
+      // The axes through 0, where they cross the close-up (near the passages close to 0).
+      const origin = plane.toScreen({re: 0, im: 0});
+      if (origin.x > 0 && origin.x < CLOSE_SIZE) {
+        kit.svg('line', {x1: origin.x, y1: 0, x2: origin.x, y2: CLOSE_SIZE, class: 'plane-axis'}, closeGrid);
+      }
+      if (origin.y > 0 && origin.y < CLOSE_SIZE) {
+        kit.svg('line', {x1: 0, y1: origin.y, x2: CLOSE_SIZE, y2: origin.y, class: 'plane-axis'}, closeGrid);
+      }
+      const reference = plane.toScreen({re: s.Zr, im: s.Zi});
+      if (Math.hypot(reference.x - middle.x, reference.y - middle.y) > 6) {
+        kit.svg('line', {x1: reference.x, y1: reference.y, x2: middle.x, y2: middle.y, class: 'plane-vector plane-z',
+          'marker-end': `url(#${id}-close-arrow)`}, closeLayer);
+      }
+      kit.svg('circle', {cx: reference.x, cy: reference.y, r: 5.5, class: 'plane-dot plane-helper deep-close-reference'}, closeLayer);
+      kit.svg('circle', {cx: middle.x, cy: middle.y, r: 5.5, class: 'plane-dot plane-w'}, closeLayer);
+      kit.placeLabels(closeLayer, [
+        {...reference, text: `Z${kit.subscript(s.m)}`, className: 'plane-label plane-helper'},
+        {...middle, text: `z${kit.subscript(s.n)}`, className: 'plane-label plane-w'},
+      ], {x: (reference.x + middle.x) / 2, y: (reference.y + middle.y) / 2}, 14);
     }
 
     function describe(run, s) {
@@ -439,7 +491,7 @@
     }
 
     const caption = figure.querySelector('figcaption');
-    for (const part of [controls, stepper, drawing, readout]) figure.insertBefore(part, caption);
+    for (const part of [controls, stepper, views, readout]) figure.insertBefore(part, caption);
     choose(state.example);
   });
 
