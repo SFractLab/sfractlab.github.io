@@ -74,7 +74,7 @@
 </div>
 </div>
 <div class="page">
-<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#complex-plane">Numbers with two coordinates</a></li><li><a href="#quadratic-rule">One rule, repeated</a></li><li><a href="#two-planes">Two planes, two different questions</a></li><li><a href="#critical-point">Why start the Mandelbrot orbit at zero?</a></li><li><a href="#escape-proof">Why an escape test works</a></li><li><a href="#derivatives">Derivatives measure local stretching</a></li><li><a href="#conjugacy">A change of coordinates can reveal the same dynamics</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#complex-plane">Numbers with two coordinates</a></li><li><a href="#quadratic-rule">Iterating z² + c</a></li><li><a href="#two-planes">Parameter plane and dynamical plane</a></li><li><a href="#critical-point">Why start the Mandelbrot orbit at zero?</a></li><li><a href="#escape-proof">Why an escape test works</a></li><li><a href="#derivatives">Derivatives measure local stretching</a></li><li><a href="#conjugacy">A change of coordinates can reveal the same dynamics</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
 <article class="chapter">
 <h1>The mathematics of iteration</h1>
 <p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span></p>
@@ -131,7 +131,7 @@
 <figure class="widget" data-widget="complex-arithmetic" data-modes="add multiply square" data-z="1,0.5" data-w="0.5,1" hidden>
 <figcaption>Try it: drag <var>z</var> and <var>w</var> or type their coordinates, and switch between adding, multiplying and squaring. Dragged points snap to steps of 0.05.</figcaption>
 </figure>
-<h2 id="quadratic-rule">One rule, repeated</h2>
+<h2 id="quadratic-rule">Iterating <var>z</var><sup>2</sup> + <var>c</var></h2>
 <p>Throughout this guide the map is the quadratic polynomial <var>f</var><sub><var>c</var></sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>. The complex number <var>c</var> is a <strong>parameter</strong>: choose it once and keep it fixed while following an orbit. Choose a starting point <var>z</var><sub>0</sub>, apply the rule to obtain <var>z</var><sub>1</sub>, then feed that result back in.</p>
 <div class="equation"><var>z</var><sub>0</sub> → <var>z</var><sub>1</sub> = <var>z</var><sub>0</sub><sup>2</sup> + <var>c</var> → <var>z</var><sub>2</sub> = (<var>z</var><sub>0</sub><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var> → ⋯</div>
 <p>The infinite sequence is the <strong>forward orbit</strong>. The notation <var>f</var><sub><var>c</var></sub><sup>n</sup>(<var>z</var>) means applying the function <var>n</var> times; it does not mean raising its output to the power <var>n</var>. For example, <var>f</var><sub><var>c</var></sub><sup>2</sup>(<var>z</var>) = (<var>z</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var>. The notation <var>f</var><sup>∘n</sup> is sometimes used to emphasize composition.</p>
@@ -142,7 +142,7 @@
 <figure class="widget" data-widget="complex-arithmetic" data-modes="step" data-z="0,0" data-c="0,1" hidden>
 <figcaption>One step of <var>z</var> ↦ <var>z</var><sup>2</sup> + <var>c</var>: square, then shift by <var>c</var>. It starts with the example above, <var>z</var> = 0 and <var>c</var> = <var>i</var>; press “Apply” three times to retrace the orbit 0 → <var>i</var> → −1 + <var>i</var> → −<var>i</var>.</figcaption>
 </figure>
-<h2 id="two-planes">Two planes, two different questions</h2>
+<h2 id="two-planes">Parameter plane and dynamical plane</h2>
 <div class="table-wrap">
 <table>
 <thead>
