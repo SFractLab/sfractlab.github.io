@@ -454,6 +454,7 @@
     ['antenna', 'Near the antenna', -1.775, 0, 0.08, [-1.7565, .0015], .06],
   ];
   const P_WIDTH = 360, P_HEIGHT = 270;
+  const P_MASK_SCALE = 2;  // the silhouette is computed at twice the drawing's resolution
   const PERIOD_LIMIT = 20000;
   const NEWTON_LIMIT = 50;
 
@@ -568,15 +569,16 @@
     const readout = element('p', 'widget-readout');
     readout.setAttribute('aria-live', 'polite');
     const canvas = document.createElement('canvas');
-    canvas.width = P_WIDTH;
-    canvas.height = P_HEIGHT;
+    canvas.width = P_WIDTH * P_MASK_SCALE;
+    canvas.height = P_HEIGHT * P_MASK_SCALE;
     const plane = () => new kit.Plane(state.view, P_WIDTH, P_HEIGHT);
 
     function setView(center, width) {
       state.view = {left: center[0] - width / 2, top: center[1] + width * P_HEIGHT / P_WIDTH / 2,
         width, height: width * P_HEIGHT / P_WIDTH};
       const budget = Math.min(kit.iterationBudget(width), 4000);
-      canvas.getContext('2d').putImageData(kit.mandelbrotMask(state.view, P_WIDTH, P_HEIGHT, budget), 0, 0);
+      canvas.getContext('2d').putImageData(
+        kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget), 0, 0);
       maskImage.setAttribute('href', canvas.toDataURL('image/png'));
     }
 
