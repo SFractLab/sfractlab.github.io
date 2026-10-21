@@ -1,22 +1,5 @@
 [
   {
-    "id": "period-components",
-    "plane": "parameter",
-    "bounds": [
-      -2.2,
-      0.8,
-      -1.125,
-      1.125
-    ],
-    "sample_size": [
-      1440,
-      1080
-    ],
-    "max_iterations": 1000,
-    "parameter": null,
-    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
-  },
-  {
     "id": "julia-0",
     "plane": "dynamical",
     "bounds": [

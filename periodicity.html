@@ -17,6 +17,7 @@
 <script src="assets/js/orbits.js" defer></script>
 <script src="assets/js/multiplier-map.js" defer></script>
 <script src="assets/js/cobweb.js" defer></script>
+<script src="assets/js/place.js" defer></script>
 </head>
 <body data-page="periodicity">
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -85,9 +86,8 @@
 <p>The parameters <var>c</var> for which <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var> has a finite attracting cycle form an open set inside the Mandelbrot set. Each of its connected components is a <strong>hyperbolic component</strong>. The cycle persists under small changes to <var>c</var>, and its exact period is constant throughout that component. The largest component has period one; the large round region to its left has period two.</p>
 <p>A <strong>bulb</strong> is an informal name for one of these rounded components, especially a satellite component attached to another. A <strong>limb</strong> includes the associated part of the Mandelbrot set beyond an attachment point: the bulb together with its smaller components and filaments. Confusing the two leads to false statements about period, because a limb contains many different components. Usage varies: some authors, Devaney among them, use “bulb” for the whole limb.</p>
 <p>Period is a dynamical label, not a count of visible bumps. It says how many distinct points belong to the attracting cycle. The critical orbit approaches those points, and it repeats exactly only at one parameter of the component, its center. Devaney’s <a href="https://math.bu.edu/DYSYS/FRACGEOM/node3.html">discussion of bulb periods</a> connects these attracting cycles to the main decorations.</p>
-<figure>
-<a href="assets/images/period-components.png"><img alt="Computed Mandelbrot set showing the main cardioid and several hyperbolic components labeled by the exact period of their attracting cycle." class="fractal-image" loading="lazy" src="assets/images/period-components.png" width="1440" height="1196"></a>
-<figcaption>Periods label individual attracting components. Smaller components attached to one of them can have larger periods, while the thin surrounding boundary contains other types of dynamics. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+<figure class="widget" data-widget="place" data-window="-0.7,0,3.2" data-marks="0,0,1,in;-1,0,2,in;-0.122561,0.744862,3,in;-0.122561,-0.744862,3,in;-1.754878,0,3,n;-1.310703,0,4,in;0.282271,0.530061,4,in;0.282271,-0.530061,4,in;-1.9408,0,4,n;-0.15652,1.032247,4,w;-0.15652,-1.032247,4,w;-1.985424,0,5,s;-1.860783,0,5,s;-1.625414,0,5,s;-1.256368,0.380321,5,n;-1.256368,-0.380321,5,s;-0.50434,0.562766,5,n;-0.50434,-0.562766,5,s;-0.198042,1.10027,5,w;-0.198042,-1.10027,5,w;-0.044212,0.986581,5,e;-0.044212,-0.986581,5,e;0.359259,0.642514,5,e;0.359259,-0.642514,5,e;0.379514,0.334932,5,e;0.379514,-0.334932,5,e;0.25,0,cusp,e" data-no-link hidden>
+<figcaption>Periods of the hyperbolic components: all 26 components of periods 1 to 5 are marked with the exact period of their attracting cycle, and the cusp of the main cardioid at <var>c</var> = 1/4 is marked too. A badge sits inside a component large enough to hold it; a dot marks one too small for that, and most of these are tiny copies of the whole set. The numbers are periods, not escape counts. Smaller components attached to one of them can have larger periods, while the thin surrounding boundary contains other types of dynamics.</figcaption>
 </figure>
 <figure class="widget" data-widget="orbits" data-example="rabbit" hidden>
 <figcaption>Periods in action: inside a component the orbit of 0 settles into a cycle of that component’s period, and at the center it repeats exactly. Try the examples, or drag <var>c</var> into another bulb and press “Play”.</figcaption>
