@@ -42,6 +42,18 @@
   --plate-muted: #a6b6c4;
   --plate-line: #2a3d54;
   --plate-accent: #5fc7cf;
+
+  /* The diagrams in content/diagrams are drawn in these colours; the diagram
+     rules under Components give each one its value in the current theme. */
+  --diagram-paper: #eef5f7;
+  --diagram-panel: #fbfdfd;
+  --diagram-ink: #162e40;
+  --diagram-muted: #526a78;
+  --diagram-grid: #b8cdd0;
+  --diagram-first: #17657b;
+  --diagram-second: #bd7d20;
+  --diagram-first-wash: #a2d9da;
+  --diagram-second-wash: #f5d59e;
 }
 
 :root[data-theme="dark"] {
@@ -62,6 +74,15 @@
   --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 14px 32px -18px rgb(0 0 0 / .85);
   --plate: #0a121d;
   --plate-raised: #13213a;
+  --diagram-paper: #101d30;
+  --diagram-panel: #0a1525;
+  --diagram-ink: #edf5ff;
+  --diagram-muted: #a6b6c4;
+  --diagram-grid: #34506a;
+  --diagram-first: #65d7d0;
+  --diagram-second: #f9c579;
+  --diagram-first-wash: #295565;
+  --diagram-second-wash: #6b5431;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,6 +104,15 @@
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 14px 32px -18px rgb(0 0 0 / .85);
     --plate: #0a121d;
     --plate-raised: #13213a;
+    --diagram-paper: #101d30;
+    --diagram-panel: #0a1525;
+    --diagram-ink: #edf5ff;
+    --diagram-muted: #a6b6c4;
+    --diagram-grid: #34506a;
+    --diagram-first: #65d7d0;
+    --diagram-second: #f9c579;
+    --diagram-first-wash: #295565;
+    --diagram-second-wash: #6b5431;
   }
 }
 
@@ -535,6 +565,30 @@ button, input, select { font: inherit; color: inherit; }
   border-radius: var(--radius);
   box-shadow: 0 0 0 1px var(--line);
 }
+
+/* Diagrams (content/diagrams) are drawn in the light values of the --diagram-*
+   tokens, so a file looks right on its own. These rules give each colour its
+   value in the current theme; tests/test_tools.py checks that no diagram uses
+   another colour. */
+.chapter figure > svg [fill="#eef5f7"] { fill: var(--diagram-paper); }
+.chapter figure > svg [fill="#fbfdfd"] { fill: var(--diagram-panel); }
+.chapter figure > svg [fill="#162e40"] { fill: var(--diagram-ink); }
+.chapter figure > svg [fill="#526a78"] { fill: var(--diagram-muted); }
+.chapter figure > svg [fill="#b8cdd0"] { fill: var(--diagram-grid); }
+.chapter figure > svg [fill="#17657b"] { fill: var(--diagram-first); }
+.chapter figure > svg [fill="#bd7d20"] { fill: var(--diagram-second); }
+.chapter figure > svg [fill="#a2d9da"] { fill: var(--diagram-first-wash); }
+.chapter figure > svg [fill="#f5d59e"] { fill: var(--diagram-second-wash); }
+.chapter figure > svg [stroke="#eef5f7"] { stroke: var(--diagram-paper); }
+.chapter figure > svg [stroke="#fbfdfd"] { stroke: var(--diagram-panel); }
+.chapter figure > svg [stroke="#162e40"] { stroke: var(--diagram-ink); }
+.chapter figure > svg [stroke="#526a78"] { stroke: var(--diagram-muted); }
+.chapter figure > svg [stroke="#b8cdd0"] { stroke: var(--diagram-grid); }
+.chapter figure > svg [stroke="#17657b"] { stroke: var(--diagram-first); }
+.chapter figure > svg [stroke="#bd7d20"] { stroke: var(--diagram-second); }
+.chapter figure > svg [stroke="#a2d9da"] { stroke: var(--diagram-first-wash); }
+.chapter figure > svg [stroke="#f5d59e"] { stroke: var(--diagram-second-wash); }
+
 figcaption { max-width: var(--measure); margin-top: .8em; font: .82rem/1.55 var(--font-ui); color: var(--muted); }
 figcaption var { font-size: 1.05em; }
 
@@ -587,7 +641,7 @@ figcaption var { font-size: 1.05em; }
 /* ---- Interactive figures ------------------------------------------------ */
 
 /* Geometry widgets built by content/assets/js (data-widget="…"). They use
-   the theme's colours, so unlike the static diagrams they follow the theme:
+   the theme's colours, so like the diagrams they follow the theme:
    z in teal, w and c in gold, results in the text colour. */
 .widget {
   margin: 2.2em 0;
@@ -903,6 +957,15 @@ figure[data-widget="certified"] canvas { image-rendering: pixelated; }
     --accent-wash: #f1f1f1;
     --gold: #444;
     --shadow: none;
+    --diagram-paper: #eef5f7;
+    --diagram-panel: #fbfdfd;
+    --diagram-ink: #162e40;
+    --diagram-muted: #526a78;
+    --diagram-grid: #b8cdd0;
+    --diagram-first: #17657b;
+    --diagram-second: #bd7d20;
+    --diagram-first-wash: #a2d9da;
+    --diagram-second-wash: #f5d59e;
   }
   body { font-size: 10.5pt; }
   .layout, .page { display: block; }
