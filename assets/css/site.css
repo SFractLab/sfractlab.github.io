@@ -33,6 +33,7 @@
   --accent-wash: #e5efee;
   --gold: #8a5a14;
   --focus: #c26a00;
+  --interactive: #e0806c;
   --shadow: 0 1px 2px rgb(23 33 44 / .06), 0 12px 28px -16px rgb(23 33 44 / .4);
 
   /* The explorer is an always-dark instrument panel, in both themes. */
@@ -71,6 +72,7 @@
   --accent-wash: #11262e;
   --gold: #e2b06a;
   --focus: #f2a541;
+  --interactive: #a35f55;
   --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 14px 32px -18px rgb(0 0 0 / .85);
   --plate: #0a121d;
   --plate-raised: #13213a;
@@ -101,6 +103,7 @@
     --accent-wash: #11262e;
     --gold: #e2b06a;
     --focus: #f2a541;
+    --interactive: #a35f55;
     --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 14px 32px -18px rgb(0 0 0 / .85);
     --plate: #0a121d;
     --plate-raised: #13213a;
@@ -651,6 +654,9 @@ figcaption var { font-size: 1.05em; }
   background: var(--surface);
   font-family: var(--font-ui);
 }
+/* Every figure the reader can change, on either panel, is outlined in coral;
+   the pictures of the set (place.js) are not. */
+:is(.widget:not([data-widget="place"]), .explorer) { border: 1.5px solid var(--interactive); }
 .widget-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; margin-bottom: .9rem; font-size: .85rem; }
 .widget-modes { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
 .widget-modes label { position: relative; cursor: pointer; }
