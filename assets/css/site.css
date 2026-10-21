@@ -728,6 +728,8 @@ figcaption var { font-size: 1.05em; }
 .deep-delta-circle.deep-inside { color: var(--gold); stroke: currentColor; fill: currentColor; fill-opacity: .12; }
 .deep-disk { fill: var(--accent-wash); fill-opacity: .6; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .deep-newton { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.deep-newton-lost { stroke-dasharray: 4 4; opacity: .6; }
+.deep-newton-end { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .deep-outline { fill: none; stroke: var(--gold); stroke-width: 2; }
 .deep-zplane { max-width: 28rem; margin: 0 auto; }
 .multiplier-silhouette { fill: var(--line-strong); opacity: .7; }

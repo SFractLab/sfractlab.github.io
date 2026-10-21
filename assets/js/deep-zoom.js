@@ -508,6 +508,17 @@
     return p;
   }
 
+  // Whether the orbit of 0 for c leaves the disk of radius 2 within p steps, so that z_p(c) is
+  // enormous: there Newton's steps cover only a small fraction of the way back to the set.
+  function escapesWithin([cr, ci], p) {
+    let x = 0, y = 0;
+    for (let n = 0; n < p; n++) {
+      [x, y] = [x * x - y * y + cr, 2 * x * y + ci];
+      if (x * x + y * y > 4) return true;
+    }
+    return false;
+  }
+
   // The size estimate at a nucleus of period p: λ_k = 2z₁·2z₂⋯2z_k, β = 1 + Σ 1/λ_k (k < p),
   // and the copy is M scaled by 1/(βλ²) with λ = λ_(p−1).
   function sizeEstimate([cr, ci], p) {
@@ -618,6 +629,8 @@
           result.outside = Math.hypot(nucleus[0] - cr, nucleus[1] - ci) > r;
           result.copy = isCopy(nucleus, result.scale, result.period);
           result.unseen = unseen(nucleus);
+        } else {
+          result.outOfSet = escapesWithin(result.newton.path.at(-1), ball.period);
         }
       }
       state.result = result;
@@ -646,8 +659,16 @@
         const {path, nucleus} = result.newton;
         const {scale} = result;
         const points = path.map(([re, im]) => p.toScreen({re, im}));
-        kit.svg('polyline', {points: points.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' '), class: 'deep-newton'}, layer);
-        for (const q of points.slice(1)) kit.svg('circle', {cx: q.x, cy: q.y, r: 2.5, class: 'plane-dot plane-z'}, layer);
+        const line = points.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' ');
+        if (nucleus) {
+          kit.svg('polyline', {points: line, class: 'deep-newton'}, layer);
+          for (const q of points.slice(1)) kit.svg('circle', {cx: q.x, cy: q.y, r: 2.5, class: 'plane-dot plane-z'}, layer);
+        } else {
+          // An unfinished run: a faint dashed path, ending in a ring rather than a nucleus.
+          const end = points.at(-1);
+          kit.svg('polyline', {points: line, class: 'deep-newton deep-newton-lost'}, layer);
+          kit.svg('circle', {cx: end.x, cy: end.y, r: 5, class: 'deep-newton-end'}, layer);
+        }
         if (nucleus && result.copy) {
           for (const outline of OUTLINE) {
             const mapped = outline.map(([a, b]) => p.toScreen({
@@ -679,6 +700,12 @@
       const steps = sizes.filter(x => x > 0).map(scientific);
       const period = whole(ball.period);
       let text = `Ball period ${period}: at step ${period} the image of the disk first covers 0. `;
+      if (!nucleus && result.outOfSet) {
+        return text + `Newton’s method from the disk’s center has not converged after ${NEWTON_LIMIT} steps: a step ` +
+          `took it out of the set, where <var>z</var><sub>${period}</sub>(<var>c</var>) is enormous and each step ` +
+          'covers only a small fraction of the way back, so its last steps crowd together. Newton’s method needs ' +
+          'a start close to a nucleus: make the disk smaller or move it.';
+      }
       if (!nucleus) {
         return text + `Newton’s method from the disk’s center has not converged after ${NEWTON_LIMIT} steps: it ` +
           'started near a boundary between the regions that lead to different nuclei, which form a fractal ' +
