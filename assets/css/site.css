@@ -685,6 +685,7 @@ figcaption var { font-size: 1.05em; }
   cursor: pointer;
 }
 .widget-button-quiet { background: none; color: var(--accent); }
+.widget-button:disabled { opacity: .4; cursor: default; }
 .widget-plane { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--paper); touch-action: none; }
 .chapter .widget-readout { max-width: none; min-height: 3.2em; margin: .8rem 0 0; font: .98rem/1.55 var(--font-text); color: var(--ink); }
 

@@ -558,7 +558,7 @@
   ];
 
   kit.setUp('deep-period', (figure, id) => {
-    const state = {view: null, c0: null, fraction: .06, result: null};
+    const state = {view: null, c0: null, fraction: .06, result: null, changed: false};
 
     const controls = element('div', 'widget-controls');
     const pick = element('label', 'widget-point');
@@ -579,7 +579,8 @@
     const radiusBox = element('label', 'widget-point deep-range');
     radiusBox.append('Disk ', radius);
     const zoom = button('Zoom to the minibrot', () => zoomIn(), false);
-    controls.append(pick, radiusBox, zoom);
+    const reset = button('Reset view', () => choose(select.value));
+    controls.append(pick, radiusBox, zoom, reset);
 
     const drawing = kit.svg('svg', {viewBox: `0 0 ${P_WIDTH} ${P_HEIGHT}`, class: 'widget-plane deep-cplane', 'aria-hidden': 'true'});
     const defs = kit.svg('defs', {}, drawing);
@@ -660,6 +661,7 @@
         }
       }
       zoom.disabled = !result.copy;
+      reset.disabled = !state.changed;
       figure.dataset.period = String(result.ball.period || 0);
       figure.dataset.found = String(result.period || 0);
       readout.innerHTML = describe(result);
@@ -701,7 +703,7 @@
       text += result.copy
         ? `The size estimate gives a copy of <var>M</var> scaled by ${scientific(size)} and turned by ${formatNumber(angle, 0)}°.`
         : 'This component is a bulb attached to a larger one, not a small copy of <var>M</var>: the size estimate ' +
-          'describes copies, so no outline is drawn.';
+          'describes copies, so no outline is drawn and there is no minibrot to zoom to.';
       if (result.unseen) {
         text += ' At this magnification the component is smaller than a pixel, so the picture shows nothing there' +
           (result.copy ? '; “Zoom to the minibrot” shows it.' : '.');
@@ -717,36 +719,38 @@
       const width = Math.max(1e-12, 3 * 2.5 * size);
       const middle = [nucleus[0] - .75 * scale[0], nucleus[1] - .75 * scale[1]];
       state.c0 = nucleus.slice();
+      state.changed = true;
       setView(middle, width);
       compute();
     }
 
-    select.addEventListener('change', () => {
-      const [, , re, im, width, start, fraction] = VIEWS.find(([key]) => key === select.value);
+    // A view from the menu as it opens; "Reset view" returns to it.
+    function choose(key) {
+      const [, , re, im, width, start, fraction] = VIEWS.find(([name]) => name === key);
+      select.value = key;
       setView([re, im], width);
       state.c0 = start.slice();
       state.fraction = fraction;
       radius.value = String(Math.round(fraction * 100));
+      state.changed = false;
       compute();
-    });
+    }
+
+    select.addEventListener('change', () => choose(select.value));
     radius.addEventListener('input', () => {
       state.fraction = Number(radius.value) / 100;
+      state.changed = true;
       compute();
     });
     kit.makeDraggable(drawing, drawing, (x, y) => {
       const c = plane().fromScreen(x, y);
       state.c0 = [c.re, c.im];
+      state.changed = true;
       compute();
     });
 
     const caption = figure.querySelector('figcaption');
     for (const part of [controls, drawing, readout]) figure.insertBefore(part, caption);
-    const start = VIEWS.find(([key]) => key === 'antenna');
-    select.value = start[0];
-    state.c0 = start[5].slice();
-    state.fraction = start[6];
-    radius.value = String(Math.round(start[6] * 100));
-    setView([start[2], start[3]], start[4]);
-    compute();
+    choose('antenna');
   });
 })();
