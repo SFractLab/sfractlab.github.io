@@ -450,7 +450,7 @@
   // [key, name, center re, center im, width, starting point of the disk, its radius / width]
   const VIEWS = [
     ['whole', 'The whole set', -0.65, 0, 3.2, [-1.76, 0], .06],
-    ['seahorse', 'Seahorse valley', -0.7445, 0.115, 0.05, [-0.7445, 0.115], .01],
+    ['seahorse', 'Seahorse valley', -0.7445, 0.115, 0.05, [-0.7445, 0.115], .03],
     ['antenna', 'Near the antenna', -1.775, 0, 0.08, [-1.7565, .0015], .06],
   ];
   const P_WIDTH = 360, P_HEIGHT = 270;
@@ -471,9 +471,12 @@
     return {};
   }
 
-  // Newton's method for z_p(c) = 0, and the size estimate at the nucleus.
+  // Newton's method for z_p(c) = 0. It has converged when its last step is at the level of
+  // rounding (relative 10⁻¹⁴; runs that are still searching after 50 steps move by 10⁻⁶ or
+  // more, or overflow).
   function newton(cr, ci, p) {
     const path = [[cr, ci]];
+    let step = Infinity;
     for (let k = 0; k < NEWTON_LIMIT; k++) {
       let x = 0, y = 0, dx = 0, dy = 0;
       for (let n = 0; n < p; n++) {
@@ -485,11 +488,29 @@
       const sr = (x * dx + y * dy) / den, si = (y * dx - x * dy) / den;
       cr -= sr;
       ci -= si;
-      if (!Number.isFinite(cr) || !Number.isFinite(ci)) return {path, failed: true};
+      if (!Number.isFinite(cr) || !Number.isFinite(ci)) break;
       path.push([cr, ci]);
-      if (Math.hypot(sr, si) <= 1e-16 * Math.max(1, Math.hypot(cr, ci))) break;
+      step = Math.hypot(sr, si) / Math.max(1, Math.hypot(cr, ci));
+      if (step <= 1e-16) break;
     }
-    // Size estimate: λ_k = 2z₁·2z₂⋯2z_k, β = 1 + Σ 1/λ_k (k < p), scale = 1/(βλ²) with λ = λ_(p−1).
+    return step <= 1e-14 ? {path, nucleus: [cr, ci]} : {path};
+  }
+
+  // The period of a nucleus that solves z_p = 0: the least divisor d of p at which c also solves
+  // z_d = 0, to the precision of a Newton step.
+  function exactPeriod([cr, ci], p) {
+    let x = 0, y = 0, dx = 0, dy = 0;
+    for (let n = 1; n < p; n++) {
+      [dx, dy] = [2 * (x * dx - y * dy) + 1, 2 * (x * dy + y * dx)];
+      [x, y] = [x * x - y * y + cr, 2 * x * y + ci];
+      if (p % n === 0 && Math.hypot(x, y) <= 1e-14 * Math.max(1, Math.hypot(cr, ci)) * Math.hypot(dx, dy)) return n;
+    }
+    return p;
+  }
+
+  // The size estimate at a nucleus of period p: λ_k = 2z₁·2z₂⋯2z_k, β = 1 + Σ 1/λ_k (k < p),
+  // and the copy is M scaled by 1/(βλ²) with λ = λ_(p−1).
+  function sizeEstimate([cr, ci], p) {
     let x = 0, y = 0, lr = 1, li = 0, br = 1, bi = 0;
     for (let n = 1; n < p; n++) {
       [x, y] = [x * x - y * y + cr, 2 * x * y + ci];
@@ -501,7 +522,7 @@
     const [l2r, l2i] = [lr * lr - li * li, 2 * lr * li];
     const [qr, qi] = [br * l2r - bi * l2i, br * l2i + bi * l2r];
     const den = qr * qr + qi * qi;
-    return {path, nucleus: [cr, ci], scale: [qr / den, -qi / den]};
+    return [qr / den, -qi / den];
   }
 
   // Whether the component of the nucleus is a small copy of M (primitive) rather than a bulb
@@ -577,8 +598,8 @@
       state.view = {left: center[0] - width / 2, top: center[1] + width * P_HEIGHT / P_WIDTH / 2,
         width, height: width * P_HEIGHT / P_WIDTH};
       const budget = Math.min(kit.iterationBudget(width), 4000);
-      canvas.getContext('2d').putImageData(
-        kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget), 0, 0);
+      state.mask = kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget);
+      canvas.getContext('2d').putImageData(state.mask, 0, 0);
       maskImage.setAttribute('href', canvas.toDataURL('image/png'));
     }
 
@@ -589,13 +610,27 @@
       const result = {r, ball};
       if (ball.period) {
         result.newton = newton(cr, ci, ball.period);
-        const [nr, ni] = result.newton.nucleus || [NaN, NaN];
-        result.left = !(Math.hypot(nr - cr, ni - ci) <= r);
-        result.copy = !result.left && !result.newton.failed &&
-          isCopy(result.newton.nucleus, result.newton.scale, ball.period);
+        const {nucleus} = result.newton;
+        if (nucleus) {
+          result.period = exactPeriod(nucleus, ball.period);
+          result.scale = sizeEstimate(nucleus, result.period);
+          result.outside = Math.hypot(nucleus[0] - cr, nucleus[1] - ci) > r;
+          result.copy = isCopy(nucleus, result.scale, result.period);
+          result.unseen = unseen(nucleus);
+        }
       }
       state.result = result;
       draw();
+    }
+
+    // Whether a nucleus in the view lies on a pixel that the silhouette leaves empty: its
+    // component is too small to be drawn at this magnification.
+    function unseen([re, im]) {
+      const {view, mask} = state;
+      const x = Math.floor((re - view.left) / view.width * mask.width);
+      const y = Math.floor((view.top - im) / view.height * mask.height);
+      if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) return false;
+      return mask.data[(y * mask.width + x) * 4 + 3] === 0;
     }
 
     function draw() {
@@ -607,7 +642,8 @@
       kit.svg('circle', {cx: center.x, cy: center.y, r: 4, class: 'plane-dot plane-w'}, layer);
       const lines = [];
       if (result.newton) {
-        const {path, nucleus, scale} = result.newton;
+        const {path, nucleus} = result.newton;
+        const {scale} = result;
         const points = path.map(([re, im]) => p.toScreen({re, im}));
         kit.svg('polyline', {points: points.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' '), class: 'deep-newton'}, layer);
         for (const q of points.slice(1)) kit.svg('circle', {cx: q.x, cy: q.y, r: 2.5, class: 'plane-dot plane-z'}, layer);
@@ -618,13 +654,14 @@
             kit.svg('polyline', {points: mapped.map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' '), class: 'deep-outline'}, layer);
           }
         }
-        if (nucleus && !result.left && !result.newton.failed) {
+        if (nucleus) {
           const q = p.toScreen({re: nucleus[0], im: nucleus[1]});
           kit.svg('circle', {cx: q.x, cy: q.y, r: 4.5, class: 'plane-dot plane-z'}, layer);
         }
       }
       zoom.disabled = !result.copy;
       figure.dataset.period = String(result.ball.period || 0);
+      figure.dataset.found = String(result.period || 0);
       readout.innerHTML = describe(result);
     }
 
@@ -635,30 +672,46 @@
           'covers 0: no minibrot found. Make the disk larger or move it closer to the set.';
       }
       if (!ball.period) return `No period up to ${whole(PERIOD_LIMIT)}: make the disk larger.`;
-      const {path, scale} = result.newton;
+      const {path, nucleus} = result.newton;
       const sizes = path.slice(1).map(([re, im], k) => Math.hypot(re - path[k][0], im - path[k][1]));
       const steps = sizes.filter(x => x > 0).map(scientific);
-      let text = `Ball period ${whole(ball.period)}: at step ${whole(ball.period)} the image of the disk first covers 0. `;
-      if (result.newton.failed || result.left) {
-        return text + `Newton’s method from the disk’s center ${result.newton.failed ? 'failed' : 'left the disk'}: ` +
-          'its starting points form a fractal pattern. Move the disk a little.';
+      const period = whole(ball.period);
+      let text = `Ball period ${period}: at step ${period} the image of the disk first covers 0. `;
+      if (!nucleus) {
+        return text + `Newton’s method from the disk’s center has not converged after ${NEWTON_LIMIT} steps: it ` +
+          'started near a boundary between the regions that lead to different nuclei, which form a fractal ' +
+          'pattern. Move the disk a little.';
       }
-      const [nr, ni] = result.newton.nucleus;
+      const [nr, ni] = nucleus;
+      const {scale} = result;
       const size = Math.hypot(scale[0], scale[1]);
       const angle = Math.atan2(scale[1], scale[0]) * 180 / Math.PI;
       text += steps.length === 0
         ? `The disk’s center is the nucleus ${nucleusText(nr, ni)}, to double precision. `
         : `Newton’s method from the disk’s center took ${steps.length} ${steps.length === 1 ? 'step' : 'steps'}, ` +
           `of ${steps.length === 1 ? 'size' : 'sizes'} ${steps.join(', ')}, to the nucleus ${nucleusText(nr, ni)}. `;
+      if (result.period < ball.period) {
+        text += `Its period is ${whole(result.period)}, a divisor of ${period}: <var>z</var><sub>${period}</sub>(<var>c</var>) ` +
+          `= 0 holds at every nucleus whose period divides ${period}. `;
+      }
+      if (result.outside) {
+        text += 'It lies outside the disk: the ball method’s test is only first order, so the component it detects ' +
+          'can lie near the disk rather than in it. ';
+      }
       text += result.copy
         ? `The size estimate gives a copy of <var>M</var> scaled by ${scientific(size)} and turned by ${formatNumber(angle, 0)}°.`
         : 'This component is a bulb attached to a larger one, not a small copy of <var>M</var>: the size estimate ' +
           'describes copies, so no outline is drawn.';
+      if (result.unseen) {
+        text += ' At this magnification the component is smaller than a pixel, so the picture shows nothing there' +
+          (result.copy ? '; “Zoom to the minibrot” shows it.' : '.');
+      }
       return text;
     }
 
     function zoomIn() {
-      const {nucleus, scale} = state.result.newton;
+      const {nucleus} = state.result.newton;
+      const {scale} = state.result;
       // M spans about 2.5 across, centered near −0.75 in its own coordinates.
       const size = Math.hypot(scale[0], scale[1]);
       const width = Math.max(1e-12, 3 * 2.5 * size);
