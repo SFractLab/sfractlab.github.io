@@ -34,7 +34,7 @@
   const EXAMPLES = [
     ['whole', 'The whole set', -.7, 0, FULL_WIDTH],
     ['minibrot', 'Period-3 copy (plate in Minibrots)', -1.765, 0, .07],
-    ['seahorse', 'Seahorse valley (plate in the tour)', -.75, .09, .08],
+    ['seahorse', 'Seahorse valley (a stop of the tour)', -.75, .09, .08],
     ['misiurewicz', 'Around c = i (plate in Special points)', 0, 1, .14],
     ['cusp', 'The cusp c = 1/4 (plate in the gallery)', .25, 0, .1],
     ['spiral', 'A deep spiral in seahorse valley', -.743643887037151, .131825904205330, 2e-9],

@@ -13,6 +13,8 @@
 <script src="assets/js/ui.js"></script>
 <script src="assets/js/search-index.js" defer></script>
 <script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/place.js" defer></script>
 </head>
 <body data-page="index">
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -77,17 +79,15 @@
 <p class="eyebrow">An illustrated atlas of complex dynamics</p>
 <h1>One equation.<br>Two worlds.</h1>
 <p class="lead">Square a complex number, add a constant, and repeat. That small instruction creates the Mandelbrot set, an entire family of Julia sets, and a landscape of cycles, islands, spirals, branching points, and unresolved mathematics.</p>
-<figure>
-<a href="assets/images/mandelbrot-overview.png"><img alt="Computed Mandelbrot parameter plane, with a dark central cardioid and bulbs surrounded by blue, turquoise, and gold escape-time bands." class="fractal-image" src="assets/images/mandelbrot-overview.png" width="1440" height="1196"></a>
-<figcaption>The familiar outline is a map of parameters. Each point <var>c</var> selects its own dynamical system—and its own Julia set. Exterior colors visualize escape time; they are not intrinsic colors of the mathematical set. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+<figure class="widget" data-widget="place" data-window="-0.7,0,3" hidden>
+<figcaption>The Mandelbrot set: the familiar outline is a map of parameters. Each point <var>c</var> selects its own dynamical system—and its own Julia set. Exterior colors visualize escape time; they are not intrinsic colors of the mathematical set. Click the picture to open it in the zoom viewer.</figcaption>
 </figure>
 <div class="equation"><var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>,    <var>z</var><sub>n+1</sub> = <var>f</var><sub>c</sub>(<var>z</var><sub>n</sub>).</div>
 <h2 id="two-worlds">The essential distinction</h2>
 <div class="cards"><a class="card" href="mandelbrot.html"><span class="eyebrow">Parameter plane · vary <var>c</var></span><h3>The Mandelbrot set</h3><p>Start at zero. Which choices of the constant c keep that orbit bounded? The answers make one set in the parameter plane.</p></a><a class="card" href="julia.html"><span class="eyebrow">Dynamical plane · vary <var>z</var><sub>0</sub></span><h3>A Julia set</h3><p>Fix c. Which starting points have bounded orbits, and where is the boundary between bounded and escaping behavior?</p></a></div>
 <p>The bounded starting points form the <strong>filled Julia set</strong> <var>K</var><sub>c</sub>. Its boundary is the <strong>Julia set</strong> <var>J</var><sub>c</sub>. The filled set and its boundary are different objects, though many pictures are casually called “Julia sets.” A fundamental theorem links the two planes: <var>J</var><sub>c</sub> is connected exactly when <var>c</var> belongs to the Mandelbrot set. <a href="julia.html">See the definitions, examples, and source references.</a></p>
-<figure>
-<a href="assets/images/parameter-dynamical.png"><img alt="A marker at c=-1 in the Mandelbrot set on the left selects the basilica filled Julia set on the right." class="fractal-image" loading="lazy" src="assets/images/parameter-dynamical.png" width="1460" height="648"></a>
-<figcaption>A point in one plane selects a whole picture in the other. Click any image in this atlas to open its full-resolution version. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+<figure class="widget" data-widget="place" data-window="-0.7,0,3" data-marks="-1,0,c = −1,n" data-julia="-1,0" hidden>
+<figcaption>A point in one plane selects a whole picture in the other: the marked parameter <var>c</var> = −1 in the parameter plane selects the basilica, its filled Julia set in the dynamical plane. Click the picture of the parameter plane to open it in the zoom viewer; the <a href="gallery.html#explorer">explorer</a> draws the Julia set of any parameter you choose. Elsewhere in the atlas, clicking an image opens its full-resolution version.</figcaption>
 </figure>
 <h2 id="reading-path">A route through the atlas</h2>
 <p>The chapters build on one another in this order. Each one names the chapters it builds on under its title and marks its level with one to three dots, and most chapters end with key ideas and questions to check yourself.</p>

@@ -1,6 +1,6 @@
 [
   {
-    "id": "mandelbrot-overview",
+    "id": "period-components",
     "plane": "parameter",
     "bounds": [
       -2.2,
@@ -201,23 +201,6 @@
       900
     ],
     "max_iterations": 1800,
-    "parameter": null,
-    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
-  },
-  {
-    "id": "seahorse-valley",
-    "plane": "parameter",
-    "bounds": [
-      -0.79,
-      -0.71,
-      0.06,
-      0.12
-    ],
-    "sample_size": [
-      1200,
-      900
-    ],
-    "max_iterations": 2000,
     "parameter": null,
     "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
   },
