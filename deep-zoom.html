@@ -92,7 +92,7 @@
 <figure>
 <svg aria-labelledby="dzp-title dzp-desc" role="img" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
 <title id="dzp-title">The stages of a deep-zoom renderer</title>
-<desc id="dzp-desc">Two rows of boxes. The upper row, done once per picture with many digits: the reference orbit at the image center, from which the skipping tables are built. The lower row, done for every pixel in hardware numbers: a step, either a jump with a table entry or one perturbation step; a rebasing test that restarts the reference when the pixel comes closer to 0 than to it; and, after escape, the color. Arrows show the reference values and the tables feeding the pixel steps, and a loop from the rebasing test back to the next step.</desc>
+<desc id="dzp-desc">Two rows of boxes. The upper row, done once per picture with many digits: the reference orbit at the image center, from which the skipping tables are built. The lower row, done for every pixel in hardware numbers: perturbation, one step of the difference from the reference or a jump with a table entry; rebasing, which restarts the reference when the pixel comes closer to 0 than to it; and, after escape, the coloring. Arrows show the reference values and the tables feeding the pixel steps, and a loop from the rebasing test back to the next step.</desc>
 <defs>
 <marker id="dzp-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
 <path d="M0 0 L8 4 L0 8Z" fill="#17657b"></path>
@@ -111,7 +111,7 @@
 <path d="M157 172 V236"></path>
 <path d="M600 172 L262 236"></path>
 <path d="M277 290 H326"></path>
-<path d="M447 342 C447 392 157 392 157 344"></path>
+<path d="M447 342 V366 Q447 382 431 382 H173 Q157 382 157 366 V344"></path>
 <path d="M567 290 H621"></path>
 </g>
 <g fill="#526a78" font-family="system-ui, sans-serif">
@@ -123,17 +123,17 @@
 <g fill="#162e40" font-family="system-ui, sans-serif" font-size="18" font-weight="700">
 <text x="60" y="102">1  Reference orbit</text>
 <text x="490" y="102">4  Skipping tables</text>
-<text x="60" y="272">2  Step</text>
-<text x="350" y="272">3  Rebase</text>
-<text x="645" y="272">5  Color</text>
+<text x="60" y="272">2  Perturbation</text>
+<text x="350" y="272">3  Rebasing</text>
+<text x="645" y="272">5  Coloring</text>
 </g>
 <g fill="#526a78" font-family="system-ui, sans-serif" font-size="15">
 <text x="60" y="128">Z₀ = 0, Z₁ = C, Z₂, … at the image center,</text>
 <text x="60" y="150">with hundreds to thousands of digits</text>
 <text x="490" y="128">linear maps over many steps (BLA or LA),</text>
 <text x="490" y="150">built once from the reference</text>
-<text x="60" y="298">a jump with a table entry,</text>
-<text x="60" y="320">or δ ← 2Zₘδ + δ² + Δc</text>
+<text x="60" y="298">δ ← 2Zₘδ + δ² + Δc,</text>
+<text x="60" y="320">or a jump with a table entry</text>
 <text x="350" y="298">if |Zₘ + δ| &lt; |δ|:</text>
 <text x="350" y="320">δ ← Zₘ + δ, m ← 0</text>
 <text x="645" y="298">from the smooth count</text>
