@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Twelve places worth visiting, from the cusp of the main cardioid around the upper half of the set and out along the real axis to its tip at −2. Each picture is computed in your browser when you reach it; click it to explore the same window in the zoom viewer.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>A guided tour — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/place.js" defer></script>
+</head>
+<body data-page="tour">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html" aria-current="page"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 12</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#route">The route</a></li><li><a href="#cusp">1. The cusp at 1/4</a></li><li><a href="#elephant-valley">2. Elephant valley</a></li><li><a href="#branch-point">3. A three-way branch point</a></li><li><a href="#tip-i">4. The tip at i</a></li><li><a href="#primitive-copy">5. A copy off the axis</a></li><li><a href="#seahorse-valley">6. Seahorse valley</a></li><li><a href="#seahorse">7. A seahorse up close</a></li><li><a href="#golden-mean">8. The golden-mean point</a></li><li><a href="#feigenbaum-point">9. The Feigenbaum point</a></li><li><a href="#band-merging">10. Where two bands merge</a></li><li><a href="#airplane-copy">11. The airplane’s copy</a></li><li><a href="#tip">12. The tip at −2</a></li><li><a href="#further">Where to go from here</a></li></ol></nav></details>
+<article class="chapter">
+<h1>A guided tour of the Mandelbrot set</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span><span class="requires">Builds on <a href="mandelbrot.html">The Mandelbrot set</a></span></p>
+<p class="lead">Twelve places worth visiting, from the cusp of the main cardioid around the upper half of the set and out along the real axis to its tip at −2. Each picture is computed in your browser when you reach it; click it to explore the same window in the zoom viewer.</p>
+<h2 id="route">The route</h2>
+<p>The map shows where the stops are. Names such as seahorse valley and elephant valley are nicknames for regions with a recognizable look; they have no precise boundaries. A place is identified precisely by its parameter <var>c</var>, by what the orbit of 0 does there, by the components around it, and by the <a href="rays.html">external rays</a> that land on it, and each stop below says what is known about these.</p>
+<figure class="widget" data-widget="place" data-window="-0.7,0,3.2" data-marks="0.25,0,1,s;0.2925,0.0145,2,n;-0.1011,0.9563,3,w;0,1,4,e;-0.1565,1.0322,5,n;-0.7475,0.1,6–7,n;-0.3905,0.5868,8,w;-1.4012,0,9,n;-1.5437,0,10,s;-1.7549,0,11,n;-2,0,12,s" hidden>
+<figcaption>The stops of the tour on the whole Mandelbrot set. Click the picture to open it in the zoom viewer.</figcaption>
+</figure>
+<p>The colors outside the set count the steps an orbit needs to escape; the boundaries between the bands approximate equipotentials. Color can stress or hide a motif, but it is not part of the set.</p>
+<h2 id="cusp">1. The cusp at 1/4</h2>
+<figure class="widget" data-widget="place" data-window="0.25,0,0.1" hidden>
+<figcaption>The cusp of the main cardioid. The dark interior of the cardioid fills the left and wraps above and below the cusp; the light wedge to its right is outside the set, and the closer a point lies to the cusp, the more steps its orbit needs to escape.</figcaption>
+</figure>
+<p>The heart-shaped main cardioid ends on the right in a cusp at <var>c</var> = 1/4. There the fixed point 1/2 has multiplier exactly 1: it is parabolic, with a single petal, and the orbit of 0 creeps toward it, about 1/<var>k</var> away after <var>k</var> steps. Its Julia set is the “cauliflower”, a name from Douady’s repertoire. Only one external ray, at angle 0, lands at the cusp. Just to the right of it the orbit of 0 escapes, but only after about π/√ε steps at <var>c</var> = 1/4 + ε: the <a href="neutral.html#implosion">parabolic gate</a>. <a href="gallery.html#zoom=0.25,0,0.1">Open in the zoom viewer</a>.</p>
+<h2 id="elephant-valley">2. Elephant valley</h2>
+<figure class="widget" data-widget="place" data-window="0.2925,0.0145,0.012" hidden>
+<figcaption>Elephant valley, to the right of the cusp and just above the real axis. The large dark disk at the upper left is the bulb with internal angle 1/15.</figcaption>
+</figure>
+<p>Above and below the cusp, small bulbs line the edge of the cardioid: the bulbs with internal angles 1/<var>q</var> and (<var>q</var> − 1)/<var>q</var>, with period <var>q</var>, crowding toward 1/4 as <var>q</var> grows. With their decorations they look like a row of elephants, each with a trunk curling into a spiral. In this window the elephant at the upper left is the bulb with internal angle 1/15 and period 15, whose root is at about 0.2895 + 0.0176<var>i</var>. <a href="gallery.html#zoom=0.2925,0.0145,0.012">Open in the zoom viewer</a>.</p>
+<h2 id="branch-point">3. A three-way branch point</h2>
+<figure class="widget" data-widget="place" data-window="-0.1011,0.9563,0.06" hidden>
+<figcaption>Three branches of the 1/3 limb meet at the Misiurewicz point ≈ −0.1011 + 0.9563<var>i</var>, in the middle of the picture.</figcaption>
+</figure>
+<p>At the top of the set is the limb of the 1/3 bulb, the bulb of Douady’s rabbit. Its main antenna splits into three at <var>c</var> ≈ −0.1011 + 0.9563<var>i</var>. This is a Misiurewicz point: the orbit of 0 lands after four steps on the fixed point α, which repels. Three parameter rays land there, at 9/56, 11/56 and 15/56, one between each pair of branches; three doublings take these angles to 2/7, 4/7 and 1/7, the angles of the rays that land at α in every Julia set of the 1/3 wake (<a href="rays.html#landing">where parameter rays land</a>). <a href="gallery.html#zoom=-0.1011,0.9563,0.06">Open in the zoom viewer</a>.</p>
+<h2 id="tip-i">4. The tip at <var>i</var></h2>
+<figure class="widget" data-widget="place" data-window="0,1,0.14" hidden>
+<figcaption>The neighborhood of <var>c</var> = <var>i</var>, the end of a filament; the dark island at the left is a small copy of the Mandelbrot set.</figcaption>
+</figure>
+<p>One branch from the previous stop leads to <var>c</var> = <var>i</var>, the tip of one of its filaments. The orbit of 0 is 0, <var>i</var>, −1 + <var>i</var>, −<var>i</var>, −1 + <var>i</var>, …: after two steps it lands on a repelling two-cycle with multiplier 4 + 4<var>i</var>. Only one ray lands here, at 1/6, so <var>i</var> is the tip of a filament. Zooming in by 4√2 and turning by 45° reproduces the picture more and more exactly, and it resembles the Julia set for <var>c</var> = <var>i</var>, a dendrite, near its critical value (<a href="special-points.html#similarity-and-cautions">Tan Lei’s theorem</a>). <a href="gallery.html#zoom=0,1,0.14">Open in the zoom viewer</a>.</p>
+<h2 id="primitive-copy">5. A copy off the axis</h2>
+<figure class="widget" data-widget="place" data-window="-0.1565,1.0322,0.03" hidden>
+<figcaption>A small copy of the Mandelbrot set with period 4, at the top of the 1/3 limb.</figcaption>
+</figure>
+<p>Higher up in the same limb sits a small copy of the whole set. Its main cardioid has period 4, with center ≈ −0.1565 + 1.0322<var>i</var> and its cusp at ≈ −0.1547 + 1.0310<var>i</var>, where the rays at 1/5 and 4/15 land. It is a primitive copy: its cardioid is not attached to a larger component. At its center the orbit of 0 returns to 0 every four steps, and near the center the fourth iterate behaves like a quadratic map, which is why the whole shape reappears (<a href="minibrots.html">minibrots</a>). <a href="gallery.html#zoom=-0.1565,1.0322,0.03">Open in the zoom viewer</a>.</p>
+<h2 id="seahorse-valley">6. Seahorse valley</h2>
+<figure class="widget" data-widget="place" data-window="-0.75,0.09,0.08" hidden>
+<figcaption>Seahorse valley, between the main cardioid on the right and the period-two disk on the left, above the point −3/4 where they touch.</figcaption>
+</figure>
+<figure>
+<a href="assets/images/seahorse-valley.png"><img alt="Computed Mandelbrot detail near minus 0.75 plus 0.1i, showing interlocking curls and fine branching filaments." class="fractal-image" loading="lazy" src="assets/images/seahorse-valley.png" width="1200" height="1016"></a>
+<figcaption>The same valley in one of the atlas’s computed plates: Re(<var>c</var>) from −0.79 to −0.71, Im(<var>c</var>) from 0.06 to 0.12. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<p>Between the main cardioid and the period-two disk, above the point −3/4 where they touch, runs a narrow valley whose decorations curl like seahorse tails; <a href="https://mathworld.wolfram.com/SeaHorseValley.html">MathWorld’s entry for the name</a> cites Peitgen and Richter’s <cite>The Beauty of Fractals</cite> (1986). Its right side is lined with bulbs of the main cardioid whose internal angles are just below 1/2, such as 15/31 with period 31; its left side with bulbs of the period-two disk with small internal angles, such as 1/15 with period 30. Farther down the valley the periods grow, and so does the time orbits need to escape: straight above −3/4, at <var>c</var> = −3/4 + ε<var>i</var>, the orbit of 0 needs about π/ε steps to leave, 3,143 for ε = 0.001. <a href="gallery.html#zoom=-0.75,0.09,0.08">Open in the zoom viewer</a>.</p>
+<h2 id="seahorse">7. A seahorse up close</h2>
+<figure class="widget" data-widget="place" data-window="-0.7453,0.1127,0.01" hidden>
+<figcaption>One seahorse of the valley, magnified 320 times: its tail is a spiral.</figcaption>
+</figure>
+<p>Magnified, each decoration of the valley turns into a spiral. Spirals are what self-similarity looks like when magnifying also turns the picture: if zooming in by some factor and turning by an angle reproduces the picture, repeated zooms trace a spiral. At a Misiurewicz point the factor and the angle come from the multiplier of its repelling cycle, as at <var>c</var> = <var>i</var>, where the turn is 45°. The zoom viewer’s last example dives into such spirals down to a width of 2 × 10<sup>−9</sup>. <a href="gallery.html#zoom=-0.7453,0.1127,0.01">Open in the zoom viewer</a>.</p>
+<h2 id="golden-mean">8. The golden-mean point</h2>
+<figure class="widget" data-widget="place" data-window="-0.3905,0.5868,0.03" hidden>
+<figcaption>The edge of the main cardioid around −0.3905 + 0.5868<var>i</var>, with bulbs of growing period crowding toward the golden-mean point.</figcaption>
+</figure>
+<p>Along the edge of the main cardioid between the 1/3 bulb and seahorse valley lies the point with internal angle (3 − √5)/2 ≈ 0.382, at <var>c</var> ≈ −0.3905 + 0.5868<var>i</var>. No bulb is attached there: the bulbs with internal angles 1/3, 2/5, 3/8, 5/13, …, whose periods are the Fibonacci numbers, approach it from alternating sides (<a href="periodicity.html#rotation-numbers">periodicity</a>). Its fixed point turns by the angle (3 − √5)/2, a close relative of the golden mean, and is surrounded by a Siegel disk, the mirror image of the one described in the <a href="neutral.html#golden-mean">chapter on neutral cycles</a>. <a href="gallery.html#zoom=-0.3905,0.5868,0.03">Open in the zoom viewer</a>.</p>
+<h2 id="feigenbaum-point">9. The Feigenbaum point</h2>
+<figure class="widget" data-widget="place" data-window="-1.401155,0,0.02" hidden>
+<figcaption>The end of the period-doubling cascade. The large disk is the component of period 16, with part of the period-8 component at the right edge; the components of period 32 and 64 follow toward the middle.</figcaption>
+</figure>
+<p>Following the real axis to the left, the components of periods 2, 4, 8, 16, … come ever closer together, each smaller than the one before by a factor that approaches 4.669 (the first factor is about 4.23), and accumulate at <var>c</var> ≈ −1.401155, the Feigenbaum point (<a href="minibrots.html#self-similarity-and-universality">universality</a>). There the orbit of 0 is attracted to no cycle at all; the map is infinitely renormalizable, and the Mandelbrot set is locally connected at this point, as Dzmitry Dudko and Mikhail Lyubich proved only recently (preprint 2023, published 2026; <a href="special-points.html#feigenbaum">special points</a>). <a href="gallery.html#zoom=-1.401155,0,0.02">Open in the zoom viewer</a>.</p>
+<h2 id="band-merging">10. Where two bands merge</h2>
+<figure class="widget" data-widget="place" data-window="-1.5437,0,0.03" hidden>
+<figcaption>The real axis around −1.5437, beyond the Feigenbaum point, with filaments branching off it.</figcaption>
+</figure>
+<p>Beyond the Feigenbaum point the real axis enters the chaotic range of the <a href="chaos.html#period-doubling">bifurcation diagram</a>. At <var>c</var> ≈ −1.5437 its two chaotic bands merge into one. This is a Misiurewicz point: the orbit of 0 lands after three steps on the fixed point ≈ −0.8393, and two rays land there, at 5/12 and 7/12, one from above and one from below. <a href="gallery.html#zoom=-1.5437,0,0.03">Open in the zoom viewer</a>.</p>
+<h2 id="airplane-copy">11. The airplane’s copy</h2>
+<figure class="widget" data-widget="place" data-window="-1.765,0,0.07" hidden>
+<figcaption>The largest small copy on the real axis, with period 3.</figcaption>
+</figure>
+<p>The largest small copy on the real axis has period 3: its main cardioid has center ≈ −1.7549, where the orbit of 0 returns to 0 every three steps and the Julia set is known as the airplane, and its cusp at exactly −7/4, where the rays at 3/7 and 4/7 land. It is the period-three window of the bifurcation diagram, and a whole copy of the Mandelbrot set, with its own cascade and its own seahorse valleys (<a href="minibrots.html#a-period-three-example">minibrots</a>). <a href="gallery.html#zoom=-1.765,0,0.07">Open in the zoom viewer</a>.</p>
+<h2 id="tip">12. The tip at −2</h2>
+<figure class="widget" data-widget="place" data-window="-1.97,0,0.08" hidden>
+<figcaption>The tip of the real antenna at −2, at the left edge of the set, with a small copy of period 4 near −1.94.</figcaption>
+</figure>
+<p>The set ends on the left at <var>c</var> = −2, where the orbit of 0 is 0, −2, 2, 2, …: it lands on the repelling fixed point 2 after two steps. One ray lands here, at 1/2. The Julia set is the segment [−2,&nbsp;2], and near −2 the Mandelbrot set looks more and more like a segment too. The largest copy in this window has period 4, with its cusp at about −1.9406, where the rays at 7/15 and 8/15 land; smaller copies, of periods 5, 6, 7, …, lie ever closer to the tip. <a href="gallery.html#zoom=-1.97,0,0.08">Open in the zoom viewer</a>.</p>
+<h2 id="further">Where to go from here</h2>
+<p>The <a href="gallery.html">gallery</a> has the zoom viewer, with deeper examples, and the explorer, which draws the Julia set for any parameter. To read a place as these stops do, find its period or preperiod from the orbit of 0 (<a href="orbits.html">orbits</a>), the components around it (<a href="periodicity.html">periodicity</a>), and the rays that land on it (<a href="rays.html">rays</a>).</p>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="neutral.html" rel="prev"><small>Previous</small> Neutral cycles</a><a class="pagination-next" href="numbers.html" rel="next"><small>Next</small> Area, dimension &amp; numbers</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

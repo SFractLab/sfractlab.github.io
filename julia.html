@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Fix a complex number c, then ask what happens to every possible starting point under z ↦ z2 + c. The Julia set is the boundary of the points whose orbits remain bounded.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Julia sets — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/orbits.js" defer></script>
+</head>
+<body data-page="julia">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html" aria-current="page"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 04</span> · Begin with the equation</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#filled-versus-boundary">The Julia set and the filled Julia set</a></li><li><a href="#many-shapes">A family with very different geometries</a></li><li><a href="#connectedness">Connected or dust: the quadratic dichotomy</a></li><li><a href="#shapes">Circles, dust, trees, and pinched sets</a></li><li><a href="#fatou">The Fatou set: where the dynamics is tame</a></li><li><a href="#boundary-dynamics">The structure of the Julia set</a></li><li><a href="#symmetry">Symmetry without identical motion</a></li><li><a href="#rendering">How a Julia picture is made</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>Julia sets: one map, every starting point</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span><span class="requires">Builds on <a href="orbits.html">Orbits &amp; stability</a></span></p>
+<p class="lead">Fix a complex number <var>c</var>, then ask what happens to every possible starting point under <var>z</var> ↦ <var>z</var><sup>2</sup> + <var>c</var>. The Julia set is the boundary of the points whose orbits remain bounded.</p>
+<h2 id="filled-versus-boundary">The Julia set and the filled Julia set</h2>
+<p>In the <strong>dynamical plane</strong>, the parameter <var>c</var> stays fixed while the initial point <var>z</var> varies. The <strong>filled Julia set</strong> <var>K</var><sub><var>c</var></sub> is the set of all initial points with bounded forward orbits. The <strong>Julia set</strong> <var>J</var><sub><var>c</var></sub> is its boundary:</p>
+<div class="equation"><var>K</var><sub><var>c</var></sub> = {<var>z</var> ∈ ℂ : (<var>f</var><sub><var>c</var></sub><sup>n</sup>(<var>z</var>))<sub>n≥0</sub> is bounded},   <var>J</var><sub><var>c</var></sub> = ∂<var>K</var><sub><var>c</var></sub>.</div>
+<p>These are not generally the same object. A filled Julia set can contain open regions of starting points attracted to the same cycle. Those regions are inside <var>K</var><sub><var>c</var></sub> but outside <var>J</var><sub><var>c</var></sub>. In other cases the filled set has no interior and coincides with its boundary. The distinction is explicit in Mikhail Lyubich’s book <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf"><cite>Conformal Geometry and Dynamics of Quadratic Polynomials</cite></a>, §20.</p>
+<p>The most useful elementary example is <var>c</var> = 0, which the <a href="orbits.html#basins">orbits chapter</a> followed point by point. Here <var>f</var><sup>n</sup>(<var>z</var>) = <var>z</var><sup>2ⁿ</sup>. Points with |<var>z</var>| &lt; 1 tend to zero, points with |<var>z</var>| &gt; 1 escape, and points with |<var>z</var>| = 1 remain on the unit circle. Thus the filled Julia set is the closed unit disk, while the Julia set is only its circumference.</p>
+<figure>
+<svg aria-labelledby="julia-disks-title julia-disks-desc" role="img" viewBox="0 0 900 290" xmlns="http://www.w3.org/2000/svg">
+<title id="julia-disks-title">Filled Julia set, Julia set, and the escaping exterior for c equals zero</title>
+<desc id="julia-disks-desc">Three panels show a filled disk K, its boundary circle J, and the exterior of the disk, which is the basin of infinity.</desc>
+<rect fill="#0d192b" height="290" rx="16" width="900"></rect>
+<g fill="none" stroke="#496780">
+<path d="M30 140 H270 M150 25 V250"></path>
+<path d="M330 140 H570 M450 25 V250"></path>
+<path d="M630 140 H870 M750 25 V250"></path>
+</g>
+<circle cx="150" cy="140" fill="#295565" r="87" stroke="#79dbc9" stroke-width="3"></circle>
+<circle cx="450" cy="140" fill="none" r="87" stroke="#79dbc9" stroke-width="5"></circle>
+<path d="M630 35 H870 V245 H630 Z M663 140 A87 87 0 1 0 837 140 A87 87 0 1 0 663 140 Z" fill="#a66d3e" fill-rule="evenodd" opacity=".65"></path>
+<circle cx="750" cy="140" fill="none" r="87" stroke="#79dbc9" stroke-width="2"></circle>
+<g fill="#e7eef9" font-family="system-ui,sans-serif" font-size="18" text-anchor="middle">
+<text x="150" y="275">K: disk and its boundary</text>
+<text x="450" y="275">J: boundary alone</text>
+<text x="750" y="275">Outside K: escape</text>
+<text x="150" y="146">|z| ≤ 1</text>
+<text x="450" y="146">|z| = 1</text>
+<text x="750" y="146">c = 0</text>
+</g>
+</svg>
+<figcaption>At <var>c</var> = 0 the distinction is exact and easy to see. For more complicated parameters the boundary folds into intricate shapes, but the definitions stay the same.</figcaption>
+</figure>
+<h2 id="many-shapes">A family with very different geometries</h2>
+<figure>
+<a href="assets/images/julia-grid.png"><img alt="Six computed examples illustrating the range of quadratic Julia sets, from a circle and connected lobes to branched sets and disconnected dust." class="fractal-image" loading="lazy" src="assets/images/julia-grid.png" width="2184" height="1262"></a>
+<figcaption>Each panel fixes a different <var>c</var> and tests many initial points. Images with solid interiors visualize filled Julia sets; their boundary is the Julia set. Fine details are limited by the sampling and iteration count. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Exact or characteristic behavior</th>
+<th>Shape to recognize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>c</var> = 0</td>
+<td>Zero is a superattracting fixed point.</td>
+<td>A disk with a circular Julia boundary.</td>
+</tr>
+<tr>
+<td><var>c</var> = −1</td>
+<td>0 ↔ −1 is a superattracting two-cycle.</td>
+<td>The basilica: two prominent lobes and infinitely many smaller attachments.</td>
+</tr>
+<tr>
+<td><var>c</var> ≈ −0.1225611669 + 0.7448617666<var>i</var></td>
+<td>0 is a superattracting point of period three.</td>
+<td>Douady’s rabbit, with a threefold cycle of major lobes.</td>
+</tr>
+<tr>
+<td><var>c</var> = −2</td>
+<td>0 → −2 → 2 → 2.</td>
+<td>The interval [−2, 2]; here <var>J</var> = <var>K</var>.</td>
+</tr>
+<tr>
+<td><var>c</var> = 1/4</td>
+<td>The critical orbit approaches the parabolic fixed point 1/2.</td>
+<td>The cauliflower: a closed curve with inward-pointing cusps at the fixed point 1/2 and at all its preimages.</td>
+</tr>
+<tr>
+<td><var>c</var> = 1 (outside <var>M</var>)</td>
+<td>The critical orbit begins 0 → 1 → 2 → 5 and escapes.</td>
+<td>A Cantor Julia set, informally called fractal dust.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The rabbit’s parameter is a root of <var>c</var><sup>3</sup> + 2<var>c</var><sup>2</sup> + <var>c</var> + 1 = 0, the condition for 0 to return to itself after three steps; the periodicity chapter derives it under <a href="periodicity.html#centers">centers</a>. The displayed decimal is rounded; only the exact root is superattracting.</p>
+<h2 id="connectedness">Connected or dust: the quadratic dichotomy</h2>
+<p>The critical orbit decides connectivity:</p>
+<div class="equation">0 has bounded orbit ⇔ <var>c</var> ∈ <var>M</var> ⇔ <var>J</var><sub><var>c</var></sub> and <var>K</var><sub><var>c</var></sub> are connected.</div>
+<p>If zero escapes, the filled Julia set equals the Julia set and is a Cantor set: it is compact, has no isolated points, and every connected component is a single point. The specks in a low-resolution image are clusters of infinitely many finer pieces. This dichotomy is special to maps with a single critical point; Julia sets of higher-degree polynomials can be disconnected without being dust (<a href="beyond.html#cubics">cubic polynomials</a>). <a href="https://math.bu.edu/DYSYS/explorer/tour3.html">Devaney’s Mandelbrot–Julia tour</a> illustrates the quadratic correspondence.</p>
+<p>The reason can be seen by pulling a large disk backward. Let <var>D</var> be a closed disk around 0 so large that every orbit leaving it escapes; any radius larger than max(2, |<var>c</var>|) will do, and <var>K</var><sub><var>c</var></sub> lies inside <var>D</var>. Each point <var>w</var> has the two preimages ±√(<var>w</var> − <var>c</var>), which coincide only at <var>w</var> = <var>c</var>, the critical value. So the preimage of a disk-shaped region is again one disk-shaped region if <var>c</var> lies inside the region, and two separate disk-shaped pieces if <var>c</var> lies outside it. (If <var>c</var> lies exactly on its edge, the two pieces touch at 0.) Pull <var>D</var> back again and again: the filled Julia set is what remains of all the preimages. If the orbit of 0 stays in <var>D</var>, every preimage is a single region, each inside the last, and what remains is connected. If the orbit of 0 leaves <var>D</var> after <var>n</var> steps, the regions split in two from then on, and a further argument shows that the pieces shrink to points, so that what remains is a Cantor set. <a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a> make the connected case precise with equipotential curves (Theorem 17.3), and <a href="https://math.bu.edu/DYSYS/FRACGEOM/node5.html">Devaney’s page on the fundamental dichotomy</a> states both cases.</p>
+<h2 id="shapes">Circles, dust, trees, and pinched sets</h2>
+<p><strong>Connected</strong> means the set cannot be split into two separated nonempty pieces. It does not mean smooth, thick, or easy to draw, and connected Julia sets come in very different forms:</p>
+<ul>
+<li><strong>Deformed circles.</strong> For every <var>c</var> in the main cardioid of the Mandelbrot set, where the map has an attracting fixed point, the Julia set is a closed curve without self-intersections, a deformed circle known as a quasicircle (<a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Lyubich’s book</a>, Proposition 25.21). At <var>c</var> = 0 it is the round circle; nearer the cardioid’s edge it becomes wildly crinkled.</li>
+<li><strong>Pinched sets.</strong> In the basilica at <var>c</var> = −1, the bounded regions of the filled Julia set touch one another at single points. The Julia set is the boundary of all of them, an infinite chain of loops pinched together.</li>
+<li><strong>Dendrites.</strong> A dendrite is a locally connected continuum containing no simple closed curve: typically a tree with branching at arbitrarily small scales. At <var>c</var> = −2 the Julia set is the simplest example, the interval [−2, 2]. Parameters whose critical orbit lands on a repelling cycle after some steps, such as <var>c</var> = <var>i</var>, give more intricate dendrites. For these Misiurewicz parameters <var>K</var><sub><var>c</var></sub> = <var>J</var><sub><var>c</var></sub> has no interior: every finite cycle repels, and every bounded Fatou component would need a cycle that does not repel (see the classification below). <a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a> show the dendrite for <var>c</var> = <var>i</var> (Figure 1c) and note that every finite cycle of a map whose critical orbit is finite is repelling or superattracting (Corollary 11.6). The <a href="special-points.html#misiurewicz">special-points chapter</a> works through both examples.</li>
+</ul>
+<p>Outside the Mandelbrot set there is only one form: a <strong>Cantor set</strong>, compact, with no isolated points and no connected piece larger than a point.</p>
+<h2 id="fatou">The Fatou set: where the dynamics is tame</h2>
+<p>The complement of the Julia set is the <strong>Fatou set</strong>. On it the iterates behave regularly: nearby starting points have nearby orbits, in the precise sense that the iterates form a <em>normal family</em> near every point. The Julia set is exactly where this fails. The definition concerns neighborhoods of points rather than single orbits.</p>
+<p>For a polynomial, the escaping points form one Fatou component, the <strong>basin of infinity</strong>, whose boundary is the whole Julia set. The other Fatou components are bounded and lie inside the filled Julia set. Two worked examples:</p>
+<ul>
+<li>For <var>c</var> = 0, the Fatou set consists of the open unit disk, the basin of the superattracting fixed point 0, and the outside of the circle.</li>
+<li>For <var>c</var> = −1, the basilica, the bounded Fatou components are infinitely many. The two that contain 0 and −1 form the <strong>immediate basin</strong> of the cycle 0 ↔ −1, and the map swaps them. Every other bounded component is a preimage of one of these: after finitely many steps it lands on one of the two. That is why the filled Julia set repeats the same lobe at smaller and smaller scales.</li>
+</ul>
+<figure class="widget" data-widget="orbits" data-example="basilica" data-z0="0.3,0.2" hidden>
+<figcaption>One parameter, many starting points: for <var>c</var> = −1, click inside the dark filled Julia set and the orbit is drawn into the attracting two-cycle {0, −1}; click outside it and the orbit escapes. The start 0.5 + 0.3<var>i</var>, close by, already escapes.</figcaption>
+</figure>
+<p>Attracting basins are not the only kind of bounded component. Near a parabolic cycle, points are drawn in slowly through regions called petals; around a Siegel point they rotate forever without approaching it. The <a href="neutral.html">chapter on neutral cycles</a> explains these cases.</p>
+<p>Sullivan’s no-wandering-domains theorem (1985) says every Fatou component of a rational map, hence of a quadratic polynomial, eventually maps into a periodic cycle of components. Together with the classification of periodic components, it means that every bounded Fatou component of a quadratic polynomial eventually maps onto a component of an immediate attracting basin, of an immediate parabolic basin, or onto a Siegel disk. Each of these cycles of components belongs to a cycle that does not repel, and a quadratic polynomial has at most one such cycle, so all its bounded Fatou components eventually land in one attracting basin, one parabolic basin, or one cycle of Siegel disks. <a href="https://www.matem.unam.mx/~omar/no-wandering-domains.html">Omar Antolín Camarena’s notes</a> state the classification, and <a href="https://www.math.stonybrook.edu/~bishop/papers/wander.pdf">Christopher Bishop’s exposition</a> explains Sullivan’s theorem and sketches its proof for polynomials.</p>
+<h2 id="boundary-dynamics">The structure of the Julia set</h2>
+<p>The Julia set is where escaping and bounded orbits meet: every neighborhood of a point of <var>J</var><sub><var>c</var></sub> contains starting points of both kinds. A small uncertainty in a starting point near the Julia set can therefore hide a large difference in its fate. From the definition, a handful of theorems follow, all proved in <a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a> (§3 and §11):</p>
+<ul>
+<li><strong>It is completely invariant.</strong> The image of a point of <var>J</var><sub><var>c</var></sub>, and both of its preimages, lie in <var>J</var><sub><var>c</var></sub> again (Lemma 3.1).</li>
+<li><strong>It has no isolated points</strong> (Corollary 3.10). In particular it is an infinite set; in fact it is uncountable.</li>
+<li><strong>Repelling periodic points are dense in it.</strong> Every neighborhood of every point of <var>J</var><sub><var>c</var></sub> contains a repelling periodic point (Theorem 11.1).</li>
+<li><strong>Backward orbits fill it.</strong> The preimages, preimages of preimages, and so on, of any point of the Julia set come arbitrarily close to every point of it (Theorem 3.9). This is how inverse iteration draws a Julia set: start on <var>J</var><sub><var>c</var></sub>, for example at a repelling fixed point, and keep taking both preimages ±√(<var>w</var> − <var>c</var>). The gallery’s Cantor dust for <var>c</var> = 1 is drawn this way.</li>
+<li><strong>Every small piece covers everything.</strong> If an open set meets the Julia set, then after enough steps its part of the Julia set is mapped onto the whole Julia set (Corollary 11.2). This is why a Julia set looks alike at every scale and in every place: under the map, any small piece of it expands onto the whole.</li>
+</ul>
+<p>On its Julia set, <var>z</var><sup>2</sup> + <var>c</var> is chaotic in the sense used in the <a href="chaos.html#defining-chaos">chapter on chaos</a>: periodic points are dense, a typical orbit wanders densely over the whole set (Corollary 3.11), and nearby starting points separate. Individual orbits in the Julia set can still be simple. A repelling fixed point stays where it is, and at <var>c</var> = 1/4 the parabolic fixed point lies in the Julia set too.</p>
+<h2 id="symmetry">Symmetry without identical motion</h2>
+<p>Because <var>f</var><sub><var>c</var></sub>(−<var>z</var>) = <var>f</var><sub><var>c</var></sub>(<var>z</var>), opposite starting points have identical orbits after the first step. Every quadratic filled Julia set and Julia set is therefore invariant under a half-turn around the origin. When <var>c</var> is real, complex conjugation gives reflection symmetry across the real axis as well.</p>
+<p>For nonreal parameters, reflection instead relates two different pictures: <var>J</var><sub>conj(<var>c</var>)</sub> is the mirror image of <var>J</var><sub><var>c</var></sub> in the real axis. A single nonreal Julia set need not be mirror-symmetric, as the rabbit shows. These symmetries make useful checks when examining a rendered image.</p>
+<h2 id="rendering">How a Julia picture is made</h2>
+<p>For each pixel, convert its position to an initial complex value and iterate using the same fixed <var>c</var>. An iterate farther from 0 than max(2, |<var>c</var>|) proves escape; radius 2 works for every starting point whenever |<var>c</var>| ≤ 2. The <a href="mathematics.html#escape-proof">escape-radius argument</a> explains why. Escaped samples are colored by their escape time; samples that have not escaped within the iteration budget are drawn dark. The result approximates the filled Julia set <var>K</var><sub><var>c</var></sub>, and its edge approximates <var>J</var><sub><var>c</var></sub>.</p>
+<p>When the filled Julia set has no interior, as for dendrites and dust, this method draws almost no dark pixels, because most pixels miss the thin set; the set shows only indirectly, through the slow escape of nearby points. Then inverse iteration, described above, or distance estimates draw the Julia set itself. Two limits remain: too few iterations make slowly escaping points look bounded, and too few pixels hide narrow gaps. The chapter on <a href="computing.html#inverse-iteration">computing the pictures</a> compares the methods, and the gallery’s <a href="gallery.html#image-method">image-method notes</a> describe how the atlas’s plates handle both limits.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>For a fixed <var>c</var>, the filled Julia set <var>K</var><sub><var>c</var></sub> collects the starting points with bounded orbits, and the Julia set <var>J</var><sub><var>c</var></sub> is its boundary.</li>
+<li>If the orbit of 0 stays bounded, <var>K</var><sub><var>c</var></sub> and <var>J</var><sub><var>c</var></sub> are connected; if it escapes, they are a Cantor set, a dust of points.</li>
+<li>Connected Julia sets range from deformed circles (the main cardioid) through pinched chains of loops (the basilica) to trees with no interior (dendrites such as <var>c</var> = −2 and <var>c</var> = <var>i</var>).</li>
+<li>The Fatou set, where the dynamics is tame, consists of the basin of infinity and bounded components that all end up in one attracting basin, one parabolic basin, or one cycle of Siegel disks.</li>
+<li>The Julia set has no isolated points, its repelling periodic points are dense, backward orbits fill it, and every small piece of it is eventually mapped onto all of it. The map is chaotic on it.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>For <var>c</var> = 0, which of the points 0.5, <var>i</var>, 1 + <var>i</var> and the point at one third of a full turn on the unit circle lie in the filled Julia set, and which in the Julia set?</summary><div class="answer"><p>0.5 is in <var>K</var><sub>0</sub>, the closed unit disk, but not on its boundary, so it is not in <var>J</var><sub>0</sub>. The point <var>i</var> and the point at one third of a turn have modulus 1, so they lie on the unit circle, which is <var>J</var><sub>0</sub>. The point 1 + <var>i</var> has modulus √2 &gt; 1, so it escapes and lies in neither.</p></div></details></li>
+<li><details><summary>Show that if <var>z</var> lies in <var>K</var><sub><var>c</var></sub>, so does −<var>z</var>.</summary><div class="answer"><p>(−<var>z</var>)<sup>2</sup> + <var>c</var> = <var>z</var><sup>2</sup> + <var>c</var>, so after one step the orbits of <var>z</var> and −<var>z</var> are identical. If one is bounded, so is the other.</p></div></details></li>
+<li><details><summary>Is the Julia set of <var>z</var><sup>2</sup> + 1 connected?</summary><div class="answer"><p>No. The orbit of 0 is 0, 1, 2, 5, 26, …, which escapes, so 1 is not in the Mandelbrot set and <var>J</var><sub>1</sub> is a Cantor set.</p></div></details></li>
+<li><details><summary>For <var>c</var> = −2, write <var>z</var> = 2 cos <var>t</var>. What is <var>f</var>(<var>z</var>)? Use this to show that the interval [−2, 2] is mapped into itself.</summary><div class="answer"><p><var>f</var>(<var>z</var>) = 4 cos<sup>2</sup> <var>t</var> − 2 = 2 cos 2<var>t</var>, by the double-angle formula. Every point of [−2, 2] can be written as 2 cos <var>t</var>, and its image 2 cos 2<var>t</var> lies in [−2, 2] again, so orbits starting in the interval stay bounded. In fact the interval is the whole filled Julia set <var>K</var><sub>−2</sub>.</p></div></details></li>
+<li><details><summary>Which points <var>z</var> satisfy <var>z</var><sup>2</sup> + <var>c</var> = <var>c</var>? Why does this make the critical value special when pulling regions backward?</summary><div class="answer"><p>Only <var>z</var> = 0. Every other value <var>w</var> has two different preimages ±√(<var>w</var> − <var>c</var>), but <var>w</var> = <var>c</var> has the single preimage 0. Whether a region contains <var>c</var> decides whether its preimage is one piece or two, which is how the critical orbit controls connectivity.</p></div></details></li>
+<li><details><summary>In the basilica, let <var>U</var> be the bounded Fatou component containing 0 and <var>V</var> the one containing −1. Where does the map send <var>U</var> and <var>V</var>?</summary><div class="answer"><p>The map sends Fatou components onto Fatou components. Since <var>f</var>(0) = −1, it sends <var>U</var> onto <var>V</var>, and since <var>f</var>(−1) = 0, it sends <var>V</var> back onto <var>U</var>. Together they form the immediate basin of the two-cycle.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Mikhail Lyubich — Conformal Geometry and Dynamics of Quadratic Polynomials</a> — filled Julia sets, Julia boundaries, and the quadratic connectivity theorem, especially §20; Julia sets that are quasicircles, Proposition 25.21 (book draft; a 35 MB PDF).</li>
+<li><a href="https://math.bu.edu/DYSYS/explorer/tour3.html">Robert Devaney — The Mandelbrot Set Explorer, Exploration #3</a> — a visual introduction to how parameters select connected sets or dust.</li>
+<li><a href="https://www.matem.unam.mx/~omar/no-wandering-domains.html">Omar Antolín Camarena — Iteration of Rational Functions</a> — Julia and Fatou sets, periodic components, and normal families.</li>
+<li><a href="https://www.math.stonybrook.edu/~bishop/papers/wander.pdf">Christopher Bishop — Wandering domains</a> — a detailed exposition of Sullivan’s theorem, with a proof sketch for polynomials.</li>
+<li><a href="https://arxiv.org/abs/math/9201272">John Milnor — Dynamics in One Complex Variable, introductory lectures</a> — the structure of Julia sets (§3, §11), the filled Julia set and connectivity (§17), and the local theory.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="orbits.html" rel="prev"><small>Previous</small> Orbits &amp; stability</a><a class="pagination-next" href="mandelbrot.html" rel="next"><small>Next</small> The Mandelbrot set</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+[
+  {
+    "id": "mandelbrot-overview",
+    "plane": "parameter",
+    "bounds": [
+      -2.2,
+      0.8,
+      -1.125,
+      1.125
+    ],
+    "sample_size": [
+      1440,
+      1080
+    ],
+    "max_iterations": 1000,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-0",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      0.0,
+      0.0
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-1",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      -1.0,
+      0.0
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-2",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      -2.0,
+      0.0
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-3",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      -0.122561166876,
+      0.74486176662
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-4",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      0.25,
+      0.0
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "julia-5",
+    "plane": "dynamical",
+    "bounds": [
+      -2.1,
+      2.1,
+      -1.575,
+      1.575
+    ],
+    "sample_size": [
+      720,
+      540
+    ],
+    "max_iterations": 1200,
+    "parameter": [
+      1.0,
+      0.0
+    ],
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "minibrot-0",
+    "plane": "parameter",
+    "bounds": [
+      -2.2,
+      0.8,
+      -1.125,
+      1.125
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 1600,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "minibrot-1",
+    "plane": "parameter",
+    "bounds": [
+      -1.95,
+      -1.55,
+      -0.15,
+      0.15
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 1600,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "minibrot-2",
+    "plane": "parameter",
+    "bounds": [
+      -1.8,
+      -1.73,
+      -0.02625,
+      0.02625
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 1600,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "misiurewicz-detail",
+    "plane": "parameter",
+    "bounds": [
+      -0.07,
+      0.07,
+      0.9475,
+      1.0525
+    ],
+    "sample_size": [
+      1200,
+      900
+    ],
+    "max_iterations": 1800,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "seahorse-valley",
+    "plane": "parameter",
+    "bounds": [
+      -0.79,
+      -0.71,
+      0.06,
+      0.12
+    ],
+    "sample_size": [
+      1200,
+      900
+    ],
+    "max_iterations": 2000,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "parabolic-detail",
+    "plane": "parameter",
+    "bounds": [
+      0.2,
+      0.3,
+      -0.0375,
+      0.0375
+    ],
+    "sample_size": [
+      1200,
+      900
+    ],
+    "max_iterations": 2000,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "cap-30",
+    "plane": "parameter",
+    "bounds": [
+      0.245,
+      0.285,
+      -0.015,
+      0.015
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 30,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "cap-100",
+    "plane": "parameter",
+    "bounds": [
+      0.245,
+      0.285,
+      -0.015,
+      0.015
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 100,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "id": "cap-1500",
+    "plane": "parameter",
+    "bounds": [
+      0.245,
+      0.285,
+      -0.015,
+      0.015
+    ],
+    "sample_size": [
+      640,
+      480
+    ],
+    "max_iterations": 1500,
+    "parameter": null,
+    "arithmetic": "IEEE binary64; pixel centers; no periodicity test; cardioid/period-2 interior tests in Mandelbrot views"
+  },
+  {
+    "note": "All assets are newly computed original illustrations, not SFract output. Color measures smooth escape time; dark is finite-time non-escape, except analytical cardioid/period-two tests. Julia c=-2 includes an exact [-2,2] segment overlay for visibility. Labels, badges and framing are explanatory overlays."
+  },
+  {
+    "id": "julia-dust-overlay",
+    "method": "84,899 retained steps of pseudo-random inverse iteration with a fixed seed after 101 discarded steps; z <- plus/minus sqrt(z-1), starting from repelling fixed point (1+i sqrt(3))/2. Pixel marks enhance visibility of the Cantor Julia set.",
+    "random_seed": 314159
+  }
+]

@@ -1,0 +1,386 @@
+/* Shared helpers for the atlas's interactive figures, available as
+   window.AtlasKit to the widget scripts listed after this one in site.toml.
+
+   A widget is a <figure data-widget="name" hidden> in a chapter. Its script
+   calls AtlasKit.setUp(name, build), which builds every such figure and then
+   reveals it; without JavaScript the figure stays hidden and the chapter's
+   static diagrams carry the explanation. Classic script, no dependencies. */
+(() => {
+  'use strict';
+
+  const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+  const MINUS = '−';
+
+  // Complex numbers are plain {re, im} objects.
+  const complex = {
+    add: (a, b) => ({re: a.re + b.re, im: a.im + b.im}),
+    multiply: (a, b) => ({re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re}),
+    abs: a => Math.hypot(a.re, a.im),
+    // The argument in [0, 2π), as the chapter measures angles.
+    arg: a => (Math.atan2(a.im, a.re) + 2 * Math.PI) % (2 * Math.PI),
+  };
+
+  // Rounds to `digits` decimals without trailing zeros, with a true minus sign:
+  // 1.50 → "1.5", −0.004 → "0", 10 → "10".
+  function formatNumber(x, digits = 2) {
+    const text = (Math.round(x * 10 ** digits) / 10 ** digits).toFixed(digits)
+      .replace(/\.(\d*?)0+$/, (match, kept) => (kept ? `.${kept}` : ''));
+    return text === '-0' ? '0' : text.replace('-', MINUS);
+  }
+
+  // A complex number as the chapters write it: "1.5 − 0.25i", "2i", "−i", "0".
+  function format(c, digits = 2) {
+    const re = formatNumber(c.re, digits);
+    const im = formatNumber(Math.abs(c.im), digits);
+    if (im === '0') return re;
+    const imaginary = im === '1' ? 'i' : `${im}i`;
+    const negative = c.im < 0;
+    if (re === '0') return (negative ? MINUS : '') + imaginary;
+    return `${re} ${negative ? MINUS : '+'} ${imaginary}`;
+  }
+
+  function formatAngle(radians) {
+    return `${formatNumber(radians * 180 / Math.PI, 1)}°`;
+  }
+
+  // Maps a window of the complex plane, {left, top, width, height}, onto a
+  // drawing of pixelWidth × pixelHeight units (y grows downwards on screen).
+  class Plane {
+    constructor(view, pixelWidth, pixelHeight) {
+      Object.assign(this, view);
+      this.pixelWidth = pixelWidth;
+      this.pixelHeight = pixelHeight;
+      this.scale = pixelWidth / view.width;
+    }
+
+    toScreen(c) {
+      return {
+        x: (c.re - this.left) / this.width * this.pixelWidth,
+        y: (this.top - c.im) / this.height * this.pixelHeight,
+      };
+    }
+
+    fromScreen(x, y) {
+      return {re: this.left + x / this.pixelWidth * this.width, im: this.top - y / this.pixelHeight * this.height};
+    }
+
+    // The nearest point on a grid of `step`, kept inside the window.
+    snap(c, step) {
+      const round = (value, low, high) => {
+        const snapped = Number((Math.round(value / step) * step).toFixed(10));
+        return Math.min(high, Math.max(low, snapped));
+      };
+      return {re: round(c.re, this.left, this.left + this.width), im: round(c.im, this.top - this.height, this.top)};
+    }
+  }
+
+  function svg(name, attributes = {}, parent = null) {
+    const element = document.createElementNS(SVG_NAMESPACE, name);
+    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+    if (parent) parent.append(element);
+    return element;
+  }
+
+  // An SVG path along the circle of `radius` around `center` (screen units),
+  // counterclockwise on screen from angle `from` to angle `to` (radians,
+  // measured as in the complex plane). Sweeps of a full turn or more are
+  // split, since one SVG arc cannot draw them.
+  function arcPath(center, radius, from, to) {
+    const point = angle => `${center.x + radius * Math.cos(angle)} ${center.y - radius * Math.sin(angle)}`;
+    let path = `M ${point(from)}`;
+    for (let start = from; start < to - 1e-9; start += Math.PI) {
+      const end = Math.min(to, start + Math.PI);
+      path += ` A ${radius} ${radius} 0 0 0 ${point(end)}`;
+    }
+    return path;
+  }
+
+  // A whole number as subscript digits: 12 → "₁₂".
+  function subscript(n) {
+    return String(n).replace(/\d/g, digit => '₀₁₂₃₄₅₆₇₈₉'[digit]);
+  }
+
+  // Draws text labels for points of a drawing. `items` are {x, y, text,
+  // className} in drawing units, most important first. Labels of the same
+  // point are joined ("z² + c = z₂") in the first one's class; each sits a
+  // little beyond its point, away from `center`.
+  function placeLabels(layer, items, center, distance = 20) {
+    const groups = [];
+    for (const item of items) {
+      const group = groups.find(other => Math.hypot(other.x - item.x, other.y - item.y) < 3);
+      if (group) group.texts.push(item.text);
+      else groups.push({...item, texts: [item.text]});
+    }
+    for (const {x, y, className, texts} of groups) {
+      const length = Math.hypot(x - center.x, y - center.y);
+      const dx = length > 1 ? (x - center.x) / length : .7;
+      const dy = length > 1 ? (y - center.y) / length : -.7;
+      svg('text', {
+        x: x + dx * distance, y: y + dy * distance + 6, class: className,
+        'text-anchor': dx < -.3 ? 'end' : dx > .3 ? 'start' : 'middle',
+      }, layer).textContent = texts.join(' = ');
+    }
+  }
+
+  // Lets the pointer drag an SVG element. `onDrag` receives the pointer
+  // position in the drawing's own units, for as long as the button is held.
+  function makeDraggable(handle, drawing, onDrag) {
+    handle.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      handle.setPointerCapture(event.pointerId);
+      const move = moveEvent => {
+        const point = new DOMPoint(moveEvent.clientX, moveEvent.clientY)
+          .matrixTransform(drawing.getScreenCTM().inverse());
+        onDrag(point.x, point.y);
+      };
+      const stop = () => {
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', stop);
+        handle.removeEventListener('pointercancel', stop);
+      };
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', stop);
+      handle.addEventListener('pointercancel', stop);
+      move(event);
+    });
+  }
+
+  // --- Angles in turns, under doubling θ ↦ 2θ mod 1 ---------------------------
+
+  // The doubling orbit of p/q (reduced, 0 ≤ p < q): the numerators p·2ⁿ mod q
+  // until one repeats, the binary digits, the preperiod and the period. The
+  // numerators are also the remainders of the long division that gives the
+  // binary digits, so orbit and digits share their preperiod and period.
+  function doublingOrbit(p, q) {
+    const numerators = [];
+    const digits = [];
+    const seen = new Map();
+    let r = p;
+    while (!seen.has(r)) {
+      seen.set(r, numerators.length);
+      numerators.push(r);
+      r *= 2;
+      digits.push(r >= q ? 1 : 0);
+      r %= q;
+    }
+    const preperiod = seen.get(r);
+    return {numerators, digits, preperiod, period: numerators.length - preperiod};
+  }
+
+  // "0.0(01)₂": the digits before the repeating block, then the block.
+  function binary(digits, preperiod) {
+    return `0.${digits.slice(0, preperiod).join('')}(${digits.slice(preperiod).join('')})₂`;
+  }
+
+  // --- Escape-time pictures (the explorer and the orbit figures) -------------
+
+  // The chapters' escape test: once |z| > max(2, |c|), the orbit of
+  // z ↦ z² + c grows without bound, so crossing this radius proves escape.
+  function escapeRadius(c) {
+    return Math.max(2, Math.hypot(c.re, c.im));
+  }
+
+  // --- Orbits and what can be said about them ------------------------------
+
+  const ORBIT_STEPS = 1000;   // steps computed for a verdict
+  const MAX_PERIOD = 64;
+  const TOLERANCE = 1e-9;
+  const distance = (a, b) => Math.hypot(a.re - b.re, a.im - b.im);
+
+  // The orbit of z0 under z ↦ z² + c, followed until it crosses the escape
+  // radius or for ORBIT_STEPS steps: {points, radius} plus escapedAt (the
+  // step that crossed the radius), or period, start and exact (a cycle the
+  // end of the orbit repeats within TOLERANCE, the step where that run of
+  // repetitions begins, and whether the repetition is exact).
+  function orbitOf(c, z0) {
+    const radius = escapeRadius(c);
+    const points = [z0];
+    if (complex.abs(z0) > radius) return {points, radius, escapedAt: 0};
+    let z = z0;
+    for (let n = 1; n <= ORBIT_STEPS; n++) {
+      z = complex.add(complex.multiply(z, z), c);
+      points.push(z);
+      if (complex.abs(z) > radius) return {points, radius, escapedAt: n};
+    }
+    const last = points.length - 1;
+    for (let period = 1; period <= MAX_PERIOD; period++) {
+      if (distance(points[last], points[last - period]) >= TOLERANCE) continue;
+      let start = last - period;
+      while (start > 0 && distance(points[start - 1], points[start - 1 + period]) < TOLERANCE) start--;
+      const exact = points[start].re === points[start + period].re && points[start].im === points[start + period].im;
+      return {points, radius, period, start, exact};
+    }
+    return {points, radius};
+  }
+
+  // The verdict on an orbit, in the chapters' terms: crossing the escape
+  // radius proves escape; an exact repetition is exact; an approach within
+  // the tolerance is numerical evidence; anything else stays undecided.
+  function describeOrbit(result) {
+    const {points, radius, escapedAt, period, start, exact} = result;
+    if (escapedAt !== undefined) {
+      const size = formatNumber(complex.abs(points[escapedAt]), 3);
+      return `The orbit escapes: |z${subscript(escapedAt)}| = ${size} exceeds R = max(2, |c|) = `
+        + `${formatNumber(radius, 3)}, and beyond that radius every step increases |z|. This proves escape.`;
+    }
+    if (period !== undefined) {
+      const cycle = period === 1 ? 'a fixed point' : `a cycle of period ${period}`;
+      if (exact) {
+        return `The computed orbit reaches ${cycle} at step ${start} and repeats it exactly: `
+          + `z${subscript(start)} = z${subscript(start + period)}.`;
+      }
+      return `The orbit settles into ${cycle}: from step ${start} on, z<sub>n</sub> and z<sub>n+${period}</sub> agree `
+        + `to within 10<sup>−9</sup> for the rest of ${ORBIT_STEPS} steps. This is numerical evidence of an `
+        + 'attracting cycle, not a proof.';
+    }
+    return `After ${ORBIT_STEPS} steps the orbit has neither escaped nor settled into a cycle of period up to `
+      + `${MAX_PERIOD}. A finite computation cannot decide what it does in the long run.`;
+  }
+
+  // Samples that did not escape are dark; escaping samples cycle through this
+  // palette by their smoothed escape time (the last colour equals the first).
+  const INTERIOR = [9, 19, 32];
+  const PALETTE = [[13, 26, 45], [27, 75, 119], [30, 135, 151], [227, 232, 196], [236, 166, 100], [13, 26, 45]];
+  const ROWS_PER_FRAME = 12;
+
+  // The iteration budget for a window of the parameter plane `width` wide: 300
+  // steps for the whole set (3.2 wide), 150 more for each halving of the width,
+  // at most 6000. The zoom viewer and the tour's pictures use it.
+  const iterationBudget = width => Math.round(Math.min(6000, 300 + 150 * Math.max(0, Math.log2(3.2 / width))));
+
+  // Parameters inside the main cardioid or the period-two disk belong to the
+  // Mandelbrot set; testing this exactly saves iterating them to the budget.
+  function inCardioidOrPeriodTwoDisk(x, y) {
+    const q = (x - .25) ** 2 + y * y;
+    return q * (q + x - .25) < .25 * y * y || (x + 1) ** 2 + y * y < .0625;
+  }
+
+  // Colours one pixel. `steps` is the escape step, or null if the sample did
+  // not escape; `size` is |z|² at that point, and `degree` the degree of the
+  // map, the base of the logarithm in the fractional count.
+  function paint(data, offset, steps, size, degree = 2) {
+    if (steps === null) {
+      data[offset] = INTERIOR[0];
+      data[offset + 1] = INTERIOR[1];
+      data[offset + 2] = INTERIOR[2];
+    } else {
+      // Fractional escape count n + 1 − log_d log |z|, mapped cyclically onto
+      // the palette with a smooth blend between neighbouring colours.
+      const logSize = Math.max(1e-20, Math.log(Math.sqrt(size)));
+      const smooth = steps + 1 - (degree === 2 ? Math.log2(logSize) : Math.log(logSize) / Math.log(degree));
+      const position = (Math.max(0, smooth) * .038 % 1) * 5;
+      const index = Math.min(4, Math.floor(position));
+      let blend = position - index;
+      blend = blend * blend * (3 - 2 * blend);
+      for (let channel = 0; channel < 3; channel++) {
+        data[offset + channel] = PALETTE[index][channel] * (1 - blend) + PALETTE[index + 1][channel] * blend;
+      }
+    }
+    data[offset + 3] = 255;
+  }
+
+  // Draws the escape-time image of one plane into a canvas context. Without a
+  // Julia parameter each pixel is a parameter c and the orbit starts at 0
+  // (the parameter plane); with one, each pixel is a starting point z for that
+  // fixed c (the dynamical plane). Every pixel is sampled at its centre. The
+  // sampling radius, max(2, |c| + 1), is generous; any radius of at least
+  // escapeRadius(c) would do. Yields to the browser every few rows; returns
+  // the image, or null if isCurrent() turned false on the way.
+  //
+  // With {repeats: true}, a sample whose orbit comes back exactly to an
+  // earlier value (checked against values kept at steps 8, 16, 32, …) stops
+  // early: an orbit that repeats exactly is periodic and never escapes, so
+  // the picture is the same, only faster where many samples do not escape.
+  async function renderEscapeTime(context, view, juliaParameter, budget, isCurrent, {repeats = false} = {}) {
+    const {width, height} = context.canvas;
+    const image = context.createImageData(width, height);
+    const radius = juliaParameter ? Math.max(2, Math.hypot(juliaParameter.re, juliaParameter.im) + 1) : 2;
+    const limit = radius * radius;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const re = view.left + (x + .5) * view.width / width;
+        const im = view.top - (y + .5) * view.height / height;
+        let zx = juliaParameter ? re : 0;
+        let zy = juliaParameter ? im : 0;
+        const cx = juliaParameter ? juliaParameter.re : re;
+        const cy = juliaParameter ? juliaParameter.im : im;
+        let n = !juliaParameter && inCardioidOrPeriodTwoDisk(cx, cy) ? budget : 0;
+        let keptX = zx;
+        let keptY = zy;
+        let keepAt = 8;
+        for (; n < budget; n++) {
+          if (zx * zx + zy * zy > limit) break;
+          const next = zx * zx - zy * zy + cx;
+          zy = 2 * zx * zy + cy;
+          zx = next;
+          if (repeats) {
+            if (zx === keptX && zy === keptY) {
+              n = budget;
+              break;
+            }
+            if (n === keepAt) {
+              keptX = zx;
+              keptY = zy;
+              keepAt *= 2;
+            }
+          }
+        }
+        const size = zx * zx + zy * zy;
+        paint(image.data, (y * width + x) * 4, size > limit ? n : null, size);
+      }
+      if (y % ROWS_PER_FRAME === ROWS_PER_FRAME - 1) {
+        if (!isCurrent()) return null;
+        await new Promise(requestAnimationFrame);
+      }
+    }
+    if (!isCurrent()) return null;
+    context.putImageData(image, 0, 0);
+    return image;
+  }
+
+  // The Mandelbrot set as a mask of width × height pixels over `view`: white
+  // and opaque where the orbit of 0 has not escaped within `budget` steps,
+  // transparent elsewhere. Drawn at once; meant for small silhouettes that a
+  // figure colours itself (for example as an SVG mask).
+  function mandelbrotMask(view, width, height, budget) {
+    const image = new ImageData(width, height);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const cx = view.left + (x + .5) * view.width / width;
+        const cy = view.top - (y + .5) * view.height / height;
+        let inside = inCardioidOrPeriodTwoDisk(cx, cy);
+        if (!inside) {
+          let zx = 0;
+          let zy = 0;
+          let n = 0;
+          while (n < budget && zx * zx + zy * zy <= 4) {
+            const next = zx * zx - zy * zy + cx;
+            zy = 2 * zx * zy + cy;
+            zx = next;
+            n++;
+          }
+          inside = zx * zx + zy * zy <= 4;
+        }
+        if (inside) image.data.fill(255, (y * width + x) * 4, (y * width + x) * 4 + 4);
+      }
+    }
+    return image;
+  }
+
+  let instances = 0;
+
+  // Builds every figure with data-widget="name", then reveals it. `build`
+  // receives the figure and a prefix that keeps its ids unique on the page.
+  function setUp(name, build) {
+    for (const figure of document.querySelectorAll(`[data-widget="${name}"]`)) {
+      build(figure, `${name}-${++instances}`);
+      figure.hidden = false;
+    }
+  }
+
+  window.AtlasKit = {
+    complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
+    makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
+    doublingOrbit, binary, iterationBudget, paint,
+  };
+})();

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Deep-zoom pictures show the Mandelbrot set magnified 10100, 101000 times or more. Ordinary computer numbers give out at about 1013, and computing every pixel with enough digits would take days or years per picture. Modern programs need minutes. This chapter explains how: one orbit computed with many digits, every pixel as a small difference from it, and shortcuts that skip millions of iterations at a time.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Deep zoom — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/deep-zoom.js" defer></script>
+</head>
+<body data-page="deep-zoom">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html" aria-current="page"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 18</span> · Compute, explore &amp; look up</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#pipeline">The pipeline at a glance</a></li><li><a href="#digits">How many digits a deep zoom needs</a></li><li><a href="#formats">More digits or more range</a></li><li><a href="#cost">Why many digits are slow</a></li><li><a href="#perturbation">Perturbation</a></li><li><a href="#glitches">Glitches</a></li><li><a href="#reference">Where the reference comes from</a></li><li><a href="#rebasing">Rebasing: one reference is enough</a></li><li><a href="#skipping">Skipping iterations</a></li><li><a href="#limits">Limits</a></li><li><a href="#programs">Programs, October 2026</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>How deep zooms are computed</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="computing.html">Computing the pictures</a> and <a href="minibrots.html">Minibrots &amp; self-similarity</a></span></p>
+<p class="lead">Deep-zoom pictures show the Mandelbrot set magnified 10<sup>100</sup>, 10<sup>1000</sup> times or more. Ordinary computer numbers give out at about 10<sup>13</sup>, and computing every pixel with enough digits would take days or years per picture. Modern programs need minutes. This chapter explains how: one orbit computed with many digits, every pixel as a small difference from it, and shortcuts that skip millions of iterations at a time.</p>
+<h2 id="pipeline">The pipeline at a glance</h2>
+<p>Take a real example. In 2021 a user called Fractal universe posted a location near <var>c</var> ≈ −1.7499 on the fractalforums.org forum, at a magnification of 6.5·10<sup>137</sup>. The view is filled by a <a href="glossary.html#minibrot">minibrot</a> whose <a href="glossary.html#center">nucleus</a> has period 43,292,334, and its pixels need between 292 million and 2.1 billion iterations before they escape (<a href="https://web.archive.org/web/20250713154203/https://fractalforums.org/index.php?topic=4360.45">Heiland-Allen’s counts</a>). Computed directly, with about 500 binary digits per number, even the smallest of these counts for each of 2048 × 1024 pixels would keep one processor core busy for more than four years. Zhuoran, the author of the program Imagina, reported rendering it at that size in 150 seconds.</p>
+<p>Every modern deep-zoom renderer does this in five stages.</p>
+<ol>
+<li><strong>A reference orbit.</strong> One orbit, usually that of the image’s center, is computed with as many digits as the depth requires.</li>
+<li><strong>Perturbation.</strong> Every pixel follows the reference as a small difference from it, computed with ordinary hardware numbers whose exponent range is extended in software.</li>
+<li><strong>Rebasing.</strong> When a pixel’s orbit comes closer to 0 than to the reference, the pixel restarts the reference from its beginning, which keeps the small differences accurate.</li>
+<li><strong>Skipping.</strong> Precomputed linear maps let each pixel jump over thousands or millions of iterations at once.</li>
+<li><strong>Coloring.</strong> The escape count, smoothed, and the distance estimate are computed as in the <a href="computing.html#smooth">chapter on computing the pictures</a>.</li>
+</ol>
+<figure>
+<svg aria-labelledby="dzp-title dzp-desc" role="img" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+<title id="dzp-title">The stages of a deep-zoom renderer</title>
+<desc id="dzp-desc">Two rows of boxes. The upper row, done once per picture with many digits: the reference orbit at the image center, from which the skipping tables are built. The lower row, done for every pixel in hardware numbers: a step, either a jump with a table entry or one perturbation step; a rebasing test that restarts the reference when the pixel comes closer to 0 than to it; and, after escape, the color. Arrows show the reference values and the tables feeding the pixel steps, and a loop from the rebasing test back to the next step.</desc>
+<defs>
+<marker id="dzp-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+<path d="M0 0 L8 4 L0 8Z" fill="#17657b"></path>
+</marker>
+</defs>
+<rect fill="#eef5f7" height="420" rx="18" width="900"></rect>
+<g fill="#fbfdfd" stroke="#b8cdd0" stroke-width="2">
+<rect height="100" rx="10" width="390" x="40" y="70"></rect>
+<rect height="100" rx="10" width="390" x="470" y="70"></rect>
+<rect height="100" rx="10" width="235" x="40" y="240"></rect>
+<rect height="100" rx="10" width="235" x="330" y="240"></rect>
+<rect height="100" rx="10" width="235" x="625" y="240"></rect>
+</g>
+<g fill="none" marker-end="url(#dzp-arrow)" stroke="#17657b" stroke-width="2.5">
+<path d="M432 120 H466"></path>
+<path d="M157 172 V236"></path>
+<path d="M600 172 L262 236"></path>
+<path d="M277 290 H326"></path>
+<path d="M447 342 C447 392 157 392 157 344"></path>
+<path d="M567 290 H621"></path>
+</g>
+<g fill="#526a78" font-family="system-ui, sans-serif">
+<text font-size="15" font-weight="700" x="40" y="52">ONCE PER PICTURE</text>
+<text font-size="15" font-weight="700" text-anchor="end" x="860" y="222">FOR EVERY PIXEL, IN HARDWARE NUMBERS</text>
+<text font-size="15" text-anchor="middle" x="302" y="398">next step</text>
+<text font-size="13" text-anchor="middle" x="594" y="280">escaped</text>
+</g>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="18" font-weight="700">
+<text x="60" y="102">1  Reference orbit</text>
+<text x="490" y="102">4  Skipping tables</text>
+<text x="60" y="272">2  Step</text>
+<text x="350" y="272">3  Rebase</text>
+<text x="645" y="272">5  Color</text>
+</g>
+<g fill="#526a78" font-family="system-ui, sans-serif" font-size="15">
+<text x="60" y="128">Z₀ = 0, Z₁ = C, Z₂, … at the image center,</text>
+<text x="60" y="150">with hundreds to thousands of digits</text>
+<text x="490" y="128">linear maps over many steps (BLA or LA),</text>
+<text x="490" y="150">built once from the reference</text>
+<text x="60" y="298">a jump with a table entry,</text>
+<text x="60" y="320">or δ ← 2Zₘδ + δ² + Δc</text>
+<text x="350" y="298">if |Zₘ + δ| &lt; |δ|:</text>
+<text x="350" y="320">δ ← Zₘ + δ, m ← 0</text>
+<text x="645" y="298">from the smooth count</text>
+<text x="645" y="320">and the distance estimate</text>
+</g>
+</svg>
+<figcaption>The stages of a deep-zoom renderer. Only the reference orbit uses many digits; the work for each pixel uses hardware numbers and, thanks to skipping, a small fraction of its iterations. Schematic.</figcaption>
+</figure>
+<p>The rest of the chapter takes these stages one at a time, after two questions that come first: how many digits a deep zoom needs, and why digits are expensive.</p>
+<h2 id="digits">How many digits a deep zoom needs</h2>
+<p>A picture <var>W</var> pixels wide of a window of width <var>w</var> has pixel spacing <var>s</var> = <var>w</var>/<var>W</var>. To give every pixel its own parameter, the coordinates must tell numbers <var>s</var> apart near |<var>c</var>| ≈ 1, which takes about log<sub>2</sub>(1/<var>s</var>) binary digits (bits). For a picture 1,920 pixels wide at magnification 10<sup><var>k</var></sup> that is about 3.32<var>k</var> + 12 bits: 345 bits (104 decimal digits) at 10<sup>100</sup>, 3,330 bits at 10<sup>1000</sup>, 33,000 bits at 10<sup>10000</sup>. Programs add a safety margin: 20 decimal digits in Kalles Fraktaler, 24 bits in Fraktaler 3, 64 in Imagina and 120 in FractalShark (their source code, read for this atlas). None of them multiplies the digits by the number of iterations.</p>
+<p>That is surprising, because the iteration is chaotic. Near the boundary each step roughly doubles small errors, as in the <a href="chaos.html#sensitive-dependence">chaos chapter</a>, so after a few hundred steps the computed orbit has nothing in common with the true orbit of the pixel’s center. In experiments for this atlas, with orbits of 7,000 and 60,000 steps computed with a few more bits than log<sub>2</sub>(1/<var>s</var>), the error in <var>z</var><sub>n</sub> grew to the size of <var>z</var><sub>n</sub> itself. Yet in every test, with orbits of 270 to 60,000 steps, the computed orbit was, to high accuracy, the <em>exact</em> orbit of a parameter only about 2<sup>−<var>m</var></sup> pixels away, where <var>m</var> is the number of extra bits, however long the orbit.</p>
+<p>The reason is that the derivative <var>dz</var><sub>n</sub>/<var>dc</var> grows just as fast as the errors do. A rounding error made at step <var>k</var> changes the orbit from then on in the same way as a change of <var>c</var> by the error divided by <var>dz</var><sub>k</sub>/<var>dc</var>, which is tiny. The computed picture is therefore an exact picture of a grid of pixels shifted by a small fraction of a pixel, which is as good as the exact picture: antialiasing moves samples by more than that on purpose. This way of judging a computation, by the change of input that would explain its result, is called <strong>backward error</strong>, and it will return at the end of the chapter.</p>
+<figure class="widget" data-widget="deep-digits" hidden>
+<figcaption>Try it: one pixel near a minibrot of period 998, in a picture 48 pixels wide of width 2.5·10<sup>−15</sup>, iterated with numbers of <var>P</var> binary digits after the point and compared with the same orbit computed with 340. The gold curve is the error in <var>z</var><sub>n</sub>, which grows until the computed orbit has nothing in common with the true one. The teal curve is the same error divided by <var>dz</var><sub>n</sub>/<var>dc</var> and measured in pixel widths: to first order, the change of <var>c</var> that would explain it. Move the slider to give the computation more bits than the 54 that tell neighboring pixels apart. Computed in your browser with whole-number (fixed-point) arithmetic.</figcaption>
+</figure>
+<p>The escape counts of individual pixels are another matter. Near a deep minibrot they are extremely sensitive: in one test window, moving every pixel by 2<sup>−24</sup> of a pixel width still changed 5% of the counts. Comparing counts with a more precise computation therefore says little about whether a picture is right; the backward error does.</p>
+<h2 id="formats">More digits or more range</h2>
+<p>A floating-point number is a <strong>mantissa</strong>, its significant digits, times a power of two, its <strong>exponent</strong>. The two parts buy different things. Mantissa bits decide how finely numbers of similar size can be told apart; exponent bits decide how small or large a number can be at all.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Format</th><th scope="col">Mantissa</th><th scope="col">Smallest normal number</th><th scope="col">Speed of one step of <var>z</var><sup>2</sup> + <var>c</var></th></tr></thead>
+<tbody>
+<tr><th scope="row">float (hardware)</th><td>24 bits, 7 digits</td><td>1.2·10<sup>−38</sup></td><td>about 1 ns</td></tr>
+<tr><th scope="row">double (hardware)</th><td>53 bits, 16 digits</td><td>2.2·10<sup>−308</sup></td><td>1.2 ns</td></tr>
+<tr><th scope="row">x87 long double</th><td>64 bits, 19 digits</td><td>3.4·10<sup>−4932</sup></td><td>9–13 ns</td></tr>
+<tr><th scope="row">double-double (two doubles)</th><td>about 106 bits</td><td>as for double</td><td>15–32 ns</td></tr>
+<tr><th scope="row">floatexp (double and a separate integer exponent)</th><td>53 bits</td><td>practically unlimited</td><td>tens of ns</td></tr>
+<tr><th scope="row">MPFR (arbitrary precision)</th><td>any</td><td>practically unlimited</td><td>0.14–0.26 µs up to 512 bits</td></tr>
+</tbody>
+</table></div>
+<p>Timings were measured for this atlas on one core of a laptop processor; they vary by up to a factor of two between runs. Computing every pixel directly needs mantissa: <var>c</var> = −0.74… must be stored to within a fraction of the pixel spacing. Perturbation, below, needs the opposite. A pixel’s difference from the reference is tiny, but it only has to be known relative to itself, to a few bits more than it takes to number the pixels across the picture: Fraktaler 3 asks for a mantissa longer than log<sub>2</sub> of the image diagonal in pixels, about 11 bits. What it does need is exponent range, down to 10<sup>−1000</sup> at a magnification of 10<sup>1000</sup>, far below the 10<sup>−308</sup> where doubles round to 0. Kalles Fraktaler therefore uses doubles up to about 10<sup>290</sup> and, for <var>z</var><sup>2</sup> + <var>c</var>, doubles rescaled in software at any greater depth; for formulas that cannot be rescaled it moves to long doubles and, beyond about 10<sup>4900</sup>, to floatexp (<a href="https://mathr.co.uk/kf/manual.html">its manual</a> and source code). Graphics processors calculate fastest in single precision, so renderers that use them combine floats with an extra exponent: FractalShark pairs two 32-bit floats with a shared exponent for an effective 48-bit mantissa.</p>
+<h2 id="cost">Why many digits are slow</h2>
+<p>A processor multiplies two doubles in one instruction, several per clock cycle. A number with <var>P</var> bits is stored as <var>P</var>/64 machine words, and the school method of multiplication multiplies every word of one number by every word of the other: (<var>P</var>/64)<sup>2</sup> products, so doubling the digits quadruples the work. Faster methods take over as numbers grow. Karatsuba’s trick needs three half-size products instead of four, so its cost grows like <var>P</var><sup>1.585</sup>; the Toom–Cook methods split numbers into more parts; methods based on the fast Fourier transform are nearly linear. The GMP library, on which most deep-zoom programs build, switches to Karatsuba from about 1,200 bits (magnifications of about 10<sup>360</sup>), to Toom–Cook from about 8,000 bits (10<sup>2300</sup>) and to the FFT only from about 200,000 to 300,000 bits (10<sup>60,000</sup> and beyond), on an AMD Zen 2 processor (<a href="https://gmplib.org/manual/Multiplication-Algorithms">GMP manual</a>; GMP’s tuning tables). Even at 53 bits, arbitrary precision is 50 to 100 times slower than hardware doubles, because of the bookkeeping around every operation.</p>
+<p>One step of <var>z</var><sup>2</sup> + <var>c</var> takes three real multiplications. Measured for this atlas with the MPFR library, one step costs 0.24 µs at 400 bits (magnification 10<sup>100</sup>), 2.2 µs at 3,400 bits (10<sup>1000</sup>) and 76 µs at 34,000 bits (10<sup>10000</sup>), against 1.2 ns in doubles. Multiplied out for a picture of 1920 × 1080 pixels at 100,000 iterations each, on one core:</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Magnification</th><th scope="col">Every pixel with many digits</th><th scope="col">Perturbation: the reference</th><th scope="col">Perturbation: all pixels</th></tr></thead>
+<tbody>
+<tr><th scope="row">10<sup>100</sup></th><td>14 hours</td><td>0.02 s</td><td>8.5 minutes</td></tr>
+<tr><th scope="row">10<sup>1000</sup></th><td>5 days</td><td>0.2 s</td><td>10 minutes to 3 hours, depending on the format</td></tr>
+<tr><th scope="row">10<sup>10000</sup></th><td>half a year</td><td>7.6 s</td><td>as at 10<sup>1000</sup></td></tr>
+</tbody>
+</table></div>
+<p>With perturbation, the work for the pixels no longer depends on the depth at all. Only the reference orbit becomes more expensive, and it is computed once per picture.</p>
+<h2 id="perturbation">Perturbation</h2>
+<p>Let the reference have parameter <var>C</var> and orbit <var>Z</var><sub>0</sub> = 0, <var>Z</var><sub>n+1</sub> = <var>Z</var><sub>n</sub><sup>2</sup> + <var>C</var>, computed once with all the digits and then stored rounded to an ordinary number format. A pixel with parameter <var>c</var> = <var>C</var> + Δ<var>c</var> has orbit <var>z</var><sub>n</sub> = <var>Z</var><sub>n</sub> + δ<sub>n</sub> with δ<sub>0</sub> = 0. Subtracting the two iterations gives, exactly,</p>
+<div class="equation">δ<sub>n+1</sub> = 2<var>Z</var><sub>n</sub>δ<sub>n</sub> + δ<sub>n</sub><sup>2</sup> + Δ<var>c</var>.</div>
+<p>This is algebra, not an approximation. The dangerous operation of direct iteration, adding a tiny number to a number of size 1, has been done on paper: the large terms <var>Z</var><sub>n</sub><sup>2</sup> + <var>C</var> cancel exactly. What is left only multiplies small numbers by numbers of size 1, and multiplication keeps relative precision. So δ<sub>n</sub> can be computed in hardware numbers, and its digits stay meaningful, as long as the exponent can reach its size. The pixel’s full value <var>Z</var><sub>n</sub> + δ<sub>n</sub> is formed only to test for escape. For the distance estimate, the pixel’s derivative <var>D</var><sub>n</sub> = <var>dz</var><sub>n</sub>/<var>dc</var> needs no special treatment: <var>D</var><sub>n+1</sub> = 2(<var>Z</var><sub>n</sub> + δ<sub>n</sub>)<var>D</var><sub>n</sub> + 1 is computed in the same ordinary numbers.</p>
+<p>K. I. Martin published this method in 2013 with his program SuperFractalThing, in a two-page note that starts the reference at <var>c</var> rather than at 0, which shifts the same recurrence by one step (<a href="https://web.archive.org/web/20130701075021/http://www.superfractalthing.co.nf/sft_maths.pdf">Martin, 2013</a>). The effect was dramatic. A year later the user Pauldelbrot described rendering a picture at a magnification of about 10<sup>157</sup> with “just three dozen points iterated at 163 decimals of precision, instead of the one-and-one-quarter-million at that precision to render this same image in conventional software” (<a href="https://www.fractalforums.com/announcements-and-news/pertubation-theory-glitches-improvement/">fractalforums.com, April 2014</a>). Why three dozen points and not one is the subject of the next section.</p>
+<h2 id="glitches">Glitches</h2>
+<p>Perturbation has one weak spot. Suppose a pixel’s orbit passes close to 0 while the reference does not. Then δ<sub>n</sub> ≈ −<var>Z</var><sub>n</sub>, and the pixel’s value <var>z</var><sub>n</sub> = <var>Z</var><sub>n</sub> + δ<sub>n</sub> is the small difference of two nearly equal numbers. δ<sub>n</sub> carries 53 bits relative to its own size, which is about |<var>Z</var><sub>n</sub>|, so <var>z</var><sub>n</sub> is known only to about 2<sup>−53</sup>|<var>Z</var><sub>n</sub>|: at |<var>z</var><sub>n</sub>| = 10<sup>−3</sup>|<var>Z</var><sub>n</sub>| ten bits are lost, at 10<sup>−16</sup>|<var>Z</var><sub>n</sub>| all of them. Pauldelbrot analyzed this in April 2014: the difference between two neighboring pixels is multiplied at each step by about twice the pixel’s own value, so when that value is small, the differences between neighbors fall below the resolution of δ. Neighboring pixels then round to the same δ and follow the same orbit from then on.</p>
+<p>These failures are called <strong>glitches</strong>. Where neighbors snap together completely, a whole region gets the same count: a flat blob of one color where there should be structure. Where they lose only part of their difference, the counts are scrambled into noise or wrong but plausible-looking patterns. Glitches appear near minibrots and embedded Julia sets other than the one the reference belongs to, because pixels there return close to 0 at multiples of a different period. A second failure is simpler: the reference may escape before the pixels do, and then pixels that need more iterations have nothing left to follow.</p>
+<p>Pauldelbrot’s test flags a pixel when |<var>z</var><sub>n</sub>| &lt; 10<sup>−3</sup>|<var>Z</var><sub>n</sub>|; Kalles Fraktaler uses the squared form |<var>z</var><sub>n</sub>|<sup>2</sup> &lt; 10<sup>−7</sup>|<var>Z</var><sub>n</sub>|<sup>2</sup>. Flagged pixels were then computed again with a second reference placed in the middle of the glitched region, and so on until no glitches were left: Kalles Fraktaler rendered a test picture at 1280 × 720 pixels with seven extra references in under 1.5 minutes in 2014, and dozens of references were common for difficult pictures. No threshold was ever shown to catch all glitches without false alarms. In a test window at width 3.6·10<sup>−31</sup>, about 1% of the pixels were glitched; the test flagged 2.4% of all pixels, more than half of them correctly computed ones, and missed some of the wrong ones.</p>
+<h2 id="reference">Where the reference comes from</h2>
+<p>Before 2021 the choice of reference mattered for correctness: it had to stay bounded at least as long as every pixel, and the nucleus of a minibrot in view was the natural choice. Today all four programs whose source code was read for this atlas, Kalles Fraktaler, Fraktaler 3, Imagina and FractalShark, simply use the image center: rebasing, in the next section, made any reference work. Finding the nucleus of a minibrot is still important, for navigation (“zoom to the next minibrot”) and for speed, and it is a nice piece of mathematics.</p>
+<p><strong>Guessing the period.</strong> Instead of one point, iterate a whole small disk of parameters around the view’s center. As long as its image under <var>c</var> ↦ <var>z</var><sub>n</sub>(<var>c</var>) is small, it is approximately a disk of radius <var>r</var>·|<var>dz</var><sub>n</sub>/<var>dc</var>| around <var>z</var><sub>n</sub>, where <var>r</var> is the radius of the view. The first <var>n</var> at which this image disk covers 0,</p>
+<div class="equation">|<var>z</var><sub>n</sub>| &lt; <var>r</var>·|<var>dz</var><sub>n</sub>/<var>dc</var>|,</div>
+<p>signals that, to first order, some parameter in the view has <var>z</var><sub>n</sub>(<var>c</var>) = 0: a nucleus of period <var>n</var>, belonging to the largest minibrot in or near the view. This <strong>ball method</strong> needs one orbit and its derivative; Robert Munafo’s older box method iterates the four corners of a square instead. A related signal comes from a single point: the steps at which |<var>z</var><sub>n</sub>| becomes smaller than ever before are the periods of the minibrots whose “atom domains” contain the point (<a href="https://mathr.co.uk/blog/2021-11-12_atom_domains_and_newton_basins.html">Heiland-Allen, 2021</a>).</p>
+<figure>
+<svg aria-labelledby="deep-zoom-ladder-title deep-zoom-ladder-desc" role="img" viewBox="0 0 900 454" xmlns="http://www.w3.org/2000/svg">
+<title id="deep-zoom-ladder-title">Steps at which the orbit of the center of a deep location comes closer to 0 than ever</title>
+<desc id="deep-zoom-ladder-desc">A bar chart with one row for each of eight steps n of the orbit of the center of a location at magnification 6.5·10¹³⁷: 152, 456, 912, 14,896, 44,688, 655,424, 4,378,360 and 43,292,334. Each bar shows how close the orbit comes to 0 at that step, in decimal digits: about 3, 4.5, 5, 7, 9 and 10 digits for the first six, 24 digits at step 4,378,360 and 67 digits at step 43,292,334. The steps are the periods of minibrots near the point; the last is the minibrot that fills the view.</desc>
+<rect fill="#eef5f7" height="454" rx="18" width="900"></rect>
+<path d="M304.3 94v310M378.6 94v310M452.9 94v310M527.1 94v310M601.4 94v310M675.7 94v310M750 94v310" stroke="#b8cdd0" stroke-dasharray="3 4"></path>
+<rect fill="#17657b" height="20" rx="3" width="23" x="230" y="98"></rect>
+<rect fill="#17657b" height="20" rx="3" width="33.1" x="230" y="136"></rect>
+<rect fill="#17657b" height="20" rx="3" width="37.3" x="230" y="174"></rect>
+<rect fill="#17657b" height="20" rx="3" width="53.4" x="230" y="212"></rect>
+<rect fill="#17657b" height="20" rx="3" width="66.3" x="230" y="250"></rect>
+<rect fill="#17657b" height="20" rx="3" width="76.9" x="230" y="288"></rect>
+<rect fill="#17657b" height="20" rx="3" width="178.3" x="230" y="326"></rect>
+<rect fill="#17657b" height="20" rx="3" width="499.6" x="230" y="364"></rect>
+<g fill="#526a78" font-family="system-ui, sans-serif">
+<text font-size="15" x="263" y="113">10<tspan baseline-shift="super" font-size="11">−3.10</tspan></text>
+<text font-size="15" x="273.1" y="151">10<tspan baseline-shift="super" font-size="11">−4.45</tspan></text>
+<text font-size="15" x="277.3" y="189">10<tspan baseline-shift="super" font-size="11">−5.02</tspan></text>
+<text font-size="15" x="293.4" y="227">10<tspan baseline-shift="super" font-size="11">−7.19</tspan></text>
+<text font-size="15" x="306.3" y="265">10<tspan baseline-shift="super" font-size="11">−8.92</tspan></text>
+<text font-size="15" x="316.9" y="303">10<tspan baseline-shift="super" font-size="11">−10.35</tspan></text>
+<text font-size="15" x="418.3" y="341">10<tspan baseline-shift="super" font-size="11">−24.00</tspan></text>
+<text font-size="15" x="739.6" y="379">10<tspan baseline-shift="super" font-size="11">−67.26</tspan></text>
+<text x="230" y="430" font-size="14" text-anchor="middle">0</text>
+<text x="304.3" y="430" font-size="14" text-anchor="middle">10</text>
+<text x="378.6" y="430" font-size="14" text-anchor="middle">20</text>
+<text x="452.9" y="430" font-size="14" text-anchor="middle">30</text>
+<text x="527.1" y="430" font-size="14" text-anchor="middle">40</text>
+<text x="601.4" y="430" font-size="14" text-anchor="middle">50</text>
+<text x="675.7" y="430" font-size="14" text-anchor="middle">60</text>
+<text x="750" y="430" font-size="14" text-anchor="middle">70</text>
+<text x="490" y="450" font-size="15" text-anchor="middle">decimal digits of closeness to 0: −log₁₀|zₙ|</text>
+</g>
+<g font-family="system-ui, sans-serif">
+<text x="214" y="114" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">152</text>
+<text x="214" y="152" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">456</text>
+<text x="214" y="190" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">912</text>
+<text x="214" y="228" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">14,896</text>
+<text x="214" y="266" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">44,688</text>
+<text x="214" y="304" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">655,424</text>
+<text x="214" y="342" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">4,378,360</text>
+<text x="214" y="380" font-size="17" text-anchor="end" fill="#162e40" font-weight="700">43,292,334</text>
+</g>
+<g fill="#162e40" font-family="system-ui, sans-serif">
+<text x="30" y="40" font-size="20" font-weight="700">The orbit of the view’s center returns ever closer to 0</text>
+</g>
+<g fill="#526a78" font-family="system-ui, sans-serif">
+<text x="30" y="66" font-size="15">Eight of the steps n at which |zₙ| is smaller than at every earlier step, and how small it is there</text>
+</g>
+</svg>
+<figcaption>The orbit of the center of Fractal universe’s location, computed for this atlas with 600-bit numbers. Each row is one of the steps at which the orbit comes closer to 0 than at every earlier step, and the bar shows how close. Of the sixteen such steps, these eight are the periods that Claude Heiland-Allen listed for this location: periods of minibrots near the point whose atom domains contain it, the last being the minibrot that fills the view. Computed diagram.</figcaption>
+</figure>
+<p><strong>Newton’s method.</strong> Once the period <var>p</var> is known, the nucleus solves <var>z</var><sub>p</sub>(<var>c</var>) = 0, and Newton’s method finds it as in the <a href="computing.html#newton">computing chapter</a>: <var>c</var> ← <var>c</var> − <var>z</var><sub>p</sub>/<var>z</var>′<sub>p</sub>, with <var>z</var>′<sub>n+1</sub> = 2<var>z</var><sub>n</sub><var>z</var>′<sub>n</sub> + 1. Each step iterates the orbit and its derivative <var>p</var> times with all the digits. Near the root the number of correct digits doubles with each step, so few steps are needed. At Fractal universe’s location, starting from the published center, two steps of 52 and 38 seconds, each of 43.3 million iterations at 600 bits, were enough. Imagina and FractalShark save time by computing the derivative with fewer digits, about a quarter of the depth in bits; with too few, the convergence becomes linear. Newton’s method can also wander off: even starting points close to one nucleus can lead to another, so programs check that the result stayed inside the view.</p>
+<p><strong>The size of the minibrot.</strong> Near a nucleus of period <var>p</var>, <var>p</var> steps of the iteration act like one step of <var>Z</var> ↦ <var>Z</var><sup>2</sup> + <var>C</var> in rescaled coordinates, the <a href="minibrots.html#renormalization-and-straightening">renormalization</a> of the minibrots chapter. The scale factor follows from the nucleus orbit: with λ<sub>k</sub> = 2<var>z</var><sub>1</sub> · 2<var>z</var><sub>2</sub> ⋯ 2<var>z</var><sub>k</sub>, λ = λ<sub>p−1</sub> and β = 1 + 1/λ<sub>1</sub> + ⋯ + 1/λ<sub>p−1</sub>, the minibrot is a copy of <var>M</var> scaled by about 1/|βλ<sup>2</sup>| and turned by the angle −arg(βλ<sup>2</sup>) (<a href="https://mathr.co.uk/blog/2016-12-24_deriving_the_size_estimate.html">Heiland-Allen, 2016</a>, after Hunt and Ott). For the period-43,292,334 minibrot the factor is 10<sup>−138.2</sup>, matching the magnification of the published view.</p>
+<figure class="widget" data-widget="deep-period" hidden>
+<figcaption>Try it: drag the point to place a disk on the Mandelbrot set, and choose its size. The ball method finds the first step at which the disk’s image covers 0, Newton’s method walks from the disk’s center to the nucleus of that period (teal dots), and, if the component is a small copy of <var>M</var> rather than a bulb attached to a larger component, the size estimate outlines it by its main cardioid and period-two disk (gold). “Zoom to the minibrot” shows how well the outline fits. Computed in your browser in double precision, which limits it to widths of about 10<sup>−12</sup>.</figcaption>
+</figure>
+<p><strong>Periodic references.</strong> The orbit of a nucleus returns exactly to 0 after <var>p</var> steps and then repeats, so it never escapes, and <var>p</var> stored values describe all of it. At Fractal universe’s location the pixels need up to 2.1 billion iterations, but the reference has only 43.3 million values: 0.69 gigabytes instead of 34. Imagina and FractalShark go one step further and do not need the nucleus at all: they stop the orbit of the image center at the first step where the ball test fires, and treat what they have as one period. Pixels that run past its end simply restart it, which is the end-of-reference case of rebasing. Misiurewicz points, whose orbits are eventually periodic too, have been suggested as references, but none of the four programs uses them.</p>
+<h2 id="rebasing">Rebasing: one reference is enough</h2>
+<p>On 3 August 2021 the user Zhuoran posted a few lines of pseudocode on fractalforums.org under the title <a href="https://web.archive.org/web/20211203072405/https://fractalforums.org/fractal-mathematics-and-new-theories/28/another-solution-to-perturbation-glitches/4360">“Another solution to perturbation glitches”</a>. A pixel keeps two counters, its own iteration <var>n</var> and its position <var>m</var> on the reference. After each step it forms its value <var>z</var> = <var>Z</var><sub>m</sub> + δ, and</p>
+<div class="equation">if |<var>Z</var><sub>m</sub> + δ| &lt; |δ|, or the reference has ended: δ ← <var>Z</var><sub>m</sub> + δ and <var>m</var> ← 0.</div>
+<p>The pixel’s own count <var>n</var> carries on. This is <strong>rebasing</strong>. It is exact, because the perturbation formula only needs <var>Z</var> to be some orbit of <var>z</var><sup>2</sup> + <var>C</var> and δ to be the pixel’s value minus the current reference value; nothing ties <var>m</var> to <var>n</var>. Restarting at <var>m</var> = 0, where <var>Z</var><sub>0</sub> = 0, makes the new δ equal to the pixel’s value itself, and Δ<var>c</var> is unchanged. And it avoids glitches instead of detecting them: the switch happens when the pixel is about as close to 0 as δ is large, before any serious cancellation, and afterwards δ is the small number <var>z</var> with its full relative precision. Having passed near 0, the pixel follows an orbit that resembles the beginning of the reference, which is where it now compares itself.</p>
+<figure class="widget" data-widget="deep-rebasing" hidden>
+<figcaption>Try it: one pixel followed by perturbation, step by step, in the plane of <var>z</var>, which zooms at each step to show 0, the reference value and the pixel (its width is shown). Gray dots are points of the reference orbit, the gray point is the reference value <var>Z</var><sub>m</sub>, the gold point the pixel’s value <var>z</var>, and the teal arrow δ. The dashed circle around 0 has radius |δ|: when the pixel lies inside it, |<var>Z</var><sub>m</sub> + δ| &lt; |δ|, and the pixel rebases. Without rebasing, the readout counts the bits of δ that cancel instead. Computed in your browser in double precision, in a view 3·10<sup>−6</sup> wide where doubles still suffice for the reference.</figcaption>
+</figure>
+<p>Zhuoran found it “very reliable, even when single precision is used”. Claude Heiland-Allen tested it in November 2021, finding that one reference gave a picture “almost identical to 338 references, taking significantly less time”, and added it to Kalles Fraktaler in December. It was a new idea in one respect only: Heiland-Allen’s own program already switched pixels to a new reference, but restarting the same reference needs no second one. In tests for this atlas, at widths 3.6·10<sup>−31</sup> and 10<sup>−35</sup> with the true counts computed directly with 192-bit numbers:</p>
+<ul>
+<li>without rebasing, about 1% of the pixels were glitched with a good reference; when the reference escaped before the pixels, 36% to 98% could not be computed, and restarting the reference only when it ended still left 28–36% wrong;</li>
+<li>with rebasing, every reference tried, the center, the nucleus or a corner pixel whose orbit escapes early, gave the same picture;</li>
+<li>a pixel rebased 6 to 12 times on average, once every 4,000 to 65,000 iterations.</li>
+</ul>
+<p>Some pixels still differed from the direct computation, 0.3–2% of them by more than ten iterations, but long-double numbers did no better: these are the oversensitive pixels of the section on digits, not glitches. Rebasing has limits. It relies on the reference starting at the only critical point, 0, so formulas with several critical points need one reference for each, and formulas that alternate between maps need one per phase. And no proof shows that the test |<var>z</var>| &lt; |δ| catches every loss of precision; Heiland-Allen wrote that there is “still room for a numerical analyst” to check why it works so well.</p>
+<h2 id="skipping">Skipping iterations</h2>
+<p>Perturbation makes each iteration cheap, but every pixel still does all of them: hundreds of millions at Fractal universe’s location. The remaining speedups use one observation. As long as δ is tiny compared with <var>Z</var><sub>m</sub>, the step δ ↦ 2<var>Z</var><sub>m</sub>δ + δ<sup>2</sup> + Δ<var>c</var> is almost linear in δ and Δ<var>c</var>, and a chain of linear maps can be multiplied out once, for all pixels, into a single linear map.</p>
+<p><strong>Series approximation.</strong> Martin’s note already observed that δ<sub>n</sub>, which starts at 0, is at first a power series in Δ<var>c</var> alone, δ<sub>n</sub> ≈ <var>A</var><sub>n</sub>Δ<var>c</var> + <var>B</var><sub>n</sub>Δ<var>c</var><sup>2</sup> + …, whose coefficients follow from the reference. All pixels can then start at some iteration <var>N</var> instead of 0. Kalles Fraktaler chooses <var>N</var> by comparing the series with eight probe pixels and stopping where they disagree. But the series stops working once the pixels’ orbits spread apart, at the latest after one period of the central minibrot, so it skips at most one period; and agreement at eight points proves nothing about the others. In a test for this atlas at width 10<sup>−35</sup> it skipped a third of the iterations, all eight probes agreed, and a quarter of the pixels came out more than ten iterations wrong. Fraktaler 3 replaced it with the next method, and FractalShark does without it.</p>
+<p><strong>Bilinear approximation (BLA).</strong> If |δ| is much smaller than |2<var>Z</var><sub>m</sub>|, the square can be dropped, and the step is the linear map δ ↦ <var>A</var>δ + <var>B</var>Δ<var>c</var> with <var>A</var> = 2<var>Z</var><sub>m</sub> and <var>B</var> = 1. The dropped term is at most a fraction ε of the kept one when |δ| &lt; ε|2<var>Z</var><sub>m</sub>|, the step’s <strong>validity radius</strong>; Fraktaler 3 uses ε = 2<sup>−24</sup>. Two steps combine into one map,</p>
+<div class="equation">(<var>A</var><sub>2</sub>, <var>B</var><sub>2</sub>) ∘ (<var>A</var><sub>1</sub>, <var>B</var><sub>1</sub>) = (<var>A</var><sub>2</sub><var>A</var><sub>1</sub>, <var>A</var><sub>2</sub><var>B</var><sub>1</sub> + <var>B</var><sub>2</sub>),</div>
+<p>valid where the first is and where its output lands inside the radius of the second. Merging neighbors in pairs, then pairs of pairs, gives a table of maps covering 1, 2, 4, 8, … iterations. A pixel takes the longest valid map from where it is, applies it, and repeats; when none is valid, near the moments where <var>Z</var><sub>m</sub> passes near 0, it does single perturbation steps and checks for rebasing. Zhuoran hinted at it in November 2021, describing the linear approximation his own program used; Heiland-Allen had it working within two weeks and wrote it up in February 2022 (<a href="https://mathr.co.uk/blog/2022-02-21_deep_zoom_theory_and_practice_again.html">“Deep zoom theory and practice (again)”</a>); it is in Fraktaler 3, FractalShark and Fractal Zoomer.</p>
+<p><strong>Linear approximation (LA).</strong> Zhuoran’s own linear approximation, published in his program Imagina, differs from BLA in three ways, as its source code shows. First, it keeps the first square: an entry starting at a reference step <var>a</var> first computes δ(2<var>Z</var><sub>a</sub> + δ) exactly, and only then applies a linear map. So an entry can start where <var>Z</var> is near 0, exactly where BLA’s radii collapse. Second, entries end where the reference comes close to 0 again, not at powers of two, and higher stages combine these entries into longer ones. Third, a pixel walks from the longest entries down to shorter ones as needed. At Fractal universe’s location the stages came out as 25, 152, 456, 14,896, 44,688, 655,424 and 4,378,360 iterations: apart from the first, the periods of the bar chart above, found without being told any of them. Imagina can even replace a whole period by one step of a small quadratic map in double precision, the renormalization of the minibrots chapter used as a shortcut. FractalShark and Fractal Zoomer have adopted LA.</p>
+<figure>
+<svg aria-labelledby="deep-zoom-skipping-title deep-zoom-skipping-desc" role="img" viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg">
+<title id="deep-zoom-skipping-title">The jump lengths of bilinear and linear approximation</title>
+<desc id="deep-zoom-skipping-desc">Two rows of dots on a logarithmic scale from 1 to 10 million iterations. The upper row, bilinear approximation, has a dot at every power of two from 8 to about 4 million. The lower row, linear approximation, has seven dots at the stage lengths 25, 152, 456, 14,896, 44,688, 655,424 and 4,378,360 measured at a deep location: apart from the first, the periods of minibrots near that location.</desc>
+<rect fill="#eef5f7" height="330" rx="18" width="900"></rect>
+<path d="M110 100v150M212.9 100v150M315.7 100v150M418.6 100v150M521.4 100v150M624.3 100v150M727.1 100v150M830 100v150" stroke="#b8cdd0" stroke-dasharray="3 4"></path>
+<path d="M110 132h720M110 222h720" stroke="#b8cdd0" stroke-width="2"></path>
+<g fill="#bd7d20"><circle cx="202.9" cy="132" r="5"></circle><circle cx="233.9" cy="132" r="5"></circle><circle cx="264.8" cy="132" r="5"></circle><circle cx="295.8" cy="132" r="5"></circle><circle cx="326.7" cy="132" r="5"></circle><circle cx="357.7" cy="132" r="5"></circle><circle cx="388.7" cy="132" r="5"></circle><circle cx="419.6" cy="132" r="5"></circle><circle cx="450.6" cy="132" r="5"></circle><circle cx="481.6" cy="132" r="5"></circle><circle cx="512.5" cy="132" r="5"></circle><circle cx="543.5" cy="132" r="5"></circle><circle cx="574.4" cy="132" r="5"></circle><circle cx="605.4" cy="132" r="5"></circle><circle cx="636.4" cy="132" r="5"></circle><circle cx="667.3" cy="132" r="5"></circle><circle cx="698.3" cy="132" r="5"></circle><circle cx="729.3" cy="132" r="5"></circle><circle cx="760.2" cy="132" r="5"></circle><circle cx="791.2" cy="132" r="5"></circle></g>
+<g fill="#17657b"><circle cx="253.8" cy="222" r="7"></circle><circle cx="334.4" cy="222" r="7"></circle><circle cx="383.5" cy="222" r="7"></circle><circle cx="539.2" cy="222" r="7"></circle><circle cx="588.3" cy="222" r="7"></circle><circle cx="708.3" cy="222" r="7"></circle><circle cx="793.1" cy="222" r="7"></circle></g>
+<g fill="#526a78" font-family="system-ui, sans-serif">
+<text x="202.9" y="118" font-size="13" text-anchor="middle">8</text>
+<text x="295.8" y="118" font-size="13" text-anchor="middle">64</text>
+<text x="388.7" y="118" font-size="13" text-anchor="middle">512</text>
+<text x="481.6" y="118" font-size="13" text-anchor="middle">4,096</text>
+<text x="574.4" y="118" font-size="13" text-anchor="middle">32,768</text>
+<text x="667.3" y="118" font-size="13" text-anchor="middle">262,144</text>
+<text x="760.2" y="118" font-size="13" text-anchor="middle">2,097,152</text>
+<text font-size="14" text-anchor="middle" x="110" y="292">10<tspan baseline-shift="super" font-size="10">0</tspan></text>
+<text font-size="14" text-anchor="middle" x="212.9" y="292">10<tspan baseline-shift="super" font-size="10">1</tspan></text>
+<text font-size="14" text-anchor="middle" x="315.7" y="292">10<tspan baseline-shift="super" font-size="10">2</tspan></text>
+<text font-size="14" text-anchor="middle" x="418.6" y="292">10<tspan baseline-shift="super" font-size="10">3</tspan></text>
+<text font-size="14" text-anchor="middle" x="521.4" y="292">10<tspan baseline-shift="super" font-size="10">4</tspan></text>
+<text font-size="14" text-anchor="middle" x="624.3" y="292">10<tspan baseline-shift="super" font-size="10">5</tspan></text>
+<text font-size="14" text-anchor="middle" x="727.1" y="292">10<tspan baseline-shift="super" font-size="10">6</tspan></text>
+<text font-size="14" text-anchor="middle" x="830" y="292">10<tspan baseline-shift="super" font-size="10">7</tspan></text>
+<text x="470" y="316" font-size="15" text-anchor="middle">iterations covered by one jump (logarithmic scale)</text>
+</g>
+<g fill="#162e40" font-family="system-ui, sans-serif">
+<text x="253.8" y="250" font-size="14" text-anchor="middle" font-weight="700">25</text>
+<text x="334.4" y="206" font-size="14" text-anchor="middle" font-weight="700">152</text>
+<text x="383.5" y="250" font-size="14" text-anchor="middle" font-weight="700">456</text>
+<text x="539.2" y="206" font-size="14" text-anchor="middle" font-weight="700">14,896</text>
+<text x="588.3" y="250" font-size="14" text-anchor="middle" font-weight="700">44,688</text>
+<text x="708.3" y="206" font-size="14" text-anchor="middle" font-weight="700">655,424</text>
+<text x="793.1" y="250" font-size="14" text-anchor="middle" font-weight="700">4,378,360</text>
+<text x="96" y="138" font-size="17" text-anchor="end" font-weight="700">BLA</text>
+<text x="96" y="228" font-size="17" text-anchor="end" font-weight="700">LA</text>
+<text x="30" y="40" font-size="20" font-weight="700">How far one precomputed jump reaches</text>
+</g>
+<g fill="#526a78" font-family="system-ui, sans-serif">
+<text x="30" y="66" font-size="15">BLA: merged maps of 2ᵏ iterations. LA: stages that end where the reference returns near 0</text>
+</g>
+</svg>
+<figcaption>The lengths of the jumps that bilinear approximation (powers of two) and linear approximation (the stages of Imagina’s construction at Fractal universe’s location, here with the reference cut at period 4,378,360) can make, on a logarithmic scale. Computed diagram, with the stage lengths measured for this atlas.</figcaption>
+</figure>
+<p>Measured for this atlas at three deep locations, with the same rebasing perturbation code in every case:</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Width of the view</th><th scope="col">Mean iterations per pixel</th><th scope="col">Steps with BLA</th><th scope="col">Steps with LA</th></tr></thead>
+<tbody>
+<tr><th scope="row">3.6·10<sup>−31</sup> (period 8,007)</th><td>37,096</td><td>1,380 (27 times fewer)</td><td>3,288 (11 times fewer)</td></tr>
+<tr><th scope="row">10<sup>−35</sup> (period 624,546)</th><td>802,168</td><td>2,623 (306 times fewer)</td><td>3,285 (244 times fewer)</td></tr>
+<tr><th scope="row">2·10<sup>−52</sup> (period 4,378,360)</th><td>25,511,637</td><td>13,144 (1,941 times fewer)</td><td>39,644 (644 times fewer)</td></tr>
+</tbody>
+</table></div>
+<p>A step of either method costs more than a perturbation step, so the gain in time is smaller, but still large: at the deepest location a full 1920 × 1080 picture would take about 16 hours with perturbation alone, 3.4 minutes with BLA and 1.7 minutes with LA, on an eight-thread laptop. Most of the remaining work is the last thousands of iterations of each pixel, after it leaves the minibrot’s neighborhood and before it escapes, which must be done one by one.</p>
+<h2 id="limits">Limits</h2>
+<p><strong>Range, again.</strong> Not only the pixels’ differences become tiny. The reference values themselves become tiny near their returns to 0, 10<sup>−67</sup> at Fractal universe’s location, about the square root of the minibrot’s size, and the coefficients of the skipping tables become huge, so deep tables need floatexp even where the pixels do not. Single-precision mantissas, attractive on graphics processors, fail at some locations.</p>
+<p><strong>Iteration counts.</strong> Every pixel near a minibrot of period <var>p</var> needs more than <var>p</var> iterations, and periods grow quickly with depth, by factors of 2 to 16 between the rows of the bar chart above. FractalShark’s example views include a period of about 28 billion, rendered at up to 10<sup>15</sup> iterations per pixel.</p>
+<p><strong>Memory.</strong> A stored reference takes 16 to 32 bytes per iteration: a period of 400 million needs 6 to 13 gigabytes. But an orbit near a minibrot repeats its own earlier stretches, so it can be stored as a few “waypoints” and replayed by perturbing it against its own beginning, an idea of Zhuoran’s in Imagina, also used by FractalShark. Ported for this atlas, it stored the 4.4-million-step reference of the deepest test location in 33 waypoints, 920 bytes instead of 70 megabytes.</p>
+<p><strong>Time for the reference.</strong> Each step of the reference needs the previous one, so it cannot be spread over many processors, except inside each large multiplication. From the measured costs, a reference of 10<sup>8</sup> iterations takes about 4 minutes at magnification 10<sup>1000</sup>, 2 hours at 10<sup>10000</sup> and days beyond 10<sup>100000</sup>, on one core. At extreme depth this is the real bottleneck: nothing in this chapter makes it faster than <var>p</var> successive multiplications of numbers as long as the depth. FractalShark computes it on a graphics processor and reports a speedup of 70 times over a single-threaded computation at about 500,000 bits.</p>
+<p><strong>Correctness.</strong> No deep-zoom program has rigorous error bounds. Series approximation, BLA and LA use tolerances found by experiment; Heiland-Allen called the bounds of BLA “a bit handwavy”, and FractalShark’s documentation calls its limits “practical controls on the approximation domain, not a certified bound on the final pixel error”. What can be said is the backward-error statement of the section on digits. In the tests for this atlas, BLA and LA with their default tolerances changed 4–8% of the counts by more than ten iterations, while moving every pixel by 10<sup>−8</sup> to 10<sup>−6</sup> of its width, with otherwise exact computation, changed 2–11%. A BLA or LA picture is thus as correct as an exact picture of a grid shifted by about a millionth of a pixel. Certified pictures, in which every pixel is proved, are possible only at modest depths, as in the <a href="computing.html#trust">computing chapter</a>.</p>
+<p><strong>Other formulas.</strong> The <a href="beyond.html#pictures-without-theorems">Burning Ship</a> and other formulas with absolute values need special care at the lines where the absolute value folds the plane, which act like extra critical points; formulas with several critical points need several references; and LA as Imagina builds it is specific to <var>z</var><sup>2</sup> + <var>c</var>.</p>
+<h2 id="programs">Programs, October 2026</h2>
+<p>Deep-zoom programs are written by a small community, mostly as free software. The techniques of this chapter are spread over them as follows.</p>
+<div class="table-wrap"><table class="catalog">
+<thead><tr><th scope="col">Program</th><th scope="col">Author</th><th scope="col">Latest version</th><th scope="col">Techniques</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="https://mathr.co.uk/kf/kf.html">Kalles Fraktaler 2+</a></th><td>Karl Runmo, Claude Heiland-Allen</td><td>2.15.5.2, June 2022; development mostly stopped</td><td>perturbation, series approximation, glitch correction with extra references, rebasing; Windows, OpenCL</td></tr>
+<tr><th scope="row"><a href="https://fraktaler.mathr.co.uk/">Fraktaler 3</a></th><td>Claude Heiland-Allen</td><td>3.1, December 2025</td><td>perturbation, rebasing, BLA; also in a web browser</td></tr>
+<tr><th scope="row"><a href="https://github.com/5E-324/Imagina">Imagina</a></th><td>Zhuoran</td><td>0.2.1, June 2023; being rewritten</td><td>perturbation, rebasing, LA, reference compression</td></tr>
+<tr><th scope="row"><a href="https://github.com/mattsaccount364/FractalShark">FractalShark</a></th><td>Matthew Renzelmann</td><td>0.545, October 2026</td><td>perturbation, rebasing, BLA, LA, reference compression; NVIDIA graphics processors, also for the reference</td></tr>
+<tr><th scope="row"><a href="https://github.com/hrkalona/Fractal-Zoomer">Fractal Zoomer</a></th><td>hrkalona</td><td>1.0.9.5, January 2026</td><td>perturbation, series approximation, BLA, LA, for hundreds of formulas</td></tr>
+<tr><th scope="row"><a href="https://github.com/WindySnowOwl/fractadyne">Fractadyne</a></th><td>WindySnowOwl</td><td>0.3 beta, October 2026</td><td>perturbation, rebasing, series approximation; graphics processors</td></tr>
+<tr><th scope="row"><a href="https://www.ultrafractal.com/whatsnew.html">Ultra Fractal 6</a></th><td>Frederik Slijkerman</td><td>6.06, February 2024 (commercial)</td><td>perturbation</td></tr>
+</tbody>
+</table></div>
+<p>Historically important programs include SuperFractalThing (2013), Mandel Machine and Nanoscope (2014). Claims of the “deepest zoom ever” come from the programs’ authors and are hard to compare: FractalShark’s documentation includes a minibrot at a magnification of about 10<sup>650452</sup>, and videos zooming to 10<sup>1000</sup> or more are common. What limits the depth is patience and memory for the reference orbit, not a fixed wall.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>A zoom to magnification 10<sup><var>k</var></sup> needs about 3.32<var>k</var> bits plus a margin, not more: the computed orbit is the exact orbit of a parameter a tiny fraction of a pixel away (backward error).</li>
+<li>Arbitrary precision is slow: one step costs 0.24 µs at 10<sup>100</sup> and 76 µs at 10<sup>10000</sup>, against about a nanosecond in hardware.</li>
+<li>Perturbation computes one reference orbit with many digits and every pixel as an exact small difference δ from it, in hardware numbers with an extended exponent.</li>
+<li>Glitches arise when a pixel passes much nearer to 0 than the reference; rebasing (Zhuoran, 2021) avoids them by restarting the same reference from 0, so one reference suffices.</li>
+<li>Bilinear and linear approximation skip long stretches of iterations with precomputed linear maps, hundreds to thousands of times fewer steps; the limits are the reference’s time and memory, and the absence of rigorous error bounds.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>About how many bits does a picture 1,000 pixels wide at magnification 10<sup>500</sup> need, before the margin?</summary><div class="answer"><p>log<sub>2</sub>(10<sup>500</sup>) ≈ 500 × 3.32 ≈ 1,661 bits to resolve the window, plus log<sub>2</sub> 1000 ≈ 10 for the pixels across it: about 1,670 bits, or 503 decimal digits. With a margin of a few dozen bits, about 1,700.</p></div></details></li>
+<li><details><summary>Derive the perturbation formula from <var>z</var><sub>n</sub> = <var>Z</var><sub>n</sub> + δ<sub>n</sub> and <var>c</var> = <var>C</var> + Δ<var>c</var>.</summary><div class="answer"><p>δ<sub>n+1</sub> = <var>z</var><sub>n+1</sub> − <var>Z</var><sub>n+1</sub> = (<var>Z</var><sub>n</sub> + δ<sub>n</sub>)<sup>2</sup> + <var>C</var> + Δ<var>c</var> − <var>Z</var><sub>n</sub><sup>2</sup> − <var>C</var> = 2<var>Z</var><sub>n</sub>δ<sub>n</sub> + δ<sub>n</sub><sup>2</sup> + Δ<var>c</var>. The large terms cancel on paper, not in the computer.</p></div></details></li>
+<li><details><summary>Why can the differences δ be stored as doubles at magnification 10<sup>50</sup> but not at 10<sup>400</sup>, although they need only about 11 bits of mantissa?</summary><div class="answer"><p>At 10<sup>400</sup> the differences are about 10<sup>−400</sup>, below the smallest double, about 10<sup>−308</sup>, so they would round to 0. The problem is the exponent range, not the mantissa; a double with a separate exponent (floatexp) or a rescaling solves it.</p></div></details></li>
+<li><details><summary>A pixel has <var>Z</var><sub>m</sub> = 0.5 and δ = −0.49. Should it rebase, and what are δ and <var>m</var> afterwards?</summary><div class="answer"><p>Its value is <var>z</var> = 0.5 − 0.49 = 0.01, and |<var>z</var>| = 0.01 &lt; |δ| = 0.49, so it rebases: δ ← 0.01 and <var>m</var> ← 0. Since <var>Z</var><sub>0</sub> = 0, the pixel’s value <var>Z</var><sub>0</sub> + δ is still 0.01, so nothing has changed except the bookkeeping, and the next steps compare the pixel with the beginning of the reference.</p></div></details></li>
+<li><details><summary>Why does the orbit of a nucleus of period <var>p</var> never escape, and how many values must be stored?</summary><div class="answer"><p>Its orbit returns to <var>z</var><sub>p</sub> = 0 = <var>z</var><sub>0</sub> and then repeats the same <var>p</var> values forever, so it stays bounded. The values <var>Z</var><sub>0</sub>, …, <var>Z</var><sub>p−1</sub> describe it completely; a pixel at step <var>n</var> of the reference uses <var>Z</var><sub>n mod p</sub>, which is what rebasing at the end of the stored orbit does.</p></div></details></li>
+<li><details><summary>Show that two linear steps δ ↦ <var>A</var><sub>1</sub>δ + <var>B</var><sub>1</sub>Δ<var>c</var> and δ ↦ <var>A</var><sub>2</sub>δ + <var>B</var><sub>2</sub>Δ<var>c</var> combine into one.</summary><div class="answer"><p><var>A</var><sub>2</sub>(<var>A</var><sub>1</sub>δ + <var>B</var><sub>1</sub>Δ<var>c</var>) + <var>B</var><sub>2</sub>Δ<var>c</var> = (<var>A</var><sub>2</sub><var>A</var><sub>1</sub>)δ + (<var>A</var><sub>2</sub><var>B</var><sub>1</sub> + <var>B</var><sub>2</sub>)Δ<var>c</var>. The coefficients depend only on the reference, so they are computed once and used by every pixel.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://web.archive.org/web/20130701075021/http://www.superfractalthing.co.nf/sft_maths.pdf">K. I. Martin — SuperFractalThing Maths</a> (2013, archived) — the two-page note that introduced perturbation and series approximation.</li>
+<li><a href="https://www.fractalforums.com/announcements-and-news/pertubation-theory-glitches-improvement/">Pauldelbrot — Pertubation Theory Glitches Improvement</a> (fractalforums.com, April 2014) — the analysis and detection of glitches, with replies by the authors of other programs.</li>
+<li><a href="https://web.archive.org/web/20211203072405/https://fractalforums.org/fractal-mathematics-and-new-theories/28/another-solution-to-perturbation-glitches/4360">Zhuoran — Another solution to perturbation glitches</a> (fractalforums.org, August 2021, archived) — rebasing, and the discussion of periodic references that followed.</li>
+<li><a href="https://mathr.co.uk/blog/2021-05-14_deep_zoom_theory_and_practice.html">Claude Heiland-Allen — Deep zoom theory and practice</a> (2021) — number formats, rescaling, glitch tests and series approximation.</li>
+<li><a href="https://mathr.co.uk/blog/2022-02-21_deep_zoom_theory_and_practice_again.html">Claude Heiland-Allen — Deep zoom theory and practice (again)</a> (2022) — rebasing and bilinear approximation.</li>
+<li><a href="https://mathr.co.uk/blog/2016-12-24_deriving_the_size_estimate.html">Claude Heiland-Allen — Deriving the size estimate</a> (2016) — the size and orientation of a minibrot from its nucleus orbit.</li>
+<li><a href="https://mathr.co.uk/blog/2021-11-12_atom_domains_and_newton_basins.html">Claude Heiland-Allen — Atom domains and Newton basins</a> (2021) — periods from new minima of |<var>z</var><sub>n</sub>|, and why Newton’s starting points need care.</li>
+<li><a href="https://mathr.co.uk/kf/manual.html">Claude Heiland-Allen — Kalles Fraktaler 2 + manual</a> — number formats by depth, glitch correction and reference options in practice.</li>
+<li><a href="https://github.com/mattsaccount364/FractalShark">Matthew Renzelmann — FractalShark</a> — source code with extensive notes on precision, BLA, LA, compression and graphics processors.</li>
+<li><a href="https://github.com/5E-324/Imagina">Zhuoran — Imagina</a> — source code of linear approximation with stages and reference compression.</li>
+<li><a href="https://gmplib.org/manual/Multiplication-Algorithms">GMP manual — Multiplication Algorithms</a> — why long numbers are expensive, and which method is used when.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 21 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="computing.html" rel="prev"><small>Previous</small> Computing the pictures</a><a class="pagination-next" href="gallery.html" rel="next"><small>Next</small> Gallery &amp; interactive lab</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

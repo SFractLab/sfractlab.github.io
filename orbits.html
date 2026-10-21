@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A fractal picture compresses infinitely many journeys into one image. An orbit is one of those journeys: the successive positions of a starting point as the same rule is applied again and again.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Orbits &amp; stability — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/orbits.js" defer></script>
+</head>
+<body data-page="orbits">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html" aria-current="page"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 03</span> · Begin with the equation</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#iteration">One rule, a sequence of points</a></li><li><a href="#worked-orbits">Four exact critical orbits</a></li><li><a href="#period-preperiod">Period, preperiod, and merely approaching a cycle</a></li><li><a href="#multipliers">Why some cycles attract and others repel</a></li><li><a href="#convergence">How fast an orbit settles</a></li><li><a href="#critical-orbit">Why the orbit of zero is special</a></li><li><a href="#basins">Basins, boundaries, and different starting points</a></li><li><a href="#computer">Orbits on a computer</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>Orbits: what iteration actually does</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span><span class="requires">Builds on <a href="mathematics.html">Mathematical foundations</a></span></p>
+<p class="lead">A fractal picture compresses infinitely many journeys into one image. An orbit is one of those journeys: the successive positions of a starting point as the same rule is applied again and again.</p>
+<h2 id="iteration">One rule, a sequence of points</h2>
+<p>The <a href="mathematics.html#quadratic-rule">foundations chapter</a> set up the rule <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>. Fix the parameter <var>c</var>, choose a starting point <var>z</var><sub>0</sub>, and apply the rule again and again: the points <var>z</var><sub>0</sub>, <var>z</var><sub>1</sub>, <var>z</var><sub>2</sub>, … form the <strong>forward orbit</strong> of <var>z</var><sub>0</sub>. An orbit is a sequence of separate points. Lines drawn between them in a figure only guide the eye; an orbit may jump, circle, spiral or scatter.</p>
+<p>What an orbit does depends on both choices, <var>c</var> and <var>z</var><sub>0</sub>. Most of this chapter follows the orbit of the critical point 0, which decides membership in the <a href="mandelbrot.html">Mandelbrot set</a>. The last sections look at other starting points, the question behind the <a href="julia.html">Julia sets</a>.</p>
+<h2 id="worked-orbits">Four exact critical orbits</h2>
+<p>Starting from zero gives examples whose behavior can be proved with elementary arithmetic. They return throughout the atlas, so they are worth knowing by heart.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter</th>
+<th scope="col">Orbit of 0</th>
+<th scope="col">What it demonstrates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row"><var>c</var> = 0</th>
+<td>0 → 0 → 0 → …</td>
+<td>A fixed point: period 1.</td>
+</tr>
+<tr>
+<th scope="row"><var>c</var> = −1</th>
+<td>0 → −1 → 0 → −1 → …</td>
+<td>A cycle of exact period 2.</td>
+</tr>
+<tr>
+<th scope="row"><var>c</var> = −2</th>
+<td>0 → −2 → 2 → 2 → …</td>
+<td>Two steps before a fixed point: preperiod 2, eventual period 1.</td>
+</tr>
+<tr>
+<th scope="row"><var>c</var> = 1</th>
+<td>0 → 1 → 2 → 5 → 26 → 677 → …</td>
+<td>Escape to infinity; this parameter lies outside the Mandelbrot set.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure>
+<svg aria-labelledby="orbit-diagram-title orbit-diagram-desc" role="img" viewBox="0 0 900 390" xmlns="http://www.w3.org/2000/svg">
+<title id="orbit-diagram-title">Fixed, periodic, and preperiodic critical orbits</title>
+<desc id="orbit-diagram-desc">For c zero, zero maps to itself. For c minus one, zero and minus one exchange. For c minus two, zero maps to minus two, then to two, which maps to itself. Arrows show applications of z squared plus c, not spatial paths.</desc>
+<defs>
+<marker id="orbit-arrow" markerHeight="7" markerWidth="7" orient="auto-start-reverse" refX="9" refY="5" viewBox="0 0 10 10">
+<path d="M0 0 L10 5 L0 10Z" fill="#17657b"></path>
+</marker>
+</defs>
+<rect fill="#eef5f7" height="390" rx="18" width="900"></rect>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="18">
+<text font-weight="700" x="55" y="42">A fixed point · c = 0</text>
+<text font-weight="700" x="385" y="42">A two-cycle · c = −1</text>
+<text font-weight="700" x="55" y="234">A preperiodic orbit · c = −2</text>
+</g>
+<g fill="none" marker-end="url(#orbit-arrow)" stroke="#17657b" stroke-width="3">
+<path d="M153 110 C235 30 252 184 159 146"></path>
+<path d="M476 110 Q588 44 699 110"></path>
+<path d="M699 151 Q588 214 476 151"></path>
+<path d="M148 303 L332 303"></path>
+<path d="M408 303 L592 303"></path>
+<path d="M657 286 C755 206 794 355 660 321"></path>
+</g>
+<g fill="#fff" stroke="#17657b" stroke-width="3">
+<circle cx="133" cy="130" r="34"></circle>
+<circle cx="451" cy="130" r="34"></circle>
+<circle cx="724" cy="130" r="34"></circle>
+<circle cx="110" cy="303" r="34"></circle>
+<circle cx="370" cy="303" r="34"></circle>
+<circle cx="630" cy="303" r="34"></circle>
+</g>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="23" text-anchor="middle">
+<text x="133" y="139">0</text>
+<text x="451" y="139">0</text>
+<text x="724" y="139">−1</text>
+<text x="110" y="312">0</text>
+<text x="370" y="312">−2</text>
+<text x="630" y="312">2</text>
+</g>
+<g fill="#526a78" font-family="system-ui, sans-serif" font-size="15" text-anchor="middle">
+<text x="133" y="192">period 1</text>
+<text x="588" y="134">period 2</text>
+<text x="240" y="284">first step</text>
+<text x="500" y="284">second step</text>
+<text x="630" y="365">fixed from here onward</text>
+</g>
+</svg>
+<figcaption>Exact orbit diagrams. Circle positions are schematic; the numbers and transitions are exact.</figcaption>
+</figure>
+<figure class="widget" data-widget="orbits" data-example="basilica" hidden>
+<figcaption>Try it: choose a parameter <var>c</var> in the parameter plane by clicking, dragging or typing, and follow the orbit of the critical point 0 in the dynamical plane with “Step” or “Play”. Click the dynamical plane to start from another point <var>z</var><sub>0</sub>. The verdict uses the <a href="mathematics.html#escape-proof">escape test</a> from the foundations chapter.</figcaption>
+</figure>
+<h2 id="period-preperiod">Period, preperiod, and merely approaching a cycle</h2>
+<p>A point <var>a</var> is <strong>periodic</strong> if <var>f</var><sub>c</sub><sup>p</sup>(<var>a</var>) = <var>a</var> for some positive integer <var>p</var>. Its <strong>exact period</strong>, also called its least or primitive period, is the smallest such integer. A fixed point is therefore a period-one point. A period-two point also returns after four or six steps, but its exact period remains two.</p>
+<p>A <strong>cycle</strong> is the finite collection of points visited by a periodic orbit. Beginning at another point of the same cycle changes the starting label, not the cycle. If an orbit reaches a cycle after exactly <var>m</var> steps, where <var>m</var> is as small as possible, it has <strong>preperiod</strong> <var>m</var>. A strictly preperiodic point has <var>m</var> &gt; 0; periodic points themselves have preperiod zero.</p>
+<p>Approaching a cycle is different from landing on it. For <var>c</var> = −0.1, the critical orbit begins 0, −0.1, −0.09, −0.0919, … and tends to the fixed point (1 − √1.4)/2 ≈ −0.091608, but no entry ever equals that limit. Rounded decimal output can make such an orbit look exactly periodic.</p>
+<p>This distinction explains a common shorthand. A bulb of the Mandelbrot set called “period five” consists of parameters whose map has an attracting cycle of period five; the orbit of zero approaches that cycle. It repeats exactly after five steps only at one parameter of the bulb, its <a href="periodicity.html#centers">center</a>.</p>
+<h2 id="multipliers">Why some cycles attract and others repel</h2>
+<p>Suppose <var>a</var><sub>0</sub>, …, <var>a</var><sub>p−1</sub> form a cycle. One full return brings a nearby point back to the neighborhood of its starting cycle point. The derivative of that return map is the <strong>multiplier</strong>; by the chain rule it is the product of the derivatives 2<var>a</var><sub>j</sub> along the cycle:</p>
+<div class="equation">λ = (<var>f</var><sub>c</sub><sup>p</sup>)′(<var>a</var><sub>0</sub>) = ∏<sub>j=0</sub><sup>p−1</sup> 2<var>a</var><sub>j</sub>.</div>
+<p>For a small displacement ε, the return map has the expansion <var>f</var><sub>c</sub><sup>p</sup>(<var>a</var><sub>0</sub> + ε) = <var>a</var><sub>0</sub> + λε + a remainder O(|ε|<sup>2</sup>) containing quadratic and higher powers. Thus |λ| describes the first-order change in distance per complete return, while the argument of λ describes a rotation. For a fixed point, <var>p</var> = 1 and λ = 2<var>a</var><sub>0</sub>, as in the <a href="mathematics.html#derivatives">foundations chapter</a>.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Multiplier</th>
+<th scope="col">Name</th>
+<th scope="col">Local behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>λ = 0</td>
+<td>Superattracting</td>
+<td>The linear term vanishes; nearby errors shrink at a higher-order rate.</td>
+</tr>
+<tr>
+<td>0 &lt; |λ| &lt; 1</td>
+<td>Attracting</td>
+<td>Nearby points approach the cycle under repeated returns.</td>
+</tr>
+<tr>
+<td>|λ| &gt; 1</td>
+<td>Repelling</td>
+<td>Small displacements grow locally under returns.</td>
+</tr>
+<tr>
+<td>|λ| = 1</td>
+<td>Neutral or indifferent</td>
+<td>The linear term alone cannot decide the dynamics.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>At a neutral cycle, a root-of-unity multiplier leads to <strong>parabolic</strong> behavior, with attracting and repelling directions for a suitable iterate. An irrational-angle multiplier can instead give a linearizable <strong>Siegel</strong> cycle, around which nearby points rotate, or a non-linearizable <strong>Cremer</strong> cycle. The <a href="neutral.html">chapter on neutral cycles</a> explains the difference; <a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a> develop the local theory.</p>
+<p>For the critical two-cycle at <var>c</var> = −1, λ = (2·0)(2·−1) = 0, so it is superattracting. At <var>c</var> = −2, the fixed point 2 has λ = 4 and is repelling, yet the critical orbit lands on it exactly. Repulsion describes what nearby points do: an exceptional orbit can still arrive precisely at a repelling point.</p>
+<h2 id="convergence">How fast an orbit settles</h2>
+<p>The multiplier also tells how an orbit approaches an attracting cycle, and what it looks like on the way.</p>
+<ul>
+<li><strong>Attracting, 0 &lt; |λ| &lt; 1.</strong> Each return multiplies the distance to the cycle by about |λ| and turns it by the argument of λ. For <var>c</var> = −0.1 the fixed point has λ = 2<var>a</var> ≈ −0.1832. The orbit of 0 lands alternately on either side of it, and each error is about −0.18 times the previous one: −0.0084, then 0.0016, then −0.00029. After seven steps it is within 10<sup>−6</sup>. Kœnigs proved in 1884 that near such a point there is a change of coordinates in which the map is exactly multiplication by λ (<a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures, Theorem 6.1</a>). Orbits near an attracting point therefore look like geometric sequences: straight lines into the point when λ is positive, zigzags when it is negative, and spirals when it is not real.</li>
+<li><strong>Superattracting, λ = 0.</strong> The error is roughly squared at each return, so the number of correct digits about doubles. For <var>c</var> = 0, starting at 0.1 gives 0.01, 0.0001, 10<sup>−8</sup>. Böttcher’s theorem says that near such a point a change of coordinates turns the map into <var>w</var> ↦ <var>w</var><sup>2</sup> exactly (Theorem 6.7 in the same lectures). The same theorem, applied at infinity, gives the coordinates used for <a href="rays.html#bottcher">external rays</a>.</li>
+<li><strong>Neutral, |λ| = 1.</strong> Convergence, when it happens, is slow. At the cusp <var>c</var> = 1/4 the critical orbit approaches the fixed point 1/2 with an error of about 1⁠/⁠<var>n</var> after <var>n</var> steps: the <a href="special-points.html#parabolic">special-points chapter</a> shows that the error obeys <var>e</var><sub>n+1</sub> = <var>e</var><sub>n</sub> − <var>e</var><sub>n</sub><sup>2</sup>, so 1⁠/⁠<var>e</var><sub>n</sub> grows by about 1 per step.</li>
+<li><strong>Repelling, |λ| &gt; 1.</strong> Small errors grow by about |λ| per return. Near the fixed point 2 at <var>c</var> = −2, an error of 10<sup>−16</sup>, the size of a rounding error, is multiplied by about 4 at each step and reaches size 1 after about 27 steps.</li>
+</ul>
+<h2 id="critical-orbit">Why the orbit of zero is special</h2>
+<p>The orbit of the <a href="mathematics.html#critical-point">critical point</a> 0, namely 0, <var>c</var>, <var>c</var><sup>2</sup> + <var>c</var>, …, is decisive for two reasons. First, the filled Julia set is connected exactly when this orbit remains bounded. Second, a quadratic polynomial has at most one finite cycle that is not repelling, and when that cycle is attracting or parabolic, the critical orbit is attracted to it. In particular there is at most one finite attracting cycle, while the same map has infinitely many repelling cycles. <a href="https://math.bu.edu/DYSYS/FRACGEOM2/node2.html">Devaney’s explanation of the critical orbit</a> states the connectedness criterion and the attracting case. <a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a> prove that every attracting or parabolic cycle attracts a critical point (Lemmas 10.2–10.3), and <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Lyubich’s book</a> that there is at most one non-repelling cycle (Theorem 28.13).</p>
+<p>These theorems are the bridge between the two kinds of picture. To find the attracting cycle of a map, if it has one, follow the orbit of 0. Testing that one orbit across the parameter plane organizes entire Julia sets into one Mandelbrot map. Other starting points of the same map can still behave differently, as the next section shows.</p>
+<h2 id="basins">Basins, boundaries, and different starting points</h2>
+<p>The <strong>basin of attraction</strong> of a cycle consists of starting points whose orbits approach that cycle. The <strong>immediate basin</strong> consists of the basin components containing its cycle points; other pieces of the basin feed into these after several iterations. The <strong>basin of infinity</strong> consists of starting points whose orbits escape.</p>
+<p>The map <var>f</var><sub>0</sub>(<var>z</var>) = <var>z</var><sup>2</sup> is an exact laboratory, since <var>z</var><sub>n</sub> = <var>z</var><sub>0</sub><sup>2<sup>n</sup></sup>. Starting at 1/2 gives 1/2, 1/4, 1/16, 1/256, …, attracted to the fixed point 0. Starting at 2 gives 2, 4, 16, 256, …, which escapes. Starting at <var>i</var> gives <var>i</var>, −1, 1, 1, …, which lands on the repelling fixed point 1. A point on the unit circle at an irrational fraction of a full turn never becomes periodic, although it stays on the circle forever. The basin of 0 is the open unit disk, the basin of infinity is the outside of the circle, and the circle itself separates them: it is the Julia set of this map, as the <a href="julia.html#filled-versus-boundary">Julia chapter</a> explains.</p>
+<h2 id="computer">Orbits on a computer</h2>
+<p>An orbit computed exactly, or with its rounding errors bounded, can prove escape: once a single iterate is farther from 0 than max(2, |<var>c</var>|), the orbit escapes, by the argument in the <a href="mathematics.html#escape-proof">foundations chapter</a>. The reverse is not true. An orbit that is still inside the radius after a million steps may escape later, especially near a parabolic parameter, where orbits linger for a long time.</p>
+<p>Rounding is the second limitation. A computer stores about 16 significant digits, and every step rounds. Near repelling cycles, as seen above, such errors grow geometrically, so after a few dozen steps a computed orbit can follow a different path from the true one. The chapter on chaos shows the same effect for <var>x</var> ↦ <var>x</var><sup>2</sup> − 2, where, measured as an angle, <a href="chaos.html#sensitive-dependence">errors double at each step</a>. Exact equations, such as the ones in the table above, or rigorous error bounds are needed to certify delicate claims; a computed orbit is the way to discover them. The chapter on <a href="computing.html#trust">computing the pictures</a> shows how bounded errors turn pictures into proofs.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>An orbit is the sequence of points <var>z</var><sub>0</sub>, <var>z</var><sub>1</sub>, <var>z</var><sub>2</sub>, … obtained by applying <var>f</var><sub>c</sub> again and again.</li>
+<li>A periodic point returns to itself; its exact period is the smallest number of steps. A preperiodic point lands on a cycle after some steps. Approaching a cycle is different from landing on it.</li>
+<li>The multiplier of a cycle, the product of the numbers 2<var>a</var><sub>j</sub> along it, classifies the cycle as superattracting, attracting, neutral or repelling.</li>
+<li>Near an attracting cycle, errors shrink by a fixed factor per return; near a superattracting one, the number of correct digits roughly doubles; near a repelling one, errors grow by a fixed factor.</li>
+<li>A quadratic polynomial has at most one non-repelling cycle, and the orbit of 0 finds it when it is attracting or parabolic. That is why one orbit can organize the whole parameter plane.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>Find the exact period and the preperiod of the orbit of 0 for <var>c</var> = −2 and for <var>c</var> = <var>i</var>.</summary><div class="answer"><p>For <var>c</var> = −2 the orbit is 0, −2, 2, 2, …: it reaches the fixed point 2 after two steps, so the preperiod is 2 and the period is 1. For <var>c</var> = <var>i</var> it is 0, <var>i</var>, −1 + <var>i</var>, −<var>i</var>, −1 + <var>i</var>, …: it reaches the cycle {−1 + <var>i</var>, −<var>i</var>} after two steps, so the preperiod is 2 and the period is 2.</p></div></details></li>
+<li><details><summary>For <var>c</var> = −1.1 the points <var>a</var> ≈ 0.0916 and <var>b</var> ≈ −1.0916 form a cycle of period 2. Is it attracting? Check that their product is <var>c</var> + 1.</summary><div class="answer"><p>The multiplier is (2<var>a</var>)(2<var>b</var>) = 4<var>ab</var>. The product is <var>ab</var> ≈ −0.1 = <var>c</var> + 1, so λ ≈ −0.4. Since |λ| &lt; 1 the cycle attracts, and the orbit of 0, which begins 0, −1.1, 0.11, −1.0879, 0.0835, …, approaches it. The <a href="periodicity.html#period-two">periodicity chapter</a> shows that the product is exactly <var>c</var> + 1 for every <var>c</var>.</p></div></details></li>
+<li><details><summary>For <var>c</var> = −0.1 the critical orbit approaches a fixed point with multiplier λ ≈ −0.183, starting at distance about 0.09. Roughly how many steps does it take to come within 10<sup>−6</sup>?</summary><div class="answer"><p>Each step multiplies the error by about 0.183, so we need 0.09 · 0.183<sup><var>n</var></sup> &lt; 10<sup>−6</sup>, that is <var>n</var> &gt; log(1.1 · 10<sup>−5</sup>)/log(0.183) ≈ 6.7. The actual errors, computed in the section above, are about 1.8 · 10<sup>−6</sup> after 6 steps and 3.3 · 10<sup>−7</sup> after 7 (the first step shrinks the error more than the estimate assumes): seven steps.</p></div></details></li>
+<li><details><summary>Under <var>z</var> ↦ <var>z</var><sup>2</sup>, start on the unit circle at one third of a full turn. What is the orbit, and is it attracting or repelling?</summary><div class="answer"><p>Squaring doubles the angle: 1/3 of a turn goes to 2/3, and 2/3 goes to 4/3, which is 1/3 again. So the orbit is a cycle of period 2. Its multiplier is (2<var>z</var><sub>1</sub>)(2<var>z</var><sub>2</sub>) = 4<var>z</var><sub>1</sub><var>z</var><sub>2</sub>, and <var>z</var><sub>1</sub><var>z</var><sub>2</sub> is the point at 1/3 + 2/3 = 1 turn, which is 1. So λ = 4: the cycle repels, even though its points stay on the circle forever.</p></div></details></li>
+<li><details><summary>Why can <var>z</var><sup>2</sup> + <var>c</var> never have two different attracting cycles?</summary><div class="answer"><p>Every attracting cycle attracts the orbit of the critical point 0. A single orbit cannot converge to two different cycles, so there is at most one.</p></div></details></li>
+<li><details><summary>A computer reports that the orbit of 0 for some <var>c</var> is still within distance 2 of the origin after 10,000 steps. What can you conclude?</summary><div class="answer"><p>Nothing definite. The orbit may be bounded, in which case <var>c</var> is in the Mandelbrot set, or it may escape later, for example near a parabolic parameter. Rounding errors may also have changed its course. Only a proof, such as finding the attracting cycle exactly, settles the question.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://math.bu.edu/DYSYS/FRACGEOM2/node2.html">Robert Devaney — Role of the Critical Orbit</a>: the connectedness criterion and attracting-cycle theorem.</li>
+<li><a href="https://arxiv.org/abs/math/9201272">John Milnor — Dynamics in One Complex Variable, introductory lectures</a>: attracting, repelling, parabolic, and irrationally indifferent dynamics; the theorems of Kœnigs (6.1) and Böttcher (6.7).</li>
+<li><a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Mikhail Lyubich — Conformal Geometry and Dynamics of Quadratic Polynomials</a>: the theorem that there is at most one non-repelling cycle, Theorem 28.13 (book draft; a 35 MB PDF).</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="mathematics.html" rel="prev"><small>Previous</small> Mathematical foundations</a><a class="pagination-next" href="julia.html" rel="next"><small>Next</small> Julia sets</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

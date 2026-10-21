@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A tiny Mandelbrot-shaped island is more than a visual coincidence. It is the parameter portrait of a slower, local version of the same quadratic dynamics. Its surrounding filaments tell the story of where that copy lives.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Minibrots &amp; self-similarity — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+</head>
+<body data-page="minibrots">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html" aria-current="page"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 10</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#what-is-a-minibrot">What is a minibrot?</a></li><li><a href="#a-period-three-example">A concrete example: the real period-three copy</a></li><li><a href="#why-the-quadratic-shape-returns">Why a quadratic map reappears</a></li><li><a href="#renormalization-and-straightening">Renormalization and straightening</a></li><li><a href="#primitive-and-satellite">Primitive and satellite copies</a></li><li><a href="#tuning-and-periods">Tuning: inserting one pattern into another</a></li><li><a href="#decorations">Decorations, antennas and apparent islands</a></li><li><a href="#self-similarity-and-universality">Self-similarity and universality</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<header>
+<p class="eyebrow">Structure within structure</p>
+<h1>Minibrots, tuning &amp; renormalization</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="periodicity.html">Cardioids, bulbs &amp; periods</a> and <a href="special-points.html">Special points</a></span></p>
+<p class="lead">A tiny Mandelbrot-shaped island is more than a visual coincidence. It is the parameter portrait of a slower, local version of the same quadratic dynamics. Its surrounding filaments tell the story of where that copy lives.</p>
+</header>
+<figure>
+<a href="assets/images/minibrot-triptych.png"><img alt="Three increasingly close views of the real antenna of the Mandelbrot set, revealing a small Mandelbrot copy around the period-three center near minus 1.75488." class="fractal-image" loading="lazy" src="assets/images/minibrot-triptych.png" width="1944" height="606"></a>
+<figcaption>From the full set to the real period-three copy. The familiar outline reappears, but its proportions and surrounding decorations differ. The colored exterior records numerical escape behavior; it is not part of the set. <a href="gallery.html#zoom=-1.765,0,0.07">Zoom into the copy yourself.</a> <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<h2 id="what-is-a-minibrot">What is a minibrot?</h2>
+<p>A <strong>minibrot</strong>, also called a baby Mandelbrot set or little Mandelbrot copy, is a subset of the Mandelbrot set that reproduces its organization of components and boundary points through a continuous, reversible correspondence. Mathematicians call that correspondence a <em>homeomorphism</em>. This is a claim about topology: which pieces connect, and how points fit together. It does not require identical angles, lengths, or curvature.</p>
+<p>A round bulb by itself is not a whole minibrot. A complete copy includes a distinguished main component, its attached components of many periods, and a corresponding collection of boundary points. A screenshot may expose only a few of these features. The straightening construction gives a precise meaning to the copy even when its finer details are below the image resolution. <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Lyubich’s treatment of little Mandelbrot copies</a> (§§40–43 of his book) develops this correspondence.</p>
+<p>To read a zoom, first locate the largest recognizable component in the small structure. Look for its attachment point and the succession of smaller bulbs. Then separate that internal organization from the extra strands around it. Those strands belong to the larger Mandelbrot set in which the copy is embedded. A minibrot has a local identity and a surrounding context.</p>
+<h2 id="a-period-three-example">A concrete example: the real period-three copy</h2>
+<p>The conspicuous miniature on the left antenna has a main component of period three. Its center is approximately <var>c</var> = −1.754877666. A center is a parameter at which the critical point 0 lies on the attracting cycle itself. In this case the three-step calculation is</p>
+<div class="equation"><var>0</var> → <var>c</var> → <var>c</var><sup>2</sup> + <var>c</var> → (<var>c</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var> = 0.</div>
+<p>The center is the real root of <var>c</var><sup>3</sup> + 2<var>c</var><sup>2</sup> + <var>c</var> + 1 = 0, as the periodicity chapter derives under <a href="periodicity.html#centers">centers</a>: an exact target for exploration, independent of colors or visual resemblance.</p>
+<p>Near that center, the critical orbit returns near its starting position every three steps. A nearby initial point can travel through three separated neighborhoods before coming back close to where it began. Observe only every third iterate, and the motion has a simpler description. The small copy’s main component represents a fixed-point attractor for this three-step observation, even though the original map has a three-cycle.</p>
+<figure>
+<svg aria-labelledby="return-title return-desc" role="img" viewBox="0 0 900 310" xmlns="http://www.w3.org/2000/svg">
+<title id="return-title">A return map groups three iterations into one</title>
+<desc id="return-desc">Three small neighborhoods around a period-three orbit are joined by arrows. One application of f moves to the next neighborhood. The three-step return map starts and ends in the first neighborhood.</desc>
+<defs>
+<marker id="return-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+<path d="M0 0 L8 4 L0 8Z" fill="#65d7d0"></path>
+</marker>
+</defs>
+<rect fill="#101d30" height="310" rx="18" width="900"></rect>
+<g fill="#19364b" stroke="#65d7d0" stroke-width="2">
+<ellipse cx="155" cy="155" rx="95" ry="68"></ellipse>
+<ellipse cx="450" cy="155" rx="95" ry="68"></ellipse>
+<ellipse cx="745" cy="155" rx="95" ry="68"></ellipse>
+</g>
+<g fill="#f9c579">
+<circle cx="155" cy="155" r="7"></circle>
+<circle cx="450" cy="155" r="7"></circle>
+<circle cx="745" cy="155" r="7"></circle>
+</g>
+<g fill="none" marker-end="url(#return-arrow)" stroke="#65d7d0" stroke-width="3">
+<path d="M254 154 H345"></path>
+<path d="M549 154 H640"></path>
+<path d="M754 225 C730 291 177 291 154 225"></path>
+</g>
+<g fill="#edf5ff" font-family="system-ui,sans-serif" text-anchor="middle">
+<text font-size="20" x="155" y="128">near 0</text>
+<text font-size="20" x="450" y="128">near c</text>
+<text font-size="20" x="745" y="128">near c² + c</text>
+<text font-size="20" x="300" y="138">f</text>
+<text font-size="20" x="595" y="138">f</text>
+<text font-size="20" x="450" y="292">f</text>
+<text font-size="24" x="450" y="40">g = f³: one return, three original steps</text>
+<text font-size="16" x="450" y="69">Schematic neighborhoods in the dynamical plane</text>
+</g>
+</svg>
+<figcaption>Renormalization begins by changing the clock: one iteration of the return map represents an entire trip around the original cycle.</figcaption>
+</figure>
+<h2 id="why-the-quadratic-shape-returns">Why a quadratic map reappears</h2>
+<p>Write <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var> and let <var>g</var><sub>c</sub> = <var>f</var><sub>c</sub><sup>3</sup>. Here the superscript 3 means composition three times. Direct expansion near <var>z</var> = 0 gives</p>
+<div class="equation"><var>g</var><sub>c</sub>(<var>z</var>) = <var>b</var>(<var>c</var>) + <var>A</var>(<var>c</var>)<var>z</var><sup>2</sup> + terms in <var>z</var><sup>4</sup>, <var>z</var><sup>6</sup>, and <var>z</var><sup>8</sup>,<br><var>b</var>(<var>c</var>) = (<var>c</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var>,   <var>A</var>(<var>c</var>) = 4<var>c</var>(<var>c</var><sup>2</sup> + <var>c</var>).</div>
+<p>At the center, <var>b</var> = 0 and <var>A</var> ≠ 0. Set <var>w</var> = <var>A</var><var>z</var>. In the new coordinate, the leading terms of the return map become <var>w</var> ↦ <var>w</var><sup>2</sup> + <var>A</var><var>b</var>. Small changes of the original parameter therefore produce a local quadratic family again. The neglected higher powers, together with the nonlinear way <var>A</var> and <var>b</var> depend on <var>c</var>, are why the copy is distorted rather than an exactly scaled replica.</p>
+<p>There is also a distinction between global and local degree. The full three-step polynomial has degree eight. Restricted to an appropriate neighborhood of its critical return, it can act as a two-to-one map onto a larger neighborhood. This restricted behavior, rather than the degree of the full polynomial, is what the next construction captures.</p>
+<h2 id="renormalization-and-straightening">Renormalization and straightening</h2>
+<p>A <strong>quadratic-like map</strong> is a holomorphic, proper degree-two map <var>g</var>: <var>U</var> → <var>V</var>, where <var>U</var> and <var>V</var> are topological disks and the closure of <var>U</var> is compact and contained in <var>V</var>. “Proper” ensures that points cannot approach the boundary of the domain while their images remain in a compact part of the target. Its filled set consists of points whose repeated returns remain in <var>U</var>.</p>
+<p><strong>Renormalization</strong> selects such a restriction of an iterate <var>f</var><sup>p</sup>. The <strong>Douady–Hubbard straightening theorem</strong> associates it with an actual quadratic polynomial; when the filled set is connected, the normalized polynomial <var>w</var><sup>2</sup> + <var>c</var>′ is unique. The equivalence preserves the local dynamics while allowing controlled geometric deformation. Applying this to suitable parameter families explains the little Mandelbrot copies. <a href="https://www.numdam.org/item/10.24033/asens.1491.pdf">Douady and Hubbard’s original paper</a> provides the theorem and construction.</p>
+<p>Think of two operations: first wait for a return, then use coordinates appropriate to the small neighborhood. Repeating those operations reveals nested dynamics. The original orbit can have complicated excursions between returns while its local return behavior belongs to the familiar quadratic family. This is why similar organizational patterns can recur at very different locations and scales. Renormalization is also the route to the main open question: the local connectivity of <var>M</var> can fail only at parameters that are renormalizable infinitely often (<a href="open-questions.html#renormalization">open questions</a>).</p>
+<h2 id="primitive-and-satellite">Primitive and satellite copies</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Type</th>
+<th scope="col">How its main component is situated</th>
+<th scope="col">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Primitive</th>
+<td>Its root is not shared with a hyperbolic component of smaller period. The main component always has a cusp at its root, though it may be too small to see.</td>
+<td>The real period-three copy near −1.75488.</td>
+</tr>
+<tr>
+<th scope="row">Satellite</th>
+<td>Its main component meets a lower-period component at the satellite component’s root. It arises through a rational bifurcation.</td>
+<td>The copy whose main component is the period-two disk centered at −1.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This distinction also appears in the dynamics: the little filled Julia sets of a primitive renormalization are disjoint, whereas those of a satellite renormalization touch one another at periodic points. For a copy attached directly to the main cardioid they all share one point, the α fixed point; for a copy of period <var>pq</var> attached to a component of period <var>p</var>, they meet <var>q</var> at a time at the <var>p</var> points of a cycle. At a satellite attachment with internal rotation number <var>r</var>/<var>q</var> in lowest terms, a parent component of period <var>p</var> gives rise to a component of period <var>pq</var>. The whole attached limb contains much more than that one component. <a href="https://people.math.harvard.edu/~ctm/papers/home/text/papers/real/book.pdf">McMullen’s renormalization discussion</a> (§§7.2–7.4) illustrates the distinction with examples of both kinds.</p>
+<p>A technical convention at the boundary: the renormalizable parameters of a satellite copy correspond to the Mandelbrot set without its cusp 1/4, so the copy’s root is missing. Usually the root is added to speak of the closed little Mandelbrot copy. <a href="https://doi.org/10.4007/annals.2022.195.1.1">Avila and Lyubich describe this convention in their discussion of renormalization.</a></p>
+<p>Visual shape is a useful clue, not a definition. A satellite copy’s distinguished component may look disk-like even though it corresponds to the main cardioid of the large set. Topological correspondence does not preserve a cusp’s geometry. For the exact main cardioid and the meaning of internal angles, see <a href="periodicity.html">Cardioids, bulbs &amp; periods</a>.</p>
+<h2 id="tuning-and-periods">Tuning: inserting one pattern into another</h2>
+<p><strong>Tuning</strong> describes the embedding of the entire Mandelbrot set into a chosen little copy. If that copy’s main component has period <var>p</var>, a period-<var>q</var> component in the original set corresponds to a period-<var>pq</var> component in the copy. Its local return orbit makes <var>q</var> returns, each requiring <var>p</var> original iterations. Tuning also encodes this substitution in the binary descriptions of external angles. <a href="https://arxiv.org/abs/math/0210382">Zakeri’s background section</a> states the period rule and angle substitution.</p>
+<p>For the real period-three copy, the recognizable main component has period 3; the analogue of the large period-two bulb has period 6; the period-four descendant has period 12. A small structure shaped like the main cardioid therefore need not represent period one. “Main” is relative to the copy being viewed.</p>
+<p>Nested tuning repeats this bookkeeping. A period-three copy inside a period-five copy has a distinguished component of period 15. The product records the number of original steps per return at that level; it says nothing about the size of the copy.</p>
+<h3>Tuning on external angles</h3>
+<p>Tuning is also arithmetic on <a href="rays.html#landing">external angles</a>. Let a component have the root angles .⁠(<var>u</var><sub>0</sub>) &lt; .⁠(<var>u</var><sub>1</sub>), written in binary with repeating blocks <var>u</var><sub>0</sub> and <var>u</var><sub>1</sub> whose length <var>p</var> is the period. In the binary expansion of any angle <var>t</var>, replace each digit 0 by the block <var>u</var><sub>0</sub> and each 1 by <var>u</var><sub>1</sub>. If the ray at angle <var>t</var> lands at a point of the Mandelbrot set, the ray at the new angle lands at the corresponding point of the copy (<a href="https://arxiv.org/abs/math/0210382">Zakeri</a>, §2; the rule is Douady’s).</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Copy grown from</th>
+<th scope="col">Blocks <var>u</var><sub>0</sub>, <var>u</var><sub>1</sub></th>
+<th scope="col">Angle <var>t</var></th>
+<th scope="col">Tuned angle</th>
+<th scope="col">What it is in the copy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Period-two disk (basilica)</td>
+<td>01, 10</td>
+<td>1/3</td>
+<td>2/5</td>
+<td>Root of the period-four bulb, <var>c</var>&nbsp;=&nbsp;−5/4</td>
+</tr>
+<tr>
+<td>Period-two disk</td>
+<td>01, 10</td>
+<td>1/7, 2/7</td>
+<td>22/63, 25/63</td>
+<td>Root of the upper period-six bulb on the disk, <var>c</var>&nbsp;=&nbsp;−9/8 + (√3/8)<var>i</var></td>
+</tr>
+<tr>
+<td>Real period-three copy (airplane)</td>
+<td>011, 100</td>
+<td>1/3, 2/3</td>
+<td>4/9, 5/9</td>
+<td>Root of its period-six bulb</td>
+</tr>
+<tr>
+<td>Rabbit component</td>
+<td>001, 010</td>
+<td>1/3, 2/3</td>
+<td>10/63, 17/63</td>
+<td>Root of its period-six bulb</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example, the period-two disk has root angles 1/3&nbsp;=&nbsp;.⁠(01) and 2/3&nbsp;=&nbsp;.⁠(10). The angle 1/3&nbsp;=&nbsp;.⁠(01) becomes .⁠(0110), which is 6/15&nbsp;=&nbsp;2/5. The root angles of the airplane, 3/7&nbsp;=&nbsp;.⁠(011) and 4/7&nbsp;=&nbsp;.⁠(100), turn 1/3 into .⁠(011100)&nbsp;=&nbsp;28/63&nbsp;=&nbsp;4/9. Tuning by the period-two disk again and again climbs the period-doubling cascade: 1/3, 2/5, 7/17, 106/257, 27031/65537, …, the angles of the roots of the components of period 2, 4, 8, 16, 32. They converge to</p>
+<div class="equation">τ = .0110 1001 1001 0110 … (binary) ≈ 0.412454,</div>
+<p>whose digits form the Thue–Morse sequence, since the substitution 0 → 01, 1 → 10 is exactly the rule that generates it. The rays at angles τ and 1 − τ are the only rays whose impressions contain the Feigenbaum point at the end of the cascade (<a href="https://arxiv.org/abs/math/0210382">Zakeri</a>, Theorem 3.3 and Lemma 3.4). The impression of a ray is the set of boundary points approached from outside by points whose angle tends to the ray’s angle and whose potential tends to zero.</p>
+<h2 id="decorations">Decorations, antennas and apparent islands</h2>
+<p>The connected pieces left when a little copy is removed from the full Mandelbrot set are its <strong>decorations</strong>. A theorem says that for any fixed positive size, only finitely many of these pieces have diameter at least that size. This controls how decorations accumulate around a copy; it does not say that every visible strand is equally small or regularly spaced. <a href="https://arxiv.org/abs/1004.0633">Dzmitry Dudko’s decoration theorem</a> makes the statement precise.</p>
+<p>In an image, the surroundings may look like branching trees, spirals, thin antennas, or strings of smaller copies. “Antenna” and “filament” are useful visual terms rather than one universal classification of local geometry. Narrow connections can disappear between pixel centers. A miniature that seems isolated in a raster image is consequently not evidence for a disconnected Mandelbrot set.</p>
+<p>When an apparent gap matters, increase both the resolution and the iteration limit, and remember that a dark pixel only means “did not escape within this computation”; the gallery’s <a href="gallery.html#image-method">image-method notes</a> say more.</p>
+<h2 id="self-similarity-and-universality">Self-similarity and universality</h2>
+<p>Three different ideas often share the phrase “self-similar.” A little copy can reproduce the set’s <em>topology</em>. A sequence of magnified neighborhoods can approach a limiting shape, which is <em>asymptotic similarity</em>. An exact geometric similarity would instead require the same picture after a single fixed scale, rotation, and translation. These claims are not interchangeable.</p>
+<p>Near a <a href="special-points.html#similarity-and-cautions">Misiurewicz parameter</a>, repeated magnification by the multiplier of its repelling cycle reproduces the picture of the Mandelbrot set more and more exactly, and it looks like the Julia set there (<a href="https://math.univ-angers.fr/~tanlei/papers/similarityMJ.pdf">Tan Lei’s similarity theorem</a>). This is asymptotic similarity: finite zooms are only approximately alike.</p>
+<p>Another form of repetition is <strong>Feigenbaum universality</strong>. Along the real period-doubling cascade, the distances between the centers of successive components, of periods 1, 2, 4, 8, …, shrink by ratios that approach δ ≈ 4.669201609:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Period</th>
+<th scope="col">Center</th>
+<th scope="col">Ratio of the last two gaps</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>0</td><td></td></tr>
+<tr><td>2</td><td>−1</td><td></td></tr>
+<tr><td>4</td><td>−1.3107026</td><td>3.2185</td></tr>
+<tr><td>8</td><td>−1.3815475</td><td>4.3857</td></tr>
+<tr><td>16</td><td>−1.3969454</td><td>4.6009</td></tr>
+<tr><td>32</td><td>−1.4002531</td><td>4.6551</td></tr>
+<tr><td>64</td><td>−1.4009620</td><td>4.6661</td></tr>
+<tr><td>128</td><td>−1.4011138</td><td>4.6685</td></tr>
+<tr><td>256</td><td>−1.4011463</td><td>4.6691</td></tr>
+</tbody>
+</table>
+</div>
+<p>Each center is a root of a polynomial equation, found here with Newton’s method; the first ratio, 3.2185, compares the gap from 0 to −1 with the gap from −1 to −1.3107. Other families of maps with a single quadratic maximum, such as <var>x</var> ↦ <var>r</var> sin(π<var>x</var>), show the same limiting ratio; this is what “universal” means here, and the ratio, not the parameter’s coordinate, is the shared quantity. The scaling comes from renormalization: near the critical point, the second iterate of the map at one stage of the cascade, rescaled, behaves like the map at the stage before. <a href="https://doi.org/10.1007/BF01020332">Feigenbaum’s original paper</a> explains the mechanism, and Lyubich’s <a href="https://arxiv.org/abs/math/9903201">work on Feigenbaum–Coullet–Tresser universality</a> proves it.</p>
+<p>A second theorem also goes by the name of universality. McMullen proved that copies of the Mandelbrot set, distorted only slightly, appear in the parameter space of every family of rational maps that depends holomorphically on its parameters, wherever the dynamics changes (in special families the copies are of a higher-degree Multibrot set instead); <a href="beyond.html#universality">Beyond <var>z</var><sup>2</sup> + <var>c</var></a> states it precisely. Its mechanism is the renormalization and straightening of the <a href="#renormalization-and-straightening">earlier section</a>, not the scaling of period doubling.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>A minibrot is a small topological copy of the Mandelbrot set, the parameter picture of a return map that behaves like a quadratic polynomial.</li>
+<li>Renormalization looks at every <var>p</var>-th iterate near the critical point; straightening identifies that return map with some <var>z</var><sup>2</sup> + <var>c</var>′.</li>
+<li>Copies are primitive, with a cusp at the root, or satellite, attached to a lower-period component; most are primitive.</li>
+<li>Tuning multiplies periods and substitutes binary blocks in external angles; repeating it along the period-doubling cascade leads to the Thue–Morse angle of the Feigenbaum point.</li>
+<li>Self-similarity comes in several kinds: topological copies, asymptotic similarity at Misiurewicz points, and the universal scaling ratio δ of period doubling.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>In the real period-three copy, what is the period of the component that plays the role of the period-two disk? And of the period-four bulb?</summary><div class="answer"><p>Periods multiply: 3 × 2 = 6 and 3 × 4 = 12.</p></div></details></li>
+<li><details><summary>Tune the angle 2/3 = .⁠(10) by the period-two disk, whose blocks are 01 and 10. Where does the new ray land?</summary><div class="answer"><p>Replacing 1 by 10 and 0 by 01 gives .⁠(1001) = 9/15 = 3/5. The rays at 2/5 and 3/5 land together at the root of the period-four bulb, −5/4, the image of −3/4 in the copy grown from the disk.</p></div></details></li>
+<li><details><summary>From the table of centers, estimate the next ratio after 4.6691. What number do the ratios approach?</summary><div class="answer"><p>They approach δ = 4.6692016…, so the next ratio is about 4.6692. The approach is fast: each step brings the ratio about δ times closer to its limit.</p></div></details></li>
+<li><details><summary>Is a primitive copy attached to a component of smaller period?</summary><div class="answer"><p>No. Its main component meets no component of smaller period at its root, which is a cusp. Satellite copies are the ones attached to a parent component, like the period-two disk on the main cardioid.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://www.numdam.org/item/10.24033/asens.1491.pdf">Adrien Douady and John Hubbard — On the dynamics of polynomial-like mappings</a> (1985) — the original straightening and small-copy construction.</li>
+<li><a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Mikhail Lyubich — Conformal Geometry and Dynamics of Quadratic Polynomials</a> — detailed theory of renormalization and little copies.</li>
+<li><a href="https://arxiv.org/abs/math/0210382">Saeed Zakeri — External rays and the real slice of the Mandelbrot set</a> — tuning and periods, with background in section 2.</li>
+<li><a href="https://arxiv.org/abs/1004.0633">Dzmitry Dudko — The Decoration Theorem for Mandelbrot and Multibrot Sets</a> — the structure of attached decorations.</li>
+<li><a href="https://arxiv.org/abs/math/9903201">Mikhail Lyubich — Feigenbaum–Coullet–Tresser universality and Milnor’s Hairiness Conjecture</a> — rigorous renormalization and universality theory.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="special-points.html" rel="prev"><small>Previous</small> Special points</a><a class="pagination-next" href="neutral.html" rel="next"><small>Next</small> Neutral cycles</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

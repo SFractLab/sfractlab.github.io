@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A complex number is a point, a quadratic function is a rule for moving it, and an orbit records repeated moves. From these three ingredients come both the Mandelbrot set and the Julia sets.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Mathematical foundations — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/complex-arithmetic.js" defer></script>
+</head>
+<body data-page="mathematics">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html" aria-current="page"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 02</span> · Begin with the equation</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#complex-plane">Numbers with two coordinates</a></li><li><a href="#quadratic-rule">One rule, repeated</a></li><li><a href="#two-planes">Two planes, two different questions</a></li><li><a href="#critical-point">Why start the Mandelbrot orbit at zero?</a></li><li><a href="#escape-proof">Why an escape test works</a></li><li><a href="#derivatives">Derivatives measure local stretching</a></li><li><a href="#conjugacy">A change of coordinates can reveal the same dynamics</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>The mathematics of iteration</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span></p>
+<p class="lead">A complex number is a point, a quadratic function is a rule for moving it, and an orbit records repeated moves. From these three ingredients come both the Mandelbrot set and the Julia sets.</p>
+<h2 id="complex-plane">Numbers with two coordinates</h2>
+<p>A <strong>complex number</strong> has the form <var>z</var> = <var>x</var> + <var>y</var><var>i</var>, where <var>x</var> and <var>y</var> are real numbers and <var>i</var><sup>2</sup> = −1. Draw it at the point (<var>x</var>, <var>y</var>): the horizontal direction is the real axis, the vertical direction the imaginary axis. Complex numbers therefore give a convenient arithmetic for a two-dimensional plane. There is nothing approximate about the imaginary coordinate; the name is historical.</p>
+<p>The <strong>modulus</strong> |<var>z</var>| is distance from the origin, and the <strong>argument</strong> is the angle measured counterclockwise from the positive real axis. The <strong>complex conjugate</strong> conj(<var>z</var>) = <var>x</var> − <var>y</var><var>i</var> is its reflection across the real axis.</p>
+<div class="equation">|<var>x</var> + <var>y</var><var>i</var>| = √(<var>x</var><sup>2</sup> + <var>y</var><sup>2</sup>)   ·   <var>z</var> = <var>r</var>(cos <var>θ</var> + <var>i</var> sin <var>θ</var>) = <var>r</var>e<sup><var>iθ</var></sup></div>
+<p>Adding complex numbers adds their coordinates. Multiplying them multiplies their moduli and adds their arguments. Squaring therefore changes radius <var>r</var> into <var>r</var><sup>2</sup> and angle <var>θ</var> into 2<var>θ</var>. Points inside the unit circle move inward under squaring, while points outside move outward. Adding a constant then shifts the result. The competition between this squaring and shifting drives the geometry.</p>
+<figure>
+<svg aria-labelledby="square-title square-desc" role="img" viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+<title id="square-title">Squaring doubles an angle and squares a radius</title>
+<desc id="square-desc">A point at radius r and angle theta is squared to a point at radius r squared and angle two theta. Adding c then translates this point.</desc>
+<defs>
+<marker id="math-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+<path d="M0 0 L8 4 L0 8Z" fill="#537c92"></path>
+</marker>
+</defs>
+<rect fill="#0d192b" height="300" rx="16" width="900"></rect>
+<g stroke="#537c92" stroke-width="1.5">
+<path d="M45 205 H240 M110 250 V40"></path>
+<path d="M335 205 H540 M410 250 V40"></path>
+<path d="M635 205 H865 M710 250 V40"></path>
+</g>
+<g fill="none" stroke="#79dbc9" stroke-width="3">
+<path d="M110 205 L195 140"></path>
+<path d="M410 205 L440 95"></path>
+<path d="M710 205 L740 95" stroke-dasharray="6 5"></path>
+<path d="M740 95 L820 125" marker-end="url(#math-arrow)" stroke="#f8b875"></path>
+</g>
+<g fill="#79dbc9">
+<circle cx="195" cy="140" r="6"></circle>
+<circle cx="440" cy="95" r="6"></circle>
+<circle cx="820" cy="125" r="6"></circle>
+</g>
+<g fill="#e7eef9" font-family="system-ui,sans-serif" font-size="18">
+<text x="150" y="122">z</text>
+<text x="140" y="185">θ</text>
+<text x="410" y="83">z²</text>
+<text x="426" y="184">2θ</text>
+<text x="780" y="88">+c</text>
+<text x="790" y="153">z²+c</text>
+<text x="71" y="281">radius r</text>
+<text x="372" y="281">radius r²</text>
+<text x="687" y="281">then translate</text>
+</g>
+<g marker-end="url(#math-arrow)" stroke="#537c92" stroke-width="2">
+<path d="M257 150 H317"></path>
+<path d="M554 150 H617"></path>
+</g>
+</svg>
+<figcaption>The geometry of one iteration. This diagram is schematic: the first two panels use their own scale, and the translation vector <var>c</var> is illustrative.</figcaption>
+</figure>
+<figure class="widget" data-widget="complex-arithmetic" data-modes="add multiply square" data-z="1,0.5" data-w="0.5,1" hidden>
+<figcaption>Try it: drag <var>z</var> and <var>w</var> or type their coordinates, and switch between adding, multiplying and squaring. Dragged points snap to steps of 0.05.</figcaption>
+</figure>
+<h2 id="quadratic-rule">One rule, repeated</h2>
+<p>Throughout this guide the map is the quadratic polynomial <var>f</var><sub><var>c</var></sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>. The complex number <var>c</var> is a <strong>parameter</strong>: choose it once and keep it fixed while following an orbit. Choose a starting point <var>z</var><sub>0</sub>, apply the rule to obtain <var>z</var><sub>1</sub>, then feed that result back in.</p>
+<div class="equation"><var>z</var><sub>0</sub> → <var>z</var><sub>1</sub> = <var>z</var><sub>0</sub><sup>2</sup> + <var>c</var> → <var>z</var><sub>2</sub> = (<var>z</var><sub>0</sub><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var> → ⋯</div>
+<p>The infinite sequence is the <strong>forward orbit</strong>. The notation <var>f</var><sub><var>c</var></sub><sup>n</sup>(<var>z</var>) means applying the function <var>n</var> times; it does not mean raising its output to the power <var>n</var>. For example, <var>f</var><sub><var>c</var></sub><sup>2</sup>(<var>z</var>) = (<var>z</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var>. The notation <var>f</var><sup>∘n</sup> is sometimes used to emphasize composition.</p>
+<p>Nothing random enters the rule. The same exact parameter and starting point always produce the same orbit. Yet nearby starting points can eventually behave very differently, because each new calculation acts on the previous result; the chapter on chaos works out <a href="chaos.html#sensitive-dependence">an exact example</a>. <a href="https://pi.math.cornell.edu/~lipa/mec/lesson2.html">Cornell’s introduction to iterated maps</a> develops this orbit viewpoint first in one real dimension.</p>
+<p>For computation, write <var>c</var> = <var>a</var> + <var>b</var><var>i</var> and expand the square. Both new coordinates must be computed from the old coordinates:</p>
+<div class="equation"><var>x</var><sub>n+1</sub> = <var>x</var><sub>n</sub><sup>2</sup> − <var>y</var><sub>n</sub><sup>2</sup> + <var>a</var><br><var>y</var><sub>n+1</sub> = 2<var>x</var><sub>n</sub><var>y</var><sub>n</sub> + <var>b</var></div>
+<p>As a concrete check, use <var>z</var><sub>0</sub> = 0 and <var>c</var> = <var>i</var>. The orbit begins 0 → <var>i</var> → −1 + <var>i</var> → −<var>i</var> → −1 + <var>i</var>. After the first two steps, it repeats a two-point cycle. This example will return when we discuss <a href="special-points.html">Misiurewicz parameters</a>.</p>
+<figure class="widget" data-widget="complex-arithmetic" data-modes="step" data-z="0,0" data-c="0,1" hidden>
+<figcaption>One step of <var>z</var> ↦ <var>z</var><sup>2</sup> + <var>c</var>: square, then shift by <var>c</var>. It starts with the example above, <var>z</var> = 0 and <var>c</var> = <var>i</var>; press “Apply” three times to retrace the orbit 0 → <var>i</var> → −1 + <var>i</var> → −<var>i</var>.</figcaption>
+</figure>
+<h2 id="two-planes">Two planes, two different questions</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Picture</th>
+<th>What a pixel represents</th>
+<th>What remains fixed</th>
+<th>Question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mandelbrot set</td>
+<td>A parameter <var>c</var></td>
+<td>The initial point <var>z</var><sub>0</sub> = 0</td>
+<td>Does this parameter give a bounded critical orbit?</td>
+</tr>
+<tr>
+<td>Filled Julia set</td>
+<td>An initial point <var>z</var><sub>0</sub></td>
+<td>One chosen parameter <var>c</var></td>
+<td>Does this starting point have a bounded orbit?</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A point in the Mandelbrot picture selects an entire dynamical system. A point in a Julia picture selects one starting position inside that system. Both pictures use complex coordinates, but the coordinates play different roles. The Mandelbrot set is often called a “map of Julia sets” in this sense: each of its points indexes a Julia set, but the Julia sets are not pieces of it.</p>
+<h2 id="critical-point">Why start the Mandelbrot orbit at zero?</h2>
+<p>The derivative of <var>f</var><sub><var>c</var></sub> is 2<var>z</var>, which vanishes at exactly one finite point: <var>z</var> = 0. This is the <strong>critical point</strong>, and its image <var>f</var><sub><var>c</var></sub>(0) = <var>c</var> is the <strong>critical value</strong>. Near a noncritical point, the map acts to first order as a rotation and scaling. At zero that linear approximation vanishes, and the quadratic folding becomes essential. In particular, opposite inputs <var>z</var> and −<var>z</var> have the same image.</p>
+<p>A major theorem connects that special orbit to the whole picture: the quadratic filled Julia set is connected exactly when the orbit of zero is bounded. If that orbit escapes, the Julia set is a Cantor set: a “dust” of points with no isolated points, in which no two points are joined by a connected piece. The <a href="julia.html#connectedness">Julia chapter</a> explains this dichotomy, and the <a href="mandelbrot.html">Mandelbrot chapter</a> turns it into a picture; see also <a href="https://math.bu.edu/DYSYS/FRACGEOM/node5.html">Devaney’s explanation of the fundamental dichotomy</a>.</p>
+<h2 id="escape-proof">Why an escape test works</h2>
+<p>An orbit <strong>escapes</strong> if its modulus tends to infinity. For an arbitrary fixed <var>c</var>, choose <var>R</var> = max(2, |<var>c</var>|). If an iterate has modulus <var>r</var> &gt; <var>R</var>, the reverse triangle inequality gives</p>
+<div class="equation">|<var>z</var><sup>2</sup> + <var>c</var>| ≥ |<var>z</var>|<sup>2</sup> − |<var>c</var>| ≥ <var>r</var><sup>2</sup> − <var>r</var> = <var>r</var>(<var>r</var> − 1) &gt; <var>r</var>.</div>
+<p>Subsequent moduli grow by a factor at least as large as the first <var>r</var> − 1, which exceeds one. Growth therefore continues without bound. This proves a sufficient <strong>escape radius</strong>. Crossing it gives a conclusion about the entire future, even though the test examines only a finite prefix of the orbit.</p>
+<p>For the Mandelbrot critical orbit, radius 2 suffices for every parameter. If |<var>c</var>| ≤ 2, the same estimate with <var>r</var><sup>2</sup> − 2 works whenever <var>r</var> &gt; 2. If |<var>c</var>| &gt; 2, the first image <var>c</var> already lies beyond 2, and the orbit does escape: |<var>c</var><sup>2</sup> + <var>c</var>| ≥ |<var>c</var>|<sup>2</sup> − |<var>c</var>| &gt; |<var>c</var>|, so the next point lies beyond the general radius max(2, |<var>c</var>|), and the preceding argument applies from there.</p>
+<p>For example, at <var>c</var> = 1 the critical orbit begins 0 → 1 → 2 → 5. The value 2 is not yet beyond the radius, but 5 is, so three steps prove that this orbit escapes and that <var>c</var> = 1 lies outside the Mandelbrot set.</p>
+<aside class="callout">
+<p><strong>The inequality is strict.</strong> For <var>c</var> = −2 the critical orbit is 0 → −2 → 2 → 2, so reaching modulus 2 does not imply escape. And radius 2 is not a universal Julia escape test for arbitrary <var>c</var>: with <var>c</var> = −6, the point <var>z</var> = 3 is fixed despite having modulus greater than 2.</p>
+</aside>
+<p>Failure to escape after a million steps is not, by itself, proof of boundedness. An orbit can stay close to a repelling or parabolic feature for a very long time before leaving. Mathematical membership means bounded forever; a finite escape-time image shows which sampled orbits have escaped so far.</p>
+<h2 id="derivatives">Derivatives measure local stretching</h2>
+<p>Suppose two nearby points differ by a small displacement <var>δ</var>. An exact expansion shows</p>
+<div class="equation"><var>f</var><sub>c</sub>(<var>z</var> + <var>δ</var>) − <var>f</var><sub>c</sub>(<var>z</var>) = 2<var>zδ</var> + <var>δ</var><sup>2</sup>.</div>
+<p>When <var>δ</var> is small, the first term dominates: one step multiplies the displacement by the derivative 2<var>z</var>. Its modulus stretches or shrinks the displacement, and its argument turns it. At the critical point the derivative is 0, and only the much smaller <var>δ</var><sup>2</sup> remains.</p>
+<p>At a <strong>fixed point</strong> <var>a</var>, a point with <var>f</var><sub>c</sub>(<var>a</var>) = <var>a</var>, this decides what nearby orbits do. The number <var>λ</var> = 2<var>a</var> is the fixed point’s <strong>multiplier</strong>. If |<var>λ</var>| &lt; 1, every step shrinks the distance to <var>a</var>, and nearby points are attracted. If |<var>λ</var>| &gt; 1, they are pushed away. For <var>c</var> = 0 the fixed points are 0 and 1: at 0 the multiplier is 0, and the orbit 0.1, 0.01, 0.0001, … rushes in; at 1 it is 2, and the orbit 1.1, 1.21, 1.4641, … moves away. When |<var>λ</var>| = 1 the first-order term no longer decides, and subtler things happen. The <a href="orbits.html#multipliers">orbits chapter</a> extends the multiplier to cycles and classifies all these cases.</p>
+<h2 id="conjugacy">A change of coordinates can reveal the same dynamics</h2>
+<p>Two formulas can describe equivalent motion in different coordinates. If an invertible map <var>h</var> satisfies <var>h</var> ∘ <var>f</var> = <var>g</var> ∘ <var>h</var>, then applying <var>h</var> to an orbit of <var>f</var> produces an orbit of <var>g</var>. This relationship is called a <strong>conjugacy</strong>. Its strength depends on the allowed coordinate change: continuous, differentiable, holomorphic, and quasiconformal conjugacies preserve different amounts of geometry.</p>
+<p>For example, any quadratic polynomial <var>q</var>(<var>z</var>) = <var>a</var><var>z</var><sup>2</sup> + <var>b</var><var>z</var> + <var>d</var>, with <var>a</var> ≠ 0, becomes the standard quadratic family after the affine substitution <var>w</var> = <var>a</var><var>z</var> + <var>b</var>/2. Direct expansion gives</p>
+<div class="equation"><var>w</var> ↦ <var>w</var><sup>2</sup> + <var>C</var>,   where   <var>C</var> = <var>a</var><var>d</var> + <var>b</var>/2 − <var>b</var><sup>2</sup>/4.</div>
+<p>This is why studying <var>z</var><sup>2</sup> + <var>c</var> is so general: it covers every complex quadratic polynomial up to a shift and nonzero scaling of coordinates. <a href="minibrots.html">Renormalization</a> later applies a subtler version of this idea to a return map on a small region, explaining why quadratic behavior reappears within much larger orbits.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>A complex number is a point of the plane. Multiplying multiplies distances from 0 and adds angles, so squaring squares the distance and doubles the angle.</li>
+<li>The atlas iterates <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>: <var>c</var> stays fixed while <var>z</var> moves, and the points visited form the orbit.</li>
+<li>A Julia picture fixes <var>c</var> and varies the starting point; a Mandelbrot picture varies <var>c</var> and always starts at the critical point 0.</li>
+<li>Once an iterate is farther from 0 than max(2, |<var>c</var>|), the orbit escapes; for the orbit of 0, farther than 2 is enough. An orbit that has not escaped after many steps may still escape later.</li>
+<li>Near a fixed point <var>a</var>, one step multiplies small distances by about |2<var>a</var>|; the multiplier <var>λ</var> = 2<var>a</var> decides whether nearby points are attracted (|<var>λ</var>| &lt; 1) or repelled (|<var>λ</var>| &gt; 1).</li>
+<li>Every quadratic polynomial becomes <var>z</var><sup>2</sup> + <var>c</var> after a change of coordinates.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>Compute (1 + 2<var>i</var>)<sup>2</sup>. How do its distance from 0 and its angle compare with those of 1 + 2<var>i</var>?</summary><div class="answer"><p>(1 + 2<var>i</var>)<sup>2</sup> = 1 + 4<var>i</var> + 4<var>i</var><sup>2</sup> = −3 + 4<var>i</var>. The distance of 1 + 2<var>i</var> from 0 is √5; that of −3 + 4<var>i</var> is 5 = (√5)<sup>2</sup>. The angle of 1 + 2<var>i</var> is about 63.4°, and that of −3 + 4<var>i</var> is about 126.9°, twice as large.</p></div></details></li>
+<li><details><summary>Take <var>c</var> = −1 and start at <var>z</var><sub>0</sub> = 0. Write down the first five points of the orbit. What do you notice?</summary><div class="answer"><p>0, −1, 0, −1, 0. The orbit repeats every two steps: it is a cycle of period 2 that contains 0, so its multiplier is 2 · 0 · 2 · (−1) = 0 and it is superattracting.</p></div></details></li>
+<li><details><summary>Is <var>c</var> = 1 + <var>i</var> in the Mandelbrot set? Follow the orbit of 0 until you can decide.</summary><div class="answer"><p>No. The orbit begins 0, 1 + <var>i</var>, then (1 + <var>i</var>)<sup>2</sup> + 1 + <var>i</var> = 2<var>i</var> + 1 + <var>i</var> = 1 + 3<var>i</var>. Its distance from 0 is √10 ≈ 3.16, more than 2, so the <a href="#escape-proof">escape argument</a> shows that the orbit escapes.</p></div></details></li>
+<li><details><summary>Why is “escapes once |<var>z</var>| &gt; 2” not a valid test for every Julia picture? Use <var>c</var> = −6.</summary><div class="answer"><p>For <var>c</var> = −6 the point 3 is fixed, since 3<sup>2</sup> − 6 = 3, so its orbit never escapes although |3| &gt; 2. The general escape radius is max(2, |<var>c</var>|), here 6. The radius 2 works for every Julia picture with |<var>c</var>| ≤ 2, and for the orbit of 0 in every Mandelbrot picture.</p></div></details></li>
+<li><details><summary>Find the fixed points of <var>z</var> ↦ <var>z</var><sup>2</sup> − 2 and their multipliers. Do they attract or repel?</summary><div class="answer"><p>A fixed point solves <var>z</var><sup>2</sup> − 2 = <var>z</var>, that is (<var>z</var> − 2)(<var>z</var> + 1) = 0, so the fixed points are 2 and −1. Their multipliers 2<var>z</var> are 4 and −2. Both have modulus greater than 1, so both repel.</p></div></details></li>
+<li><details><summary>Which <var>z</var><sup>2</sup> + <var>c</var> is <var>z</var> ↦ 2<var>z</var><sup>2</sup> + 1 in disguise?</summary><div class="answer"><p>Here <var>a</var> = 2, <var>b</var> = 0 and <var>d</var> = 1, so <var>w</var> = 2<var>z</var> and <var>C</var> = <var>a</var><var>d</var> = 2. Indeed 2(2<var>z</var><sup>2</sup> + 1) = (2<var>z</var>)<sup>2</sup> + 2, so <var>w</var> ↦ <var>w</var><sup>2</sup> + 2. Since the orbit 0, 2, 6, 38, … escapes, 2 is not in the Mandelbrot set, and the Julia set of the original map is a Cantor set too.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<p>The worked arithmetic, escape argument, and coordinate substitution above are self-contained derivations. These sources provide the broader mathematical framework:</p>
+<ul class="sources">
+<li><a href="https://pi.math.cornell.edu/~lipa/mec/lesson2.html">Chris Lipa, Cornell Math Explorers’ Club — One-Dimensional Maps</a> — iteration, fixed points, cobweb diagrams and periodic orbits.</li>
+<li><a href="https://math.bu.edu/DYSYS/FRACGEOM/node5.html">Robert Devaney — The fundamental dichotomy</a> — the role of the critical orbit in quadratic connectedness.</li>
+<li><a href="https://arxiv.org/abs/math/9201272">John Milnor — Dynamics in One Complex Variable, introductory lectures</a> — rigorous foundations and local dynamics; later expanded into the book of the same name (third edition, Princeton University Press, 2006).</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="chaos.html" rel="prev"><small>Previous</small> Chaos &amp; fractals</a><a class="pagination-next" href="orbits.html" rel="next"><small>Next</small> Orbits &amp; stability</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

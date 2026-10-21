@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A boundary point can mark a cycle becoming neutral, a critical orbit landing exactly on a repelling cycle, or an infinite cascade of returns. These mechanisms produce different landmarks, even when a picture makes them look similar.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Special points — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/cobweb.js" defer></script>
+</head>
+<body data-page="special-points">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html" aria-current="page"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 09</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#four-landmarks">Four kinds of landmark</a></li><li><a href="#misiurewicz">Misiurewicz points: eventually repeating, but repelling</a></li><li><a href="#parabolic">Parabolic points and cusps</a></li><li><a href="#rays">Addresses by external rays</a></li><li><a href="#feigenbaum">The Feigenbaum accumulation point</a></li><li><a href="#density">Landmarks are everywhere on the boundary</a></li><li><a href="#similarity-and-cautions">Local resemblance and what remains delicate</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<header>
+<p class="eyebrow">Landmarks on the boundary</p>
+<h1>Misiurewicz points, cusps &amp; the Feigenbaum point</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="rays.html">External rays &amp; angles</a></span></p>
+<p class="lead">A boundary point can mark a cycle becoming neutral, a critical orbit landing exactly on a repelling cycle, or an infinite cascade of returns. These mechanisms produce different landmarks, even when a picture makes them look similar.</p>
+</header>
+<h2 id="four-landmarks">Four kinds of landmark</h2>
+<p>The parameter <var>c</var> selects the map <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>. Its distinguished orbit begins at the critical point 0. Following that orbit gives a more reliable classification than the outline of a rendered image.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Landmark</th>
+<th scope="col">Critical-orbit behavior</th>
+<th scope="col">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Center</th>
+<td>0 itself lies on a periodic orbit. The cycle is superattracting, with multiplier zero.</td>
+<td><var>c</var> = −1: 0 → −1 → 0.</td>
+</tr>
+<tr>
+<th scope="row">Parabolic parameter</th>
+<td>The critical orbit is attracted toward a neutral cycle with a root-of-unity multiplier; it never lands on that cycle exactly.</td>
+<td>The cusp <var>c</var> = 1/4.</td>
+</tr>
+<tr>
+<th scope="row">Misiurewicz parameter</th>
+<td>0 is not periodic but reaches a repelling periodic cycle after finitely many steps.</td>
+<td><var>c</var> = −2 or <var>c</var> = <var>i</var>.</td>
+</tr>
+<tr>
+<th scope="row">Period-doubling limit</th>
+<td>Successive return periods grow without bound. No finite critical cycle describes the limiting orbit.</td>
+<td>The real Feigenbaum parameter, approximately −1.401155.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A center lies inside a hyperbolic component; the other three kinds lie on the boundary of the Mandelbrot set. “Center” is a dynamical notion: a point at the visual middle of a spiral is usually not one.</p>
+<h2 id="misiurewicz">Misiurewicz points: eventually repeating, but repelling</h2>
+<p>A <strong>Misiurewicz parameter</strong> has a critical orbit that is <em>strictly preperiodic</em>: an initial nonrepeating segment leads into a cycle, while 0 itself never returns to 0. If the orbit first enters a cycle after <var>m</var> steps and that cycle has least period <var>p</var>, then</p>
+<div class="equation"><var>f</var><sub>c</sub><sup><var>m</var>+<var>p</var></sup>(0) = <var>f</var><sub>c</sub><sup><var>m</var></sup>(0),   with <var>m</var> &gt; 0 and minimal <var>m</var>, <var>p</var>.</div>
+<p>The eventual cycle is repelling for these quadratic maps. An exactly chosen critical orbit lands on it, but a small perturbation generally does not. This combination of exact landing and instability makes such parameters useful landmarks. <a href="https://math.univ-angers.fr/~tanlei/papers/similarityMJ.pdf">Tan Lei’s paper on similarity</a> states the definition, introduces <var>c</var> = <var>i</var> and <var>c</var> = −2 as its first examples, and works through <var>c</var> = <var>i</var> in detail.</p>
+<p>The word “preperiodic” sometimes includes points already on a cycle. The qualifier <strong>strictly</strong> rules those out. This prevents confusing a Misiurewicz parameter with a center. Preperiod also depends on whether an author starts counting at the critical point 0 or the critical value <var>c</var>. This page counts from 0 throughout.</p>
+<h3 id="minus-two">Example 1: the left tip, c = −2</h3>
+<div class="equation">0 → −2 → 2 → 2 → 2 → …</div>
+<p>Two steps bring the critical orbit to the fixed point 2, so the preperiod is 2 and the eventual period is 1. The derivative is <var>f</var>′(<var>z</var>) = 2<var>z</var>; at 2 it equals 4. A displacement from 2 is therefore expanded by approximately a factor of four per iteration while it remains small.</p>
+<p>This example is also unusually explicit in the dynamical plane. Put <var>z</var> = 2 cos <var>t</var>. The double-angle identity gives <var>z</var><sup>2</sup> − 2 = 2 cos(2<var>t</var>). Hence the real interval [−2, 2] maps into itself. In fact the Julia set for this parameter is exactly that interval. The Mandelbrot set contains infinitely many small copies along the real axis near −2, yet under high magnification at −2 it looks more and more like a straight segment ending there, just like this Julia set; <a href="#similarity-and-cautions">local resemblance</a> below explains why.</p>
+<h3 id="imaginary-unit">Example 2: c = i</h3>
+<div class="equation">0 → <var>i</var> → −1 + <var>i</var> → −<var>i</var> → −1 + <var>i</var> → −<var>i</var> → …</div>
+<p>Check the last two steps directly: (−1 + <var>i</var>)<sup>2</sup> + <var>i</var> = −<var>i</var>, and (−<var>i</var>)<sup>2</sup> + <var>i</var> = −1 + <var>i</var>. The preperiod from 0 is 2 and the cycle period is 2. Its multiplier is the product of derivatives around the cycle:</p>
+<div class="equation">λ = 2(−1 + <var>i</var>) · 2(−<var>i</var>) = 4 + 4<var>i</var>,   |λ| = 4√2 &gt; 1.</div>
+<p>The multiplier combines expansion with rotation. Its modulus 4√2 ≈ 5.66 is the local expansion per two-step return, and its argument, 45°, is the local turn. These two numbers reappear in the parameter plane: near <var>c</var> = <var>i</var>, magnifying the Mandelbrot set by 4√2 and turning it by 45° reproduces its picture more and more exactly, as Tan Lei showed for this very example (<a href="#similarity-and-cautions">local resemblance</a>).</p>
+<figure>
+<svg aria-labelledby="preperiod-title preperiod-desc" role="img" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg">
+<title id="preperiod-title">The finite critical orbit for c equals i</title>
+<desc id="preperiod-desc">The critical point zero maps to i, then enters the cycle from minus one plus i to minus i and back. The first two arrows form the preperiod, and the final pair form a period-two cycle.</desc>
+<defs>
+<marker id="preperiod-arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+<path d="M0 0 L8 4 L0 8Z" fill="#65d7d0"></path>
+</marker>
+</defs>
+<rect fill="#101d30" height="260" rx="18" width="900"></rect>
+<g fill="#19364b" stroke="#65d7d0" stroke-width="2">
+<circle cx="105" cy="135" r="43"></circle>
+<circle cx="300" cy="135" r="43"></circle>
+<circle cx="540" cy="135" r="57"></circle>
+<circle cx="775" cy="135" r="50"></circle>
+</g>
+<g fill="none" marker-end="url(#preperiod-arrow)" stroke="#65d7d0" stroke-width="3">
+<path d="M154 135 H250"></path>
+<path d="M349 135 H477"></path>
+<path d="M601 118 Q664 59 720 118"></path>
+<path d="M720 154 Q660 215 604 154"></path>
+</g>
+<g fill="#edf5ff" font-family="system-ui,sans-serif" text-anchor="middle">
+<text font-size="27" x="105" y="144">0</text>
+<text font-size="27" x="300" y="144">i</text>
+<text font-size="24" x="540" y="144">−1 + i</text>
+<text font-size="27" x="775" y="144">−i</text>
+<text font-size="21" x="245" y="43">Initial segment: two steps</text>
+<text font-size="21" x="660" y="43">Repelling two-cycle</text>
+<text font-size="17" x="450" y="238">An exact orbit diagram; positions are schematic, not complex-plane coordinates</text>
+</g>
+</svg>
+<figcaption>Landing exactly on a repelling cycle is different from being attracted toward a cycle. A nearby parameter can eventually produce a different orbit.</figcaption>
+</figure>
+<figure>
+<a href="assets/images/misiurewicz-detail.png"><img alt="Numerical close view of the Mandelbrot set around the Misiurewicz parameter c equals i, the tip of a filament, with branching filaments and repeated detail nearby." class="fractal-image" loading="lazy" src="assets/images/misiurewicz-detail.png" width="1200" height="1016"></a>
+<figcaption>The neighborhood of <var>c</var> = <var>i</var> in parameter space. The point <var>c</var> = <var>i</var> itself is the tip of a filament, where the single parameter ray at angle 1/6 lands; the branching happens nearby. Such structure is read more reliably through critical orbits and <a href="rays.html#landing">external rays</a> than through the chosen escape-time palette. <a href="gallery.html#zoom=0,1,0.14">Open this window in the zoom viewer</a>. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<h2 id="parabolic">Parabolic points and cusps</h2>
+<p>A periodic cycle is <strong>parabolic</strong> when its multiplier is a root of unity. After enough returns, the multiplier becomes 1. Linearization alone then cannot tell whether nearby points move in or out; higher-order terms create attracting and repelling directions, often described as <em>petals</em>. The <a href="neutral.html#flower">chapter on neutral cycles</a> describes these petals and the irrationally neutral cases.</p>
+<p>At <var>c</var> = 1/4, the fixed-point equation <var>z</var><sup>2</sup> + 1/4 = <var>z</var> becomes (<var>z</var> − 1/2)<sup>2</sup> = 0. The fixed point is 1/2 and its multiplier is 1. Starting at 0, the orbit increases toward 1/2 without reaching it in a finite number of steps. Write <var>u</var> = <var>z</var> − 1/2; the local map is</p>
+<div class="equation"><var>u</var> ↦ <var>u</var> + <var>u</var><sup>2</sup>.</div>
+<p>The correction is quadratic rather than a uniform linear contraction. If the real error is <var>e</var><sub>n</sub> = 1/2 − <var>z</var><sub>n</sub>, then <var>e</var><sub>n+1</sub> = <var>e</var><sub>n</sub> − <var>e</var><sub>n</sub><sup>2</sup>. Its decrease becomes very slow. This provides a concrete reason why orbits near a parabolic parameter can linger for many iterations.</p>
+<p>The parameter is also the cusp of the main cardioid: in the parameterization <var>c</var> = λ/2 − λ<sup>2</sup>/4 of the <a href="periodicity.html#cardioid">periodicity chapter</a>, the derivative vanishes at λ = 1, and the boundary turns back on itself there.</p>
+<p>At <var>c</var> = −3/4, the fixed point −1/2 instead has multiplier −1. It is parabolic in the root-of-unity sense, and its two-step multiplier is 1. This is the attachment of the period-two bulb to the main cardioid, not the main cardioid’s cusp. The critical orbit approaches the neutral fixed point with alternating behavior. Both 1/4 and −3/4 are parabolic parameters, but their geometric and bifurcation roles differ.</p>
+<h2 id="rays">Addresses by external rays</h2>
+<p>Most landmarks in this chapter can also be found from outside, along the <a href="rays.html">external rays</a> that come in from infinity at fixed angles. One ray lands at the cusp 1/4, at angle 0, one at −2, at angle 1/2, and one at <var>i</var>, at angle 1/6; two rays land at −3/4, at 1/3 and 2/3, and two at the root of every other component; Misiurewicz points can have one, two or more. The <a href="rays.html#landing">rays chapter</a> explains where rays land and what their angles say about the dynamics.</p>
+<h2 id="feigenbaum">The Feigenbaum accumulation point</h2>
+<p>Following the real period-doubling chain encounters attracting cycles of periods 1, 2, 4, 8, and so on. Their bifurcations accumulate at approximately <var>c</var> = −1.401155. The limiting map is infinitely renormalizable: one can repeatedly take an appropriate return map at smaller scales. Its critical orbit is not a finite preperiodic orbit, so this point is not Misiurewicz. <a href="https://people.math.harvard.edu/~ctm/papers/home/text/papers/real/book.pdf">McMullen’s Feigenbaum example</a> (§7.4) describes this structure. Whether the Mandelbrot set is locally connected at this point was settled only recently: it is, by a theorem of <a href="https://doi.org/10.5802/pmihes.2">Dzmitry Dudko and Mikhail Lyubich (2026)</a>.</p>
+<figure class="widget" data-widget="cobweb" data-c="-1.401155189" hidden>
+<figcaption>At the accumulation point, <var>c</var> ≈ −1.401155, the orbit of 0 neither escapes nor settles into a cycle within 1000 steps. Move right into the period-doubling cascade, or left into the chaotic region with its periodic windows, such as the period-three window near −1.75.</figcaption>
+</figure>
+<p>The coordinate −1.401155… belongs to the family <var>z</var><sup>2</sup> + <var>c</var>. The logistic map, which is the same family in other coordinates, reaches the same point at <var>r</var> ≈ 3.5699; genuinely different families end their cascades elsewhere, the sine map <var>x</var> ↦ <var>r</var> sin(π<var>x</var>) near <var>r</var> ≈ 0.8656. What all of them share is the Feigenbaum constant δ ≈ 4.6692, the limiting ratio of successive doubling intervals, described in the <a href="minibrots.html#self-similarity-and-universality">minibrots chapter</a>.</p>
+<h2 id="density">Landmarks are everywhere on the boundary</h2>
+<p>The special points are not rare. Every point of the boundary of the Mandelbrot set is a limit of Misiurewicz parameters, a limit of parabolic parameters, and a limit of centers of hyperbolic components; conversely, centers accumulate only at points of the boundary (<a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Lyubich’s book</a>, Proposition 36.4). So however far one zooms into the boundary, small hyperbolic components, with their cusps and attachment points, and Misiurewicz points keep appearing. They are countably many points, yet they are found arbitrarily close to every boundary point.</p>
+<h2 id="similarity-and-cautions">Local resemblance and what remains delicate</h2>
+<p>At a Misiurewicz parameter, the Mandelbrot set near that parameter and the corresponding Julia set near its critical value have asymptotically matching geometry after suitable magnification and rotation (<a href="https://math.univ-angers.fr/~tanlei/papers/similarityMJ.pdf">Tan Lei, 1990</a>). The magnification and turn under which the picture repeats come from the multiplier of the repelling cycle: for <var>c</var> = <var>i</var> it is 4 + 4<var>i</var>, so magnifying by 4√2 ≈ 5.66 and turning by 45° maps the picture near <var>i</var> approximately onto itself, ever more exactly as one zooms in. Zooming by 4√2 without turning, the picture comes back to its original orientation after eight steps. The Julia set near its critical value <var>i</var> repeats itself in the same way, and Tan Lei proved more: in the limit the two pictures differ only by one fixed scale and rotation, for <var>c</var> = <var>i</var> a factor of about 1.12 and a turn of about 27°. The resemblance is local: it compares small neighborhoods in two different planes. <a href="https://arxiv.org/abs/1907.13488">Kawahira’s treatment of Tan Lei’s theorem</a> gives a simpler proof. At the tip −2 the Julia set is the segment [−2, 2], so near −2 the Mandelbrot set, too, looks more and more like a straight segment. The <a href="gallery.html#zoom=0,1,0.14">zoom viewer</a> opens on the neighborhood of <var>i</var>.</p>
+<p>To identify a landmark numerically, solve its orbit relation exactly, check that the preperiod and period are minimal, and compute the multiplier of the cycle. A long list of nearly repeating iterates is not enough: rounding can make an escaping orbit look periodic, and a slowly approaching parabolic orbit can look like an exact repetition.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>The orbit of 0 classifies landmarks: it is periodic at a center, approaches a parabolic cycle at a parabolic parameter, lands on a repelling cycle at a Misiurewicz parameter, and does none of these at the Feigenbaum point.</li>
+<li>Misiurewicz parameters such as −2 and <var>i</var> lie on the boundary; their cycle repels, so nearby parameters behave differently.</li>
+<li>At a parabolic parameter, such as the cusp 1/4 or the root −3/4, a cycle has a root-of-unity multiplier, and the orbit of 0 approaches it only slowly: like 1/<var>n</var> at 1/4, and like 1/√<var>n</var> at −3/4.</li>
+<li>Near a Misiurewicz parameter the Mandelbrot set looks like the Julia set near its critical value, up to a fixed scale and rotation, and both repeat themselves under magnification by the multiplier of the repelling cycle.</li>
+<li>Centers, parabolic and Misiurewicz parameters come arbitrarily close to every boundary point.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>Show that <var>c</var> = −<var>i</var> is a Misiurewicz parameter. What are its preperiod and period?</summary><div class="answer"><p>The orbit is 0, −<var>i</var>, −1 − <var>i</var>, <var>i</var>, −1 − <var>i</var>, …, since (−1 − <var>i</var>)<sup>2</sup> − <var>i</var> = <var>i</var> and <var>i</var><sup>2</sup> − <var>i</var> = −1 − <var>i</var>. It reaches the cycle {−1 − <var>i</var>, <var>i</var>} after two steps without returning to 0: preperiod 2, period 2. It is the mirror image of <var>c</var> = <var>i</var>.</p></div></details></li>
+<li><details><summary>At <var>c</var> = 1/4 the error <var>e</var><sub>n</sub> = 1/2 − <var>z</var><sub>n</sub> obeys <var>e</var><sub>n+1</sub> = <var>e</var><sub>n</sub> − <var>e</var><sub>n</sub><sup>2</sup>, starting from 1/2. Compute the first three errors. Roughly how small is <var>e</var><sub>n</sub> after <var>n</var> steps?</summary><div class="answer"><p><var>e</var><sub>1</sub> = 1/4, <var>e</var><sub>2</sub> = 3/16 ≈ 0.19, <var>e</var><sub>3</sub> = 39/256 ≈ 0.15. Since 1/<var>e</var><sub>n+1</sub> = 1/(<var>e</var><sub>n</sub>(1 − <var>e</var><sub>n</sub>)) ≈ 1/<var>e</var><sub>n</sub> + 1, the reciprocal grows by about 1 per step, so <var>e</var><sub>n</sub> is roughly 1/<var>n</var>: after a thousand steps the orbit is still about 0.001 from the fixed point.</p></div></details></li>
+<li><details><summary>At <var>c</var> = −3/4, find the fixed points and their multipliers. Which one is parabolic?</summary><div class="answer"><p>The fixed points solve <var>z</var><sup>2</sup> − <var>z</var> − 3/4 = 0, so they are 3/2 and −1/2. The multipliers 2<var>z</var> are 3 and −1. The fixed point −1/2 is parabolic: its multiplier −1 is a root of unity, and after two steps it is 1. Here the period-two disk is attached to the main cardioid.</p></div></details></li>
+<li><details><summary>Is the Feigenbaum point a Misiurewicz parameter?</summary><div class="answer"><p>No. Its critical orbit is not eventually periodic: the point is infinitely renormalizable, and its orbit of 0 never lands on a cycle.</p></div></details></li>
+<li><details><summary>Which parameters have a critical orbit with preperiod 2 and period 1, counting from 0?</summary><div class="answer"><p>The condition is <var>z</var><sub>3</sub> = <var>z</var><sub>2</sub>, that is (<var>c</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var> = <var>c</var><sup>2</sup> + <var>c</var>, or <var>c</var><sup>2</sup>(<var>c</var> + 1)<sup>2</sup> = <var>c</var><sup>2</sup>. So <var>c</var> = 0 or (<var>c</var> + 1)<sup>2</sup> = 1, that is <var>c</var> = 0 or <var>c</var> = −2. At <var>c</var> = 0 the orbit is periodic from the start, so the only such parameter is −2, the tip.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://math.univ-angers.fr/~tanlei/papers/similarityMJ.pdf">Tan Lei — Similarity Between the Mandelbrot Set and Julia Sets</a> (1990) — the original asymptotic similarity result.</li>
+<li><a href="https://arxiv.org/abs/1907.13488">Tomoki Kawahira — Zalcman functions and similarity between the Mandelbrot set, Julia sets, and the tricorn</a> — a later approach to that theorem.</li>
+<li><a href="https://doi.org/10.5802/pmihes.2">Dzmitry Dudko and Mikhail Lyubich — MLC at Feigenbaum points</a> (Publications mathématiques de l’IHÉS, 2026) — local connectivity at the Feigenbaum point and related parameters.</li>
+<li><a href="https://arxiv.org/abs/2606.27272">Jeremy Kahn, Alex Kapiamba and Mikhail Lyubich — MLC for parabolically bounded primitive renormalization</a> (2026 preprint, not yet refereed) — recent progress for another class of parameters, not a proof of the full conjecture.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="rays.html" rel="prev"><small>Previous</small> External rays &amp; angles</a><a class="pagination-next" href="minibrots.html" rel="next"><small>Next</small> Minibrots &amp; self-similarity</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

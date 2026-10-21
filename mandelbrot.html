@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The Mandelbrot set is a map of quadratic dynamics. Every point chooses a different equation; the set collects exactly those choices for which the critical orbit stays bounded forever.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>The Mandelbrot set — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+</head>
+<body data-page="mandelbrot">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html" aria-current="page"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 05</span> · Begin with the equation</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#definition">A precise definition</a></li><li><a href="#first-examples">Four parameters you can check by hand</a></li><li><a href="#parameter-map">A map of connected Julia sets</a></li><li><a href="#cardioid">The main cardioid and the bulbs</a></li><li><a href="#boundary">Interior, boundary, and exterior</a></li><li><a href="#bifurcation">Where Julia sets change</a></li><li><a href="#connected">Why the Mandelbrot set is connected</a></li><li><a href="#dimension">Dimension and area</a></li><li><a href="#open-questions">What remains open</a></li><li><a href="#reading-images">What the colored image does and does not show</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>The Mandelbrot set</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span><span class="requires">Builds on <a href="julia.html">Julia sets</a></span></p>
+<p class="lead">The Mandelbrot set is a map of quadratic dynamics. Every point chooses a different equation; the set collects exactly those choices for which the critical orbit stays bounded forever.</p>
+<h2 id="definition">A precise definition</h2>
+<p>Choose a complex parameter <var>c</var>. Start at <var>z</var><sub>0</sub> = 0 and repeatedly calculate <var>z</var><sub>n+1</sub> = <var>z</var><sub>n</sub><sup>2</sup> + <var>c</var>. The <strong>Mandelbrot set</strong>, written <var>M</var>, is the collection of parameters for which the resulting sequence is bounded:</p>
+<div class="equation"><var>M</var> = {<var>c</var> ∈ ℂ : there is a finite <var>B</var> such that |<var>f</var><sub><var>c</var></sub><sup>n</sup>(0)| ≤ <var>B</var> for every <var>n</var> ≥ 0}.</div>
+<p>“Bounded” does not mean converging to one value. A bounded orbit might approach a cycle, eventually repeat exactly, rotate without settling, or behave in a more complicated way. Membership asks only whether the orbit remains in some finite disk. In this family, an unbounded orbit necessarily escapes to infinity.</p>
+<p>The tested starting point is zero because it is the unique finite <a href="mathematics.html#critical-point">critical point</a> of the quadratic map, and the <a href="orbits.html#critical-orbit">orbit of the critical point</a> controls the whole dynamics. A closely related convention starts at <var>z</var><sub>0</sub> = <var>c</var>; this drops the initial zero and gives exactly the same boundedness decision.</p>
+<figure>
+<a href="assets/images/mandelbrot-overview.png"><img alt="Computed overview of the Mandelbrot set, with its large central cardioid, round period-two bulb on the left, and branching decorations." class="fractal-image" src="assets/images/mandelbrot-overview.png" width="1440" height="1196"></a>
+<figcaption>The familiar silhouette belongs to the parameter plane. The colors surrounding it visualize escape behavior and are chosen for the illustration; they are not intrinsic colors of the mathematical set. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<h2 id="first-examples">Four parameters you can check by hand</h2>
+<p>The four critical orbits of the <a href="orbits.html#worked-orbits">orbits chapter</a> settle membership at once. For <var>c</var> = 0 the orbit stays at 0, for <var>c</var> = −1 it alternates between 0 and −1, and for <var>c</var> = −2 it runs 0, −2, 2, 2, …: all three are bounded, so these parameters lie in <var>M</var>. For <var>c</var> = 1 the orbit 0, 1, 2, 5, 26, … escapes, so 1 lies outside.</p>
+<p>The example <var>c</var> = −2 shows that membership does not require attraction. The orbit lands exactly on the fixed point 2, whose multiplier 4 makes it repelling; it is bounded nonetheless. Such a parameter is a <a href="special-points.html#misiurewicz">Misiurewicz parameter</a>, and −2 is the leftmost point of the Mandelbrot set.</p>
+<h2 id="parameter-map">A map of connected Julia sets</h2>
+<p>For a fixed parameter, the filled Julia set <var>K</var><sub><var>c</var></sub> contains every starting point whose orbit stays bounded, and its boundary is the Julia set <var>J</var><sub><var>c</var></sub>. The <a href="julia.html#connectedness">quadratic dichotomy</a> says</p>
+<div class="equation"><var>c</var> ∈ <var>M</var>   ⇔   <var>K</var><sub><var>c</var></sub> is connected   ⇔   <var>J</var><sub><var>c</var></sub> is connected.</div>
+<p>Outside <var>M</var>, the quadratic Julia set is a Cantor set: uncountably many points, totally disconnected, with no isolated points. Inside or on the boundary of <var>M</var>, it is connected, though its geometry varies enormously. This makes the Mandelbrot set the <strong>connectedness locus</strong> of the quadratic family. <a href="https://pi.math.cornell.edu/~lipa/mec/lesson5.html">Cornell’s Mandelbrot lesson</a> explains this interpretation.</p>
+<p>Membership is a statement about the orbit of 0 alone. Even for <var>c</var> = 0, the starting point 2 escapes: 2, 4, 16, …. What <var>c</var> ∈ <var>M</var> guarantees is that the bounded starting points form one connected piece.</p>
+<figure>
+<a href="assets/images/parameter-dynamical.png"><img alt="A selected parameter in the Mandelbrot plane paired with the filled Julia set of that quadratic map." class="fractal-image" loading="lazy" src="assets/images/parameter-dynamical.png" width="1460" height="648"></a>
+<figcaption>Choose one parameter on the left, then hold it fixed and vary the starting point on the right. The link is dynamical: one point in the parameter plane specifies a whole Julia picture. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<h2 id="cardioid">The main cardioid and the bulbs</h2>
+<p>The large central region is the <strong>main cardioid</strong>; the name means “heart-shaped.” It consists exactly of the parameters whose map has an attracting fixed point. If the fixed point has multiplier <var>λ</var>, then</p>
+<div class="equation"><var>c</var> = <var>λ</var>/2 − <var>λ</var><sup>2</sup>/4,   |<var>λ</var>| &lt; 1,</div>
+<p>and letting <var>λ</var> run once around the unit circle traces the cardioid’s boundary. At <var>λ</var> = 0 the parameter is the center <var>c</var> = 0; at <var>λ</var> = 1 it is the cusp <var>c</var> = 1/4; at <var>λ</var> = −1 it is <var>c</var> = −3/4, where the large round bulb on the left is attached. That bulb is the <strong>period-two component</strong>: the parameters with an attracting cycle of two points form exactly the disk |<var>c</var> + 1| &lt; 1/4, centered at −1. Both formulas take only a few lines to derive; the periodicity chapter does it under <a href="periodicity.html#cardioid">the cardioid</a> and <a href="periodicity.html#period-two">the period-two disk</a>.</p>
+<p id="bulbs">The other bulbs have other periods. The parameters with a finite attracting cycle form an open set, and each of its connected pieces is a <strong>hyperbolic component</strong>; the period of the attracting cycle is constant throughout it. Its <strong>center</strong> is the one parameter where the critical point itself is periodic. Around the main cardioid, the bulbs are arranged by rational numbers: the bulb attached where <var>λ</var> = e<sup>2π<var>i</var><var>p</var>/<var>q</var></sup>, with <var>p</var>/<var>q</var> a fraction in lowest terms between 0 and 1, has period <var>q</var>. Secondary bulbs repeat this organization around their parents. Apart from the period-two disk, the bulbs are not in general exact circles.</p>
+<p>A <strong>limb</strong> is a bulb together with everything attached beyond it. A <strong>wake</strong> is the region of the parameter plane cut off by the two <a href="rays.html#wakes">external rays</a> that land at the bulb’s root. The <a href="periodicity.html">periodicity chapter</a> develops all of this.</p>
+<h2 id="boundary">Interior, boundary, and exterior</h2>
+<p>An <strong>interior point</strong> has a small disk around it contained in <var>M</var>. An <strong>exterior point</strong> lies outside <var>M</var> and has an escaping critical orbit. A <strong>boundary point</strong> belongs to <var>M</var>, but every disk around it also contains exterior parameters. The boundary is where arbitrarily small parameter changes can cross from bounded critical dynamics to escape.</p>
+<p>The main cardioid and the open bulbs are easy to recognize as interior regions. The boundary includes their edges, branching structures, tips, and limits of ever smaller features. Some prominent features are <a href="minibrots.html">minibrots</a>, small topological copies of the whole set. Others are <a href="special-points.html">parabolic and Misiurewicz points</a>, where orbits satisfy special relations.</p>
+<p>The set is compact: it is closed and lies inside |<var>c</var>| ≤ 2. It is symmetric under reflection across the real axis, because conjugating both the parameter and every orbit point preserves the recurrence. Its intersection with the real axis is exactly the interval [−2, 1/4]. Along that interval lie the real quadratic maps of the chapter on chaos, with their <a href="chaos.html#period-doubling">period-doubling cascade</a> and chaotic parameters.</p>
+<h2 id="bifurcation">Where Julia sets change</h2>
+<p>Move <var>c</var> around inside the main cardioid, and the Julia set deforms but remains a closed curve. Move it inside the period-two disk, and it remains a pinched chain of loops like the basilica. Move it outside <var>M</var>, and it remains dust. The type of the Julia set changes only when <var>c</var> crosses the boundary of <var>M</var>.</p>
+<p>This can be made precise. Away from the boundary of <var>M</var>, the Julia set depends continuously on the parameter, and the Julia sets of nearby parameters are deformations of one another; inside one component of the interior of <var>M</var>, they all have the same shape, and the maps act on them in the same way (<a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Lyubich’s book</a>, Theorem 36.2). At every point of the boundary this stability fails: arbitrarily close to it there are parameters whose Julia sets are of a different kind, such as Cantor sets just outside <var>M</var>. In McMullen’s formulation, the boundary of the Mandelbrot set is exactly the set of parameters that are not “J-stable” (<a href="https://people.math.harvard.edu/~ctm/papers/home/text/papers/real/book.pdf">McMullen, <cite>Complex Dynamics and Renormalization</cite>, Theorems 4.2 and 4.6</a>), building on the work of <a href="https://doi.org/10.24033/asens.1446">Mañé, Sad and Sullivan (1983)</a>. The boundary of <var>M</var> is therefore the <strong>bifurcation locus</strong> of the quadratic family: the parameters where an arbitrarily small change alters the Julia set, and the dynamics on it, qualitatively. Every parameter with a neutral cycle, parabolic or irrational, lies on it (McMullen, Theorem 4.8). The Mandelbrot set is a map of Julia sets in this sharper sense too: its boundary marks every place where they change.</p>
+<h2 id="connected">Why the Mandelbrot set is connected</h2>
+<p>The Mandelbrot set itself is connected, as Adrien Douady and John Hubbard proved in 1982 (<a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">Douady and Hubbard, 1982</a>). The idea of the proof can be explained with the escape rate of the critical orbit. Outside <var>M</var>, the numbers log⁠|⁠<var>z</var><sub>n</sub>⁠| roughly double with every step, so the limit</p>
+<div class="equation"><var>g</var>(<var>c</var>) = lim<sub>n→∞</sub> log|<var>z</var><sub>n</sub>| / 2<sup>n</sup></div>
+<p>exists. It is positive outside <var>M</var> and set to 0 on <var>M</var>; in electrostatics it would be the electric potential around a charged plate shaped like <var>M</var>. The curves on which it is constant are called <strong>equipotentials</strong>. Douady and Hubbard constructed a coordinate that maps the outside of <var>M</var> one-to-one and without distortion of angles onto the outside of the unit disk, carrying the equipotentials to circles. Each equipotential is therefore a simple closed curve, and the region inside it is a closed topological disk. These regions are nested, and <var>M</var> is what remains in all of them. What remains of a nested sequence of closed disks is always connected, so <var>M</var> is connected. The <a href="rays.html#parameter-rays">chapter on external rays</a> describes this coordinate and the corresponding one in the dynamical plane, and <a href="https://pi.math.cornell.edu/~klindsey/presentations/MandelbrotReport.pdf">Kathryn Lindsey’s introductory exposition</a> presents the proof.</p>
+<p>The boundaries between the colored bands in escape-time pictures approximate these equipotentials: all pixels in one band escaped after the same number of steps. Seemingly isolated minibrots in an image are not separate islands of the set: the parts of <var>M</var> that connect them to the rest are thinner than the pixels. Connectedness means that <var>M</var> cannot be split into two separated pieces. Whether any two of its points can be joined by a curve inside the set, a stronger property called path-connectedness, is not known; it would follow from the MLC conjecture below.</p>
+<h2 id="dimension">Dimension and area</h2>
+<p>The boundary of the Mandelbrot set has no interior, yet Mitsuhiro Shishikura proved that it has Hausdorff dimension 2, the largest possible in the plane (<a href="https://annals.math.princeton.edu/articles/12909">Shishikura, 1998</a>). Whether it also has positive area is open, and so is the exact area of <var>M</var> itself: it is at least 7π/16 ≈ 1.3744, pixel counts estimate about 1.50659, and floating-point computations that cover the plane with squares place it between about 1.506 and 1.531. The chapter on <a href="numbers.html">area, dimension and famous numbers</a> explains these numbers, the dimensions of Julia sets, and Julia sets of positive area.</p>
+<h2 id="open-questions">What remains open</h2>
+<p>Three basic questions about the Mandelbrot set are open as of October 2026: whether it is locally connected (the <strong>MLC</strong> conjecture), whether the hyperbolic parameters, those with an attracting cycle or an escaping critical orbit, are dense (the <strong>density of hyperbolicity</strong>), and whether its boundary has positive area. MLC is known at every parameter that is not infinitely renormalizable and at many that are, including the Feigenbaum point (2026), and it would imply the density of hyperbolicity, which is proved for real parameters. The chapter on <a href="open-questions.html">open questions</a> states them precisely, explains the methods behind the progress, and lists what is known.</p>
+<h2 id="reading-images">What the colored image does and does not show</h2>
+<p>An escape-time picture samples parameters on a grid and follows each critical orbit until it crosses the escape radius 2 or reaches an iteration limit. In exact arithmetic a colored pixel would prove that its sample point lies outside <var>M</var>; the computer’s rounding makes this a very reliable indication rather than a proof. A dark pixel only says that the orbit had not escaped yet. Palettes, smooth coloring and distance shading change the texture of a picture without changing the set. The chapter on <a href="computing.html">computing the pictures</a> explains the methods and what each of them proves, the gallery’s <a href="gallery.html#image-method">image-method notes</a> explain how the atlas’s plates were made, and the <a href="tour.html">guided tour</a> connects spirals, valleys and fine branching with the dynamics behind them.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>The Mandelbrot set <var>M</var> is the set of parameters <var>c</var> for which the orbit of 0 under <var>z</var><sup>2</sup> + <var>c</var> stays bounded.</li>
+<li>It is also the set of <var>c</var> whose Julia set is connected; outside it, Julia sets are dust.</li>
+<li>The main cardioid holds the parameters with an attracting fixed point; the bulbs hold those with attracting cycles of other periods.</li>
+<li>Inside each component of the interior, the Julia sets keep their shape; the boundary of <var>M</var> is exactly where they change.</li>
+<li><var>M</var> is connected, because it is the intersection of nested closed disks bounded by equipotentials. Whether it is locally connected (MLC) is still open.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>Is <var>c</var> = −1 + 0.1<var>i</var> in the Mandelbrot set?</summary><div class="answer"><p>Yes. |<var>c</var> + 1| = 0.1 &lt; 1/4, so <var>c</var> lies in the period-two disk: the map has an attracting cycle of period two, the orbit of 0 is attracted to it, and in particular it is bounded.</p></div></details></li>
+<li><details><summary>Show that <var>c</var> = 0.3 is not in the Mandelbrot set. After how many steps does the orbit of 0 pass 2?</summary><div class="answer"><p>The Mandelbrot set meets the real axis in [−2, 1/4], and 0.3 &gt; 1/4. Computing confirms it: the orbit 0, 0.3, 0.39, 0.4521, 0.5044, 0.5544, … creeps upward, slowly at first, and <var>z</var><sub>12</sub> ≈ 2.19 is the first value beyond 2. From there the escape argument shows that the orbit escapes.</p></div></details></li>
+<li><details><summary>Which parameter on the edge of the main cardioid has a fixed point with multiplier <var>i</var>?</summary><div class="answer"><p><var>c</var> = <var>i</var>/2 − <var>i</var><sup>2</sup>/4 = 1/4 + <var>i</var>/2. It is the point where the bulb of period 4 is attached, since <var>i</var> = e<sup>2π<var>i</var>·1/4</sup>.</p></div></details></li>
+<li><details><summary>Why is the Mandelbrot set symmetric under reflection in the real axis?</summary><div class="answer"><p>If <var>c</var> is replaced by its complex conjugate, every point of the orbit of 0 is replaced by its conjugate, because conjugation respects squaring and addition. Conjugate numbers have the same modulus, so one orbit is bounded exactly when the other is.</p></div></details></li>
+<li><details><summary>The Julia sets of <var>c</var> = −1 and <var>c</var> = −1.1 look alike. Why should they?</summary><div class="answer"><p>Both parameters lie in the period-two disk |<var>c</var> + 1| &lt; 1/4, one component of the interior of <var>M</var>. Within such a component the Julia sets are deformations of one another, so both are pinched chains of loops like the basilica.</p></div></details></li>
+<li><details><summary>An escape-time picture shows a tiny dark island with no visible connection to the rest of the set. Does this contradict the connectedness of <var>M</var>?</summary><div class="answer"><p>No. If the island belongs to <var>M</var>, whatever connects it to the rest is thinner than the pixels, so the sampling misses it; a dark pixel may also just be a point whose orbit had not escaped within the iteration limit. Connectedness is a theorem; the picture is a finite sample.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://pi.math.cornell.edu/~lipa/mec/lesson5.html">Chris Lipa, Cornell Math Explorers’ Club — The Mandelbrot Set</a> — the parameter-plane and Julia-set connection.</li>
+<li><a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">Adrien Douady and John Hubbard — Itération des polynômes quadratiques complexes</a> — the 1982 note proving that <var>M</var> is connected (in French).</li>
+<li><a href="https://pi.math.cornell.edu/~klindsey/presentations/MandelbrotReport.pdf">Kathryn Lindsey — An Introduction to the Mandelbrot and Julia Sets</a> — compactness, connectedness, and external coordinates.</li>
+<li><a href="https://people.math.harvard.edu/~ctm/papers/home/text/papers/real/book.pdf">Curtis McMullen — Complex Dynamics and Renormalization</a> — stability and the boundary of <var>M</var> as bifurcation locus (§4.1–4.2), and the open conjectures (§1.2).</li>
+<li><a href="https://arxiv.org/abs/math/9905169">John Milnor — Periodic orbits, external rays and the Mandelbrot set: an expository account</a> — a deeper account of the organization of periodic features.</li>
+<li><a href="https://arxiv.org/abs/2512.24171">Dzmitry Dudko — On the MLC Conjecture and the Renormalization Theory in Complex Dynamics</a> — research context and open problems; to appear in the Proceedings of the ICM 2026.</li>
+<li><a href="https://arxiv.org/abs/math/9902155">Dierk Schleicher — On Fibers and Local Connectivity of Mandelbrot and Multibrot Sets</a> — local connectivity and density of hyperbolicity.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="julia.html" rel="prev"><small>Previous</small> Julia sets</a><a class="pagination-next" href="history.html" rel="next"><small>Next</small> A short history</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Concise definitions for the quadratic family fc(z) = z² + c. Linked chapters give worked examples, qualifications, and mathematical sources.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Glossary &amp; notation — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+</head>
+<body data-page="glossary">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html" aria-current="page"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 20</span> · Compute, explore &amp; look up</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#notation">The symbols</a></li><li><a href="#basic">Numbers, maps, and orbits</a></li><li><a href="#cycles">Periods and stability</a></li><li><a href="#parameters">Features in parameter space</a></li><li><a href="#geometry">Topology, geometry, and pictures</a></li><li><a href="#names">Names of pictures and places</a></li><li><a href="#combinatorial">Angles and combinatorics</a></li><li><a href="#relatives">Other families</a></li><li><a href="#further-reading">Continue with the chapters</a></li></ol></nav></details>
+<article class="chapter">
+<h1>Glossary &amp; notation</h1>
+<p class="lead">Concise definitions for the quadratic family <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var>² + <var>c</var>. Linked chapters give worked examples, qualifications, and mathematical sources.</p>
+<h2 id="notation">The symbols</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ℂ, <var>i</var></td>
+<td>The complex plane; the imaginary unit, with <var>i</var>² = −1.</td>
+</tr>
+<tr>
+<td><var>c</var></td>
+<td>A fixed parameter during an orbit; the varying coordinate in a Mandelbrot picture.</td>
+</tr>
+<tr>
+<td><var>z</var><sub>0</sub>, <var>z</var><sub>n</sub></td>
+<td>The starting point and its position after <var>n</var> iterations.</td>
+</tr>
+<tr>
+<td><var>f</var><sup>n</sup>, <var>f</var><sup>∘n</sup></td>
+<td>The <var>n</var>-fold composition of <var>f</var>, not the <var>n</var>th power of its output.</td>
+</tr>
+<tr>
+<td>|<var>z</var>|, arg(<var>z</var>)</td>
+<td>Modulus (distance from zero) and argument (angle).</td>
+</tr>
+<tr>
+<td><var>M</var></td>
+<td>The Mandelbrot set: parameters with bounded critical orbit.</td>
+</tr>
+<tr>
+<td><var>K</var><sub>c</sub>, <var>J</var><sub>c</sub></td>
+<td>The filled Julia set and Julia set; <var>J</var><sub>c</sub> = ∂<var>K</var><sub>c</sub>.</td>
+</tr>
+<tr>
+<td>∂<var>A</var>, int(<var>A</var>)</td>
+<td>The boundary and interior of a set <var>A</var>.</td>
+</tr>
+<tr>
+<td><var>p</var>, <var>m</var>, λ</td>
+<td>Least period, preperiod, and cycle multiplier, respectively.</td>
+</tr>
+<tr>
+<td>θ, <var>G</var><sub>c</sub></td>
+<td>An angle and the escape-rate potential. External angles, internal angles and rotation numbers are measured in turns (fractions of a full turn); in formulas such as <var>e</var><sup><var>i</var>θ</sup> the angle is in radians.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="basic">Numbers, maps, and orbits</h2>
+<dl class="glossary">
+<dt id="complex-number">Complex number</dt>
+<dd>A number <var>x</var> + <var>iy</var> represented by the point (<var>x</var>, <var>y</var>). Squaring multiplies its angle by two and squares its modulus. <a href="mathematics.html">Foundations</a>.</dd>
+<dt id="complex-conjugation">Complex conjugation</dt>
+<dd>The reflection <var>x</var> + <var>iy</var> ↦ <var>x</var> − <var>iy</var>. The Mandelbrot set has this symmetry; conjugating a Julia parameter reflects its Julia set.</dd>
+<dt id="iteration">Iteration</dt>
+<dd>Repeatedly applying the same map, each time using the previous result as the next input.</dd>
+<dt id="orbit">Orbit</dt>
+<dd>The ordered sequence of iterates of a starting point. An orbit is a sequence of points, not the drawn line segments sometimes used to connect them.</dd>
+<dt id="backward-orbit">Backward orbit</dt>
+<dd>All preimages of a point, their preimages, and so on. Each point has two preimages under <var>z</var><sup>2</sup> + <var>c</var>, except the critical value <var>c</var>, which has one. Backward orbits of points of the Julia set come close to every point of it, which is how inverse iteration draws Julia sets. <a href="julia.html#boundary-dynamics">Structure of the Julia set</a>.</dd>
+<dt id="critical-point">Critical point / critical value</dt>
+<dd>A critical point has derivative zero. For <var>z</var>² + <var>c</var>, the unique finite critical point is zero and its image—the critical value—is <var>c</var>.</dd>
+<dt id="bounded-orbit">Bounded orbit</dt>
+<dd>An orbit whose points all stay within some finite distance of the origin. Bounded does not mean periodic, convergent, or visually simple.</dd>
+<dt id="escape">Escape / bailout radius</dt>
+<dd>Escape means tending to infinity. A proven bailout radius gives a sufficient finite test for it. Reaching radius two is not enough; the Mandelbrot critical-orbit test uses strictly greater than two.</dd>
+<dt id="parameter-plane">Parameter plane / dynamical plane</dt>
+<dd>The first varies the map’s constant <var>c</var>; the second fixes the map and varies its starting point <var>z</var>. <a href="mandelbrot.html">Mandelbrot</a> and <a href="julia.html">Julia</a>.</dd>
+<dt id="conjugacy">Conjugacy</dt>
+<dd>An invertible change of coordinates that turns the iterates of one map into those of another. Different regularity requirements preserve different amounts of geometry.</dd>
+<dt id="linearization">Linearization</dt>
+<dd>A local change of coordinates in which a map becomes multiplication by its multiplier, <var>w</var> ↦ <var>λw</var>. Near an attracting or repelling fixed point with <var>λ</var> ≠ 0 it always exists (Kœnigs). Near a neutral one it exists at Siegel points and not at Cremer points. Near a superattracting one the map instead becomes <var>w</var> ↦ <var>w</var><sup>2</sup> (Böttcher). <a href="orbits.html#convergence">How fast an orbit settles</a>.</dd>
+<dt id="deterministic">Deterministic / chaotic</dt>
+<dd><strong>Deterministic:</strong> Fixed entirely by the starting state and the rule. <strong>Chaotic:</strong> Deterministic, but with nearby starts separating so fast that long-range prediction fails in practice. There is no single accepted definition of chaos. <a href="chaos.html#defining-chaos">What “chaos” means</a>.</dd>
+<dt id="lyapunov-exponent">Lyapunov exponent</dt>
+<dd>The average exponential rate at which nearby orbits separate. A positive value is the usual working criterion for chaos; for <var>x</var> ↦ <var>x</var>² − 2 on [−2, 2] it is ln 2 for almost every starting point. <a href="chaos.html#sensitive-dependence">Errors that double</a>.</dd>
+<dt id="holomorphic">Holomorphic</dt>
+<dd>Complex differentiable on an open region. Away from critical points, such maps locally preserve angles. The quadratic map is holomorphic everywhere.</dd>
+</dl>
+<h2 id="cycles">Periods and stability</h2>
+<dl class="glossary">
+<dt id="fixed-point">Fixed point</dt>
+<dd>A point <var>a</var> with <var>f</var>(<var>a</var>) = <var>a</var>; a cycle of period one.</dd>
+<dt id="alpha-fixed-point">α fixed point</dt>
+<dd>Of the two fixed points of <var>z</var><sup>2</sup> + <var>c</var>, β is the one where the external ray of angle 0 lands, and α is the other. For <var>c</var> in the main cardioid α is the attracting fixed point; for <var>c</var> in the <var>p</var>/<var>q</var> limb, <var>q</var> rays land at α, <var>q</var> arms of the Julia set meet there, and the map turns them by <var>p</var> places. <a href="periodicity.html#rotation-numbers">Rotation numbers</a>.</dd>
+<dt id="cycle">Cycle / least period</dt>
+<dd>A finite orbit that repeats. The least, exact, or primitive period is the smallest positive number of steps returning to the starting point. This use of “primitive” differs from a primitive component. <a href="orbits.html">Orbits</a>.</dd>
+<dt id="preperiodic">Preperiodic / strictly preperiodic</dt>
+<dd><strong>Preperiodic:</strong> A point that eventually reaches a cycle. <strong>Strictly preperiodic:</strong> One that reaches it only after a nonzero initial transient. Preperiod in this atlas is counted from <var>z</var><sub>0</sub> = 0 when discussing the critical orbit.</dd>
+<dt id="return-map">Return map</dt>
+<dd>An iterate <var>f</var><sup>p</sup> viewed as one step. Near a period-<var>p</var> cycle it returns to a neighborhood of the same cycle point.</dd>
+<dt id="multiplier">Multiplier</dt>
+<dd>The derivative of the least-period return map at a cycle point: λ = ∏2<var>z</var><sub>k</sub>. Its modulus measures first-order attraction or repulsion per complete cycle.</dd>
+<dt id="attracting">Attracting / superattracting</dt>
+<dd><strong>Attracting:</strong> A cycle with |λ| &lt; 1. <strong>Superattracting:</strong> A cycle with λ = 0. Nearby starting points approach it; they need not land on it in finitely many steps.</dd>
+<dt id="repelling">Repelling</dt>
+<dd>A cycle with |λ| &gt; 1. Small displacements expand under the return map. The exactly periodic orbit itself still repeats.</dd>
+<dt id="neutral">Neutral / indifferent</dt>
+<dd>A cycle with |λ| = 1. Higher-order terms and the rotation angle decide the local behavior.</dd>
+<dt id="parabolic">Parabolic</dt>
+<dd>A periodic orbit with root-of-unity multiplier, so a suitable iterate has multiplier one and nontrivial petal dynamics. <a href="neutral.html#flower">The Leau–Fatou flower</a>.</dd>
+<dt id="petal">Petal / Leau–Fatou flower</dt>
+<dd><strong>Petal:</strong> Near a parabolic fixed point <var>f</var>(<var>z</var>) = <var>z</var> + <var>a</var><var>z</var><sup><var>n</var>+1</sup> + …, the <var>n</var> attracting regions, in which orbits converge slowly to the point, alternate with <var>n</var> repelling ones. <strong>Leau–Fatou flower:</strong> The whole arrangement. On an attracting petal the map is a translation by 1 in its Fatou coordinate. <a href="neutral.html#flower">The flower</a>.</dd>
+<dt id="parabolic-implosion">Parabolic implosion</dt>
+<dd>The abrupt change of Julia sets when a parameter moves just past a parabolic one: orbits slip through a narrow gate between the separated fixed points, taking about π/√ε steps at <var>c</var> = 1/4 + ε. <a href="neutral.html#implosion">Implosion</a>.</dd>
+<dt id="siegel-disk">Siegel disk</dt>
+<dd>A maximal Fatou rotation domain where a return map is holomorphically conjugate to an irrational rigid rotation. <a href="neutral.html#siegel">Siegel disks</a>.</dd>
+<dt id="cremer-point">Cremer point</dt>
+<dd>An irrationally neutral periodic point that cannot be holomorphically linearized. There is no surrounding Siegel disk giving rigid rotation. <a href="neutral.html#cremer">Cremer points</a>.</dd>
+<dt id="brjuno-condition">Brjuno condition</dt>
+<dd>The condition ∑ log(<var>q</var><sub>n+1</sub>)/<var>q</var><sub>n</sub> &lt; ∞ on the denominators of the continued-fraction approximations of an angle θ. It guarantees that every holomorphic map with a fixed point of multiplier e<sup>2π<var>i</var>θ</sup> can be linearized there, so a rational map has a Siegel disk around it (Brjuno); for the fixed point of <var>z</var><sup>2</sup> + <var>c</var> it is also necessary (Yoccoz). <a href="neutral.html#siegel">Siegel disks</a>.</dd>
+<dt id="basin">Basin / immediate basin</dt>
+<dd>A basin consists of points tending to an attractor. Its immediate component or cyclic collection of components lies at the attractor; other basin components can be preimages.</dd>
+</dl>
+<h2 id="parameters">Features in parameter space</h2>
+<dl class="glossary">
+<dt id="hyperbolic-parameter">Hyperbolic parameter</dt>
+<dd>For this quadratic family, the finite critical orbit tends to an attracting cycle or escapes to infinity. The escaping exterior is hyperbolic too.</dd>
+<dt id="hyperbolic-component">Hyperbolic component</dt>
+<dd>A connected component of the open set of parameters with an attracting finite cycle; the period is constant on it. Whether every component of the interior of <var>M</var> is hyperbolic is the density-of-hyperbolicity conjecture.</dd>
+<dt id="density-of-hyperbolicity">Density of hyperbolicity</dt>
+<dd>The conjecture that hyperbolic parameters are dense in the plane; equivalently, that every component of the interior of <var>M</var> is a hyperbolic component. It is proved for real parameters and follows from MLC. <a href="open-questions.html#hyperbolicity">Density of hyperbolicity</a>.</dd>
+<dt id="queer-component">Queer component</dt>
+<dd>A component of the interior of <var>M</var> that is not hyperbolic. None is known, and density of hyperbolicity says there are none; the Julia sets of its parameters would have positive area and carry an invariant line field. <a href="open-questions.html#hyperbolicity">Density of hyperbolicity</a>.</dd>
+<dt id="bifurcation-locus">Bifurcation locus / J-stability</dt>
+<dd><strong>Bifurcation locus:</strong> The parameters at which an arbitrarily small change alters the Julia set, and the map on it, qualitatively. <strong>J-stability:</strong> The property of the remaining parameters: for every nearby <var>c</var> the Julia set, with the map on it, is a continuous deformation of the original. For <var>z</var><sup>2</sup> + <var>c</var> the bifurcation locus is the boundary of <var>M</var>. <a href="mandelbrot.html#bifurcation">Where Julia sets change</a>.</dd>
+<dt id="main-cardioid">Main cardioid</dt>
+<dd>The period-one hyperbolic component, with boundary <var>c</var> = e<sup>it</sup>/2 − e<sup>2it</sup>/4. <a href="periodicity.html">Derivation</a>.</dd>
+<dt id="bulb">Bulb</dt>
+<dd>An informal visual name for a hyperbolic component attached to another. The period-two component is exactly a disk; most bulbs are not exact circles. Some authors, Devaney among them, use “bulb” for the whole limb.</dd>
+<dt id="center">Center / nucleus</dt>
+<dd>The parameter in a hyperbolic component where its attracting cycle contains zero and is superattracting.</dd>
+<dt id="root">Root / cusp / co-root</dt>
+<dd>The root is the boundary point of a hyperbolic component where its multiplier equals 1; for a satellite it is the attachment point to its parent. Two parameter rays land at every root except the main cardioid’s cusp 1/4, where one lands. A quadratic component of period greater than one has no co-roots. Co-roots matter in higher-degree families such as <var>z</var><sup><var>d</var></sup> + <var>c</var>, where they are boundary points with multiplier 1 at which a single ray lands; under that definition the cusp 1/4 itself counts as a co-root (<a href="https://arxiv.org/abs/1410.6729">Eberlein, Mukherjee and Schleicher</a>, Theorem 1.1). <a href="periodicity.html#roots">Roots and satellites</a>.</dd>
+<dt id="internal-angle">Internal angle / rotation number</dt>
+<dd>An angle in multiplier coordinates. A rational value <var>r</var>/<var>q</var> at a parent boundary describes a satellite bifurcation and period multiplication by <var>q</var>; it is not an external-ray angle.</dd>
+<dt id="satellite">Satellite / primitive component</dt>
+<dd>A satellite component attaches to a lower-period parent at its root. A primitive component does not arise through such a lower-period attachment. These are dynamical/combinatorial distinctions, not just silhouette names.</dd>
+<dt id="limb">Limb / wake</dt>
+<dd>A wake is the region of the parameter plane cut off by the two parameter rays that land at the root of a component, on the side away from the main cardioid; the limb is the part of the Mandelbrot set in the closed wake. <a href="rays.html#wakes">Wakes and limbs</a>.</dd>
+<dt id="minibrot">Minibrot / little Mandelbrot copy</dt>
+<dd>A small topological copy of <var>M</var> arising from renormalization. Its geometry is generally distorted rather than an exactly scaled replica.</dd>
+<dt id="decoration">Decoration / antenna</dt>
+<dd><strong>Decoration:</strong> The connected pieces left when a small copy is removed from <var>M</var>. <strong>Antenna:</strong> An informal name for thin, filament-like decorations. <a href="minibrots.html#decorations">Decorations and antennas</a>.</dd>
+<dt id="quadratic-like-map">Quadratic-like map / straightening</dt>
+<dd><strong>Quadratic-like map:</strong> A degree-two proper holomorphic map between nested topological disks with compact containment. <strong>Straightening:</strong> The Douady–Hubbard theorem that every quadratic-like map is equivalent, through a controlled (quasiconformal) change of coordinates, to some <var>z</var>² + <var>c</var>′, with <var>c</var>′ unique when the filled set is connected. <a href="minibrots.html">Minibrots</a>.</dd>
+<dt id="renormalization">Renormalization / tuning</dt>
+<dd><strong>Renormalization:</strong> Extracting rescaled small-scale return dynamics. <strong>Tuning:</strong> Inserting one pattern of quadratic dynamics into another’s little copy. A parameter is infinitely renormalizable when it lies in infinitely many nested little copies; only there can MLC fail. It is of bounded type when the ratios of the periods of successive copies stay bounded, as at the Feigenbaum point, where each ratio is 2. <a href="open-questions.html#renormalization">The hard case</a>.</dd>
+<dt id="misiurewicz-parameter">Misiurewicz parameter</dt>
+<dd>A parameter whose critical point is strictly preperiodic: its orbit lands on a cycle without returning to 0, and that cycle is necessarily repelling. Examples include −2 and <var>i</var>; a component center is not Misiurewicz. <a href="special-points.html">Special points</a>.</dd>
+<dt id="period-doubling">Period doubling / Feigenbaum parameter</dt>
+<dd><strong>Period doubling:</strong> A cascade of periods multiplied by two. <strong>Feigenbaum parameter:</strong> An accumulation parameter of an infinite doubling cascade. The real principal example is near −1.401155189, not a finite-period center.</dd>
+<dt id="universality">Universality</dt>
+<dd>Common limiting scaling behavior across a class of systems. In period doubling for smooth maps with a single quadratic hump, the lengths of successive bifurcation intervals shrink by a ratio approaching δ ≈ 4.6692. McMullen’s universality theorem is a different statement: copies of the boundary of the Mandelbrot set, or in special families of a Multibrot set, are dense in the bifurcation locus of every holomorphic family of rational maps that has bifurcations. <a href="chaos.html#period-doubling">Period doubling</a>; <a href="beyond.html#universality">why the Mandelbrot set keeps coming back</a>.</dd>
+<dt id="feigenbaum-constant">Feigenbaum constant δ</dt>
+<dd>δ = 4.6692016…, the limiting ratio of the lengths of successive period-doubling intervals, the same for a wide class of families of smooth maps with a single quadratic maximum. Not to be confused with the Feigenbaum point −1.401155… of the family <var>z</var><sup>2</sup> + <var>c</var>. <a href="minibrots.html#self-similarity-and-universality">Universality</a>.</dd>
+</dl>
+<h2 id="geometry">Topology, geometry, and pictures</h2>
+<dl class="glossary">
+<dt id="julia-set">Julia set / filled Julia set</dt>
+<dd><var>J</var><sub>c</sub> is the boundary of the bounded-orbit set <var>K</var><sub>c</sub>. If <var>K</var><sub>c</sub> has empty interior, they coincide; otherwise they do not.</dd>
+<dt id="fatou-set">Fatou set / Fatou component</dt>
+<dd><strong>Fatou set:</strong> The open locus of locally normal iterative behavior. <strong>Fatou component:</strong> One connected component of it. This concerns neighborhoods, not merely one orbit.</dd>
+<dt id="wandering-domain">Wandering domain</dt>
+<dd>A Fatou component whose images under the map are all different. Sullivan proved that rational maps, and so quadratic polynomials, have none; some entire functions do. <a href="julia.html#fatou">The Fatou set</a>; <a href="beyond.html#entire">entire functions</a>.</dd>
+<dt id="normal-family">Normal family</dt>
+<dd>A family of functions from which every sequence has a subsequence converging nicely, uniformly on compact sets, possibly to infinity. The iterates of <var>f</var><sub>c</sub> form a normal family near the points of the Fatou set and fail to do so near every point of the Julia set. Montel’s theorem, that functions omitting the same two values form a normal family, is the main tool for proving the basic properties of the Julia set, such as that backward orbits come close to every point of it. <a href="julia.html#fatou">The Fatou set</a>; <a href="julia.html#boundary-dynamics">the structure of the Julia set</a>.</dd>
+<dt id="connected">Connected / locally connected</dt>
+<dd><strong>Connected:</strong> Unable to split into separated pieces. <strong>Locally connected:</strong> Having a basis of connected relative neighborhoods. Local connectedness is an additional property asked of the already connected Mandelbrot set in MLC. A comb, made of a base segment with vertical teeth over 0 and over every 1/<var>n</var>, is connected but not locally connected at the points of the tooth over 0 above the base.</dd>
+<dt id="homeomorphism">Homeomorphism</dt>
+<dd>A continuous one-to-one map whose inverse is also continuous. Sets related by a homeomorphism have the same topology; a small copy of <var>M</var> is homeomorphic to <var>M</var>, but usually not similar to it. <a href="minibrots.html#what-is-a-minibrot">What is a minibrot?</a></dd>
+<dt id="quasiconformal">Quasiconformal map</dt>
+<dd>A homeomorphism that may distort shapes, but only by a bounded amount: it takes infinitely small circles to ellipses whose ratio of axes is bounded. Unlike conformal maps it need not preserve angles, which makes it flexible enough to build conjugacies, as in the straightening theorem. <a href="mathematics.html#conjugacy">Changes of coordinates</a>.</dd>
+<dt id="quasicircle">Quasicircle</dt>
+<dd>A closed curve without self-intersections obtained from a circle by a controlled (quasiconformal) deformation. For every <var>c</var> in the main cardioid the Julia set is a quasicircle. <a href="julia.html#shapes">Shapes of Julia sets</a>.</dd>
+<dt id="cantor-set">Cantor set / fractal dust</dt>
+<dd><strong>Cantor set:</strong> A compact, perfect, totally disconnected set. <strong>Fractal dust:</strong> An informal picture name. The mathematical set has no isolated points, even if a rendering looks like scattered dots.</dd>
+<dt id="dendrite">Dendrite</dt>
+<dd>A locally connected continuum without simple closed curves. It is tree-like, potentially with infinitely complicated branching.</dd>
+<dt id="escape-potential">Escape potential / equipotential</dt>
+<dd><strong>Escape potential:</strong> Also called the Green’s function of the filled Julia set, <var>G</var><sub>c</sub>(<var>z</var>) = lim 2<sup>−n</sup> log⁺|<var>f</var><sub>c</sub><sup>n</sup>(<var>z</var>)|, which measures how fast <var>z</var> escapes and is zero exactly on the filled Julia set. <strong>Equipotential:</strong> One of its level curves. In Böttcher’s coordinate the potential is the logarithm of the radius. <a href="rays.html#potential">The escape potential</a>.</dd>
+<dt id="bottcher-coordinate">Böttcher coordinate</dt>
+<dd>A holomorphic coordinate near infinity that converts quadratic polynomial iteration into squaring. For connected filled Julia sets it extends through the exterior. <a href="rays.html#bottcher">Böttcher’s coordinate</a>.</dd>
+<dt id="external-ray">External ray / landing</dt>
+<dd><strong>External ray:</strong> A curve of fixed angle in an exterior coordinate. <strong>Landing:</strong> Convergence of that ray to a definite boundary point. For the Mandelbrot set, and for quadratic Julia sets that are connected, rays at rational angles always land. For the Mandelbrot set, “every ray lands, at a point depending continuously on the angle” is equivalent to MLC. <a href="rays.html#landing">Where rays land</a>.</dd>
+<dt id="angle-doubling">Angle doubling / orbit portrait</dt>
+<dd><strong>Angle doubling:</strong> The rule θ ↦ 2θ mod 1 by which <var>z</var><sup>2</sup> + <var>c</var> moves external rays. <strong>Orbit portrait:</strong> The angles of the rays landing at the points of a periodic orbit. <a href="rays.html#wakes">Orbit portraits</a>.</dd>
+<dt id="attractor">Attractor / strange attractor</dt>
+<dd><strong>Attractor:</strong> A set that nearby states approach and then stay near. <strong>Strange attractor:</strong> An attractor on which the motion is chaotic, typically with fractal structure, such as the Lorenz attractor. <a href="chaos.html#lorenz">Lorenz and the butterfly</a>.</dd>
+<dt id="fractal">Fractal / similarity dimension</dt>
+<dd><strong>Fractal:</strong> A set with detail at arbitrarily small scales and too irregular for classical geometry; there is no single accepted definition. <strong>Similarity dimension:</strong> The number log <var>N</var> / log <var>s</var> for a set made of <var>N</var> copies of itself scaled by 1/<var>s</var>. <a href="chaos.html#fractals">Fractals</a>.</dd>
+<dt id="hausdorff-dimension">Hausdorff dimension / Lebesgue area</dt>
+<dd><strong>Hausdorff dimension:</strong> A fine-scale notion of dimension. <strong>Lebesgue area:</strong> Ordinary two-dimensional measure. Dimension two alone does not guarantee positive area: the boundary of <var>M</var> has dimension 2, and whether it has positive area is open. <a href="numbers.html#dimension">How rough is the boundary?</a></dd>
+<dt id="area-of-m">Area of <var>M</var></dt>
+<dd>Unknown. It is at least 7π/16 ≈ 1.3744 (the main cardioid and the period-two disk), pixel counts estimate 1.50659, partial sums of Gronwall’s area formula give upper bounds (the best about 1.68288), and covering the plane with squares decided by distance estimates gives, by computer, 1.50640 ≤ area ≤ 1.53121. <a href="numbers.html#exact-area">Area</a>.</dd>
+<dt id="harmonic-measure">Harmonic measure</dt>
+<dd>The distribution in which a random particle coming in from far away hits a set; for a connected Julia set it is the measure that random inverse iteration samples, and it has dimension 1. <a href="numbers.html#julia-dimension">The dimension of a Julia set</a>.</dd>
+<dt id="escape-time-coloring">Escape-time coloring / orbit trap</dt>
+<dd><strong>Escape-time coloring:</strong> Assigning colors from escape behavior. <strong>Orbit trap:</strong> Measuring proximity of an orbit to a chosen shape. These change the visualization, not the set’s definition. <a href="computing.html#escape-time">Escape time</a>.</dd>
+<dt id="distance-estimate">Distance estimate</dt>
+<dd><var>b</var> = 2|<var>z</var><sub>n</sub>| log|<var>z</var><sub>n</sub>| / |<var>z</var>′<sub>n</sub>|, computed with the derivative of the orbit; near the set the true distance lies between about <var>b</var>/4 and <var>b</var> (Koebe). It reveals filaments thinner than a pixel. <a href="computing.html#distance">Distance estimates</a>.</dd>
+<dt id="binary-decomposition">Binary decomposition</dt>
+<dd>Coloring escaping points by the sign of Im <var>z</var><sub>n</sub> at the escape step <var>n</var>; with a large escape radius this is the <var>n</var>-th binary digit of the external angle. <a href="computing.html#binary-decomposition">Reading angles</a>.</dd>
+<dt id="inverse-iteration">Inverse iteration</dt>
+<dd>Drawing a Julia set by following backward orbits, choosing one of the two preimages ±√(<var>z</var> − <var>c</var>) at each step; its points follow harmonic measure and neglect deep fjords, which the modified method, following all preimages with pruning, fills. <a href="computing.html#inverse-iteration">Julia sets backwards</a>.</dd>
+<dt id="ball-arithmetic">Ball arithmetic / certified picture</dt>
+<dd><strong>Ball arithmetic:</strong> Computing with disks that are guaranteed to contain the true values, rounding outward at every step. <strong>Certified picture:</strong> A picture in which every pixel is proved outside the set, proved inside it, or marked undecided. <a href="computing.html#trust">Pictures you can trust</a>.</dd>
+<dt id="computable-set">Computable set</dt>
+<dd>A set that a program can draw to any prescribed accuracy. Filled Julia sets are computable, some Julia sets are not, and whether <var>M</var> is computable is open (it is if density of hyperbolicity holds). <a href="computing.html#trust">Pictures you can trust</a>.</dd>
+<dt id="arbitrary-precision">Arbitrary precision / floatexp</dt>
+<dd><strong>Arbitrary precision:</strong> Numbers with as many digits as needed, computed in software, for example with the MPFR library; slow, because the cost of a multiplication grows faster than the number of digits. <strong>Floatexp:</strong> A hardware mantissa with a separate exponent kept in software, which gives practically unlimited range but no more digits. <a href="deep-zoom.html#formats">More digits or more range</a>.</dd>
+<dt id="perturbation">Perturbation / reference orbit</dt>
+<dd><strong>Reference orbit:</strong> One orbit <var>Z</var><sub>n</sub> computed with as many digits as a deep zoom needs. <strong>Perturbation:</strong> Computing each pixel’s orbit as an exact small difference δ<sub>n</sub> from it, δ<sub>n+1</sub> = 2<var>Z</var><sub>n</sub>δ<sub>n</sub> + δ<sub>n</sub><sup>2</sup> + Δ<var>c</var>, in ordinary numbers. <a href="deep-zoom.html#perturbation">Perturbation</a>.</dd>
+<dt id="rebasing">Rebasing / glitch</dt>
+<dd><strong>Glitch:</strong> A region of a perturbation picture with wrong counts, flat or noisy, caused by lost precision when a pixel’s orbit passes much closer to 0 than the reference. <strong>Rebasing:</strong> Restarting the reference from its beginning, with δ set to the pixel’s value, when |<var>Z</var><sub>m</sub> + δ| &lt; |δ|; exact because the reference starts at 0, it avoids glitches with a single reference. <a href="deep-zoom.html#rebasing">Rebasing</a>.</dd>
+<dt id="bilinear-approximation">Bilinear approximation / linear approximation (BLA / LA)</dt>
+<dd>Skipping many iterations of a perturbation computation at once with precomputed linear maps δ ↦ <var>A</var>δ + <var>B</var>Δ<var>c</var>, valid while δ is small compared with the reference. <strong>BLA</strong> merges steps in blocks of 2<sup><var>k</var></sup>; <strong>LA</strong>, in the program Imagina, keeps the first square and cuts the reference where it returns near 0. <a href="deep-zoom.html#skipping">Skipping iterations</a>.</dd>
+<dt id="atom-domain">Atom domain</dt>
+<dd>The parameters <var>c</var> for which |<var>z</var><sub>p</sub>| is smaller than every earlier |<var>z</var><sub>k</sub>|, 1 ≤ <var>k</var> &lt; <var>p</var>; it contains every nucleus of period <var>p</var>. The steps at which an orbit comes closer to 0 than ever before are the periods of the atom domains that contain its parameter. <a href="deep-zoom.html#reference">Where the reference comes from</a>.</dd>
+<dt id="finite-iteration-artifact">Finite iteration artifact / aliasing</dt>
+<dd><strong>Finite iteration artifact:</strong> Misleading appearance caused by a cutoff before eventual escape. <strong>Aliasing:</strong> Loss or distortion caused by sampling a continuous plane on a finite pixel grid. <a href="computing.html#computation">A picture is a computation</a>.</dd>
+<dt id="mlc">MLC</dt>
+<dd>The Mandelbrot local-connectivity conjecture: whether <var>M</var> is locally connected everywhere. Global connectedness is already a theorem. <a href="open-questions.html#mlc">Open questions</a>.</dd>
+<dt id="fiber">Fiber</dt>
+<dd>The set of points of <var>M</var> that cannot be separated from a given point by cutting along two rational parameter rays that land together, or that land on the boundary of the same hyperbolic component and are joined through it (Schleicher). MLC holds exactly when every fiber is a single point. <a href="open-questions.html#mlc">Local connectivity</a>.</dd>
+<dt id="yoccoz-puzzle">Yoccoz puzzle / Yoccoz inequality</dt>
+<dd><strong>Yoccoz puzzle:</strong> The pieces into which the rays landing at α and an equipotential cut a disk around the filled Julia set, refined by pulling back; nests of pieces shrinking to points prove local connectivity. <strong>Yoccoz inequality:</strong> The bound that confines each <var>p</var>/<var>q</var>-limb to a region that shrinks as <var>q</var> grows. <a href="open-questions.html#yoccoz">What Yoccoz proved</a>.</dd>
+<dt id="a-priori-bounds">A priori bounds</dt>
+<dd>For an infinitely renormalizable map, a uniform lower bound on the moduli of the annuli of its successive quadratic-like restrictions; together with rigidity theorems it gives MLC at that parameter. <a href="open-questions.html#renormalization">The hard case</a>.</dd>
+<dt id="invariant-line-field">Invariant line field</dt>
+<dd>A choice of a line through almost every point of a positive-area part of a Julia set that the map preserves. Density of hyperbolicity is equivalent to there being none for quadratic polynomials (Mañé, Sad and Sullivan; McMullen). <a href="open-questions.html#hyperbolicity">Density of hyperbolicity</a>.</dd>
+</dl>
+<h2 id="names">Names of pictures and places</h2>
+<dl class="glossary">
+<dt id="basilica">Basilica</dt>
+<dd>The Julia set of <var>c</var> = −1, where 0 and −1 form a superattracting cycle of period two: a chain of lobes pinched at the fixed point α and its preimages. <a href="julia.html#shapes">Shapes of Julia sets</a>; <a href="history.html#names">the name</a>.</dd>
+<dt id="douadys-rabbit">Douady’s rabbit</dt>
+<dd>The Julia set at the center of the 1/3 bulb, <var>c</var> ≈ −0.1226 + 0.7449<var>i</var>, where 0 lies on a superattracting cycle of period three: a body and two ears that meet in threes at α and its preimages. <a href="julia.html#many-shapes">A family of geometries</a>.</dd>
+<dt id="airplane">Airplane</dt>
+<dd>The Julia set at the real center of period three, <var>c</var> ≈ −1.7549, and the period-three window of the real axis that its component opens at −7/4. <a href="tour.html#airplane-copy">The airplane’s copy</a>.</dd>
+<dt id="cauliflower">Cauliflower</dt>
+<dd>The Julia set of <var>c</var> = 1/4, at the cusp of the main cardioid: a closed curve with inward-pointing cusps at the parabolic fixed point 1/2 and its preimages. <a href="julia.html#many-shapes">A family of geometries</a>; <a href="neutral.html#flower">parabolic points</a>.</dd>
+<dt id="seahorse-valley">Seahorse valley / elephant valley</dt>
+<dd>Nicknames for regions without precise boundaries. <strong>Seahorse valley:</strong> The narrow region between the main cardioid and the period-two disk above −3/4, whose decorations curl like seahorse tails. <strong>Elephant valley:</strong> The region just right of the cusp 1/4, where the small bulbs on the cardioid look like a row of elephants with curled trunks. <a href="tour.html#seahorse-valley">Seahorse valley</a>; <a href="tour.html#elephant-valley">elephant valley</a>.</dd>
+</dl>
+<h2 id="combinatorial">Angles and combinatorics</h2>
+<dl class="glossary">
+<dt id="lavaurs-algorithm">Lavaurs’ algorithm</dt>
+<dd>The rule that pairs the periodic angles whose parameter rays land together: for each period in turn, join the smallest unpaired angle to the smallest larger one of the same period whose chord crosses no earlier chord. <a href="combinatorics.html#lavaurs">Which angles land together</a>.</dd>
+<dt id="kneading-sequence">Kneading sequence</dt>
+<dd>For an angle θ, the record of which side of the cuts at θ/2 and (θ + 1)/2 the angles θ, 2θ, 4θ, … lie on, with ⋆ for an angle on a cut. <a href="combinatorics.html#kneading">Kneading sequences</a>.</dd>
+<dt id="internal-address">Internal address</dt>
+<dd>The periods of the components met on the way from the main cardioid to a given component, each time taking the component of smallest period that still separates; with the sublimbs recorded it becomes the angled internal address, which determines the component. <a href="combinatorics.html#internal-addresses">Internal addresses</a>.</dd>
+<dt id="hubbard-tree">Hubbard tree</dt>
+<dd>For a parameter with a finite critical orbit, the smallest tree in the filled Julia set that contains the critical orbit and crosses Fatou components only along internal rays; the map sends it into itself. <a href="combinatorics.html#hubbard-trees">Hubbard trees</a>.</dd>
+<dt id="spider-algorithm">Spider algorithm</dt>
+<dd>An iteration that turns a rational angle into a parameter: for a periodic angle, the center of the component at whose root its parameter ray lands; for a strictly preperiodic angle, the Misiurewicz point where it lands. It pulls back curves at the angles θ, 2θ, 4θ, …. <a href="combinatorics.html#spider">From an angle to a parameter</a>.</dd>
+<dt id="pinched-disk">Lamination / pinched disk</dt>
+<dd><strong>Lamination:</strong> Thurston’s family of chords joining periodic angles whose parameter rays land together, with their limits. <strong>Pinched disk:</strong> The space obtained by collapsing each chord, and each region bounded by finitely many chords, to a point: a combinatorial model of <var>M</var>, homeomorphic to it exactly if MLC holds. <a href="combinatorics.html#model">A model of the whole set</a>.</dd>
+<dt id="core-entropy">Core entropy</dt>
+<dd>The topological entropy of the map on its Hubbard tree: 0 for the basilica and the rabbit, log 2 at −2; it depends continuously on the external angle (Tiozzo). <a href="combinatorics.html#core-entropy">Core entropy</a>.</dd>
+</dl>
+<h2 id="relatives">Other families</h2>
+<dl class="glossary">
+<dt id="rational-map">Rational map / Newton’s map</dt>
+<dd><strong>Rational map:</strong> A quotient of two polynomials, regarded as a map of the Riemann sphere; Fatou and Julia built their theory for these maps. <strong>Newton’s map:</strong> The map <var>N</var>(<var>z</var>) = <var>z</var> − <var>p</var>(<var>z</var>)/<var>p</var>′(<var>z</var>) of Newton’s method, whose superattracting fixed points are the simple roots of <var>p</var>. <a href="beyond.html#newton">Newton’s method</a>.</dd>
+<dt id="multibrot-set">Multibrot set</dt>
+<dd>The set <var>M</var><sub>d</sub> of parameters <var>c</var> for which the orbit of 0 under <var>z</var><sup><var>d</var></sup> + <var>c</var> stays bounded, for a whole number <var>d</var> ≥ 2; <var>M</var><sub>2</sub> is the Mandelbrot set. It has (<var>d</var> − 1)-fold rotational symmetry. <a href="beyond.html#multibrot">Multibrot sets</a>.</dd>
+<dt id="tricorn">Antiholomorphic / tricorn</dt>
+<dd><strong>Antiholomorphic:</strong> A map is antiholomorphic if it is holomorphic in the complex conjugate <var class="bar">z</var>; it reverses orientation. <strong>Tricorn:</strong> The set of <var>c</var> for which the orbit of 0 under <var class="bar">z</var><sup>2</sup> + <var>c</var> stays bounded. It is connected but not path connected. <a href="beyond.html#tricorn">The tricorn</a>.</dd>
+<dt id="herman-ring">Herman ring</dt>
+<dd>A periodic Fatou component shaped like an annulus, on which an iterate of the map is conjugate to an irrational rotation. Rational maps of degree three or more can have them; polynomials cannot. <a href="beyond.html#zoo">A zoo of rational Julia sets</a>.</dd>
+<dt id="lattes-map">Lattès map</dt>
+<dd>A rational map that comes from an affine map of a torus; its Julia set is the whole Riemann sphere. <a href="beyond.html#zoo">A zoo of rational Julia sets</a>.</dd>
+<dt id="sierpinski-carpet">Sierpiński carpet</dt>
+<dd>The set left when the middle ninth of a square is removed, then the middle ninth of each of the eight remaining squares, and so on; some rational maps have Julia sets homeomorphic to it, but no polynomial does. <a href="beyond.html#zoo">A zoo of rational Julia sets</a>.</dd>
+<dt id="cantor-bouquet">Cantor bouquet / hair</dt>
+<dd>A set made of uncountably many disjoint curves, called hairs, that run out to infinity, such as the Julia set of λe<sup><var>z</var></sup> for 0 &lt; λ &lt; 1/e. <a href="beyond.html#entire">Entire functions</a>.</dd>
+<dt id="mating">Mating</dt>
+<dd>Gluing two filled Julia sets of quadratic polynomials along their boundaries, matching the ray at angle <var>t</var> of one with the ray at −<var>t</var> of the other, to obtain a rational map of degree two. <a href="beyond.html#neighbors">Neighboring worlds</a>.</dd>
+</dl>
+<h2 id="further-reading">Continue with the chapters</h2>
+<p>These definitions summarize the explanations and sources in <a href="chaos.html">Chaos and fractals</a>, <a href="mathematics.html">Foundations</a>, <a href="orbits.html">Orbits</a>, <a href="periodicity.html">Periodicity</a>, <a href="rays.html">External rays</a>, <a href="special-points.html">Special points</a>, <a href="minibrots.html">Minibrots</a>, <a href="neutral.html">Neutral cycles</a>, the <a href="tour.html">Tour</a>, <a href="numbers.html">Area, dimension and famous numbers</a>, <a href="beyond.html">Beyond <var>z</var><sup>2</sup> + <var>c</var></a>, <a href="combinatorics.html">Angles, addresses and trees</a>, <a href="open-questions.html">Open questions</a> and <a href="computing.html">Computing the pictures</a>. The <a href="gallery.html">interactive lab</a> offers a visual way to revisit the distinctions.</p>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="gallery.html" rel="prev"><small>Previous</small> Gallery &amp; interactive lab</a><a class="pagination-next" href="sources.html" rel="next"><small>Next</small> Sources</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

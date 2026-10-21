@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Square a complex number, add a constant, and repeat. That small instruction creates the Mandelbrot set, an entire family of Julia sets, and a landscape of cycles, islands, spirals, branching points, and unresolved mathematics.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Start here — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+</head>
+<body data-page="index">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html" aria-current="page"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 00</span> · Begin with the equation</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#two-worlds">The essential distinction</a></li><li><a href="#reading-path">A route through the atlas</a></li><li><a href="#look-for">What to look for</a></li><li><a href="#reading-pictures">Reading the pictures honestly</a></li><li><a href="#about">Scope and further study</a></li></ol></nav></details>
+<article class="chapter">
+<p class="eyebrow">An illustrated atlas of complex dynamics</p>
+<h1>One equation.<br>Two worlds.</h1>
+<p class="lead">Square a complex number, add a constant, and repeat. That small instruction creates the Mandelbrot set, an entire family of Julia sets, and a landscape of cycles, islands, spirals, branching points, and unresolved mathematics.</p>
+<figure>
+<a href="assets/images/mandelbrot-overview.png"><img alt="Computed Mandelbrot parameter plane, with a dark central cardioid and bulbs surrounded by blue, turquoise, and gold escape-time bands." class="fractal-image" src="assets/images/mandelbrot-overview.png" width="1440" height="1196"></a>
+<figcaption>The familiar outline is a map of parameters. Each point <var>c</var> selects its own dynamical system—and its own Julia set. Exterior colors visualize escape time; they are not intrinsic colors of the mathematical set. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<div class="equation"><var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>,    <var>z</var><sub>n+1</sub> = <var>f</var><sub>c</sub>(<var>z</var><sub>n</sub>).</div>
+<h2 id="two-worlds">The essential distinction</h2>
+<div class="cards"><a class="card" href="mandelbrot.html"><span class="eyebrow">Parameter plane · vary <var>c</var></span><h3>The Mandelbrot set</h3><p>Start at zero. Which choices of the constant c keep that orbit bounded? The answers make one set in the parameter plane.</p></a><a class="card" href="julia.html"><span class="eyebrow">Dynamical plane · vary <var>z</var><sub>0</sub></span><h3>A Julia set</h3><p>Fix c. Which starting points have bounded orbits, and where is the boundary between bounded and escaping behavior?</p></a></div>
+<p>The bounded starting points form the <strong>filled Julia set</strong> <var>K</var><sub>c</sub>. Its boundary is the <strong>Julia set</strong> <var>J</var><sub>c</sub>. The filled set and its boundary are different objects, though many pictures are casually called “Julia sets.” A fundamental theorem links the two planes: <var>J</var><sub>c</sub> is connected exactly when <var>c</var> belongs to the Mandelbrot set. <a href="julia.html">See the definitions, examples, and source references.</a></p>
+<figure>
+<a href="assets/images/parameter-dynamical.png"><img alt="A marker at c=-1 in the Mandelbrot set on the left selects the basilica filled Julia set on the right." class="fractal-image" loading="lazy" src="assets/images/parameter-dynamical.png" width="1460" height="648"></a>
+<figcaption>A point in one plane selects a whole picture in the other. Click any image in this atlas to open its full-resolution version. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<h2 id="reading-path">A route through the atlas</h2>
+<p>The chapters build on one another in this order. Each one names the chapters it builds on under its title and marks its level with one to three dots, and most chapters end with key ideas and questions to check yourself.</p>
+<p><strong>Begin with the equation</strong> (introductory)</p>
+<ol>
+<li><a href="chaos.html"><strong>Chaos, nature, and fractals</strong></a> sets the scene: deterministic chaos, where it occurs in nature, and fractal geometry, the ideas that meet in the Mandelbrot and Julia sets.</li>
+<li><a href="mathematics.html"><strong>Mathematical foundations</strong></a> introduces complex arithmetic, iteration, the critical point, and escape.</li>
+<li><a href="orbits.html"><strong>Orbits and stability</strong></a> follows actual numbers through fixed points, cycles, preperiodic behavior, and escape, and explains when cycles attract.</li>
+<li><a href="julia.html"><strong>Julia sets</strong></a> fixes the map and looks at every starting point at once.</li>
+<li><a href="mandelbrot.html"><strong>The Mandelbrot set</strong></a> turns the critical orbit into a map of all Julia sets, and explains why it is connected and where Julia sets change.</li>
+<li><a href="history.html"><strong>A short history</strong></a> follows the subject from a question about Newton’s method in 1879 to the computer pictures of the late 1970s and 1980s and the open problems of today.</li>
+</ol>
+<p><strong>Read the landscape</strong> (intermediate, with an introductory tour)</p>
+<ol start="7">
+<li><a href="periodicity.html"><strong>Cardioids, bulbs, and periods</strong></a> derives the main cardioid and period-two disk, counts the components of each period, and explains how bulbs are attached.</li>
+<li><a href="rays.html"><strong>External rays and angles</strong></a> puts coordinates on the outside of the Mandelbrot set and of connected Julia sets, and reads the angles of the rays that land at their landmarks.</li>
+<li><a href="special-points.html"><strong>Special points</strong></a> explores Misiurewicz points, parabolic parameters, the Feigenbaum point, and the resemblance between the Mandelbrot set and Julia sets near Misiurewicz points.</li>
+<li><a href="minibrots.html"><strong>Minibrots and self-similarity</strong></a> explains why small Mandelbrot copies occur, what “copy” really means, and how tuning acts on periods and angles.</li>
+<li><a href="neutral.html"><strong>Neutral cycles</strong></a> explains the cycles with multipliers of modulus 1: parabolic flowers and implosion, and the number theory that decides between Siegel disks and Cremer points.</li>
+<li><a href="tour.html"><strong>A guided tour</strong></a> visits twelve places in the Mandelbrot set, from the cusp at 1/4 to the tip at −2, with live pictures and what is known about each.</li>
+</ol>
+<p><strong>Go deeper</strong> (intermediate and advanced)</p>
+<ol start="13">
+<li><a href="numbers.html"><strong>Area, dimension and famous numbers</strong></a> separates what is exact, what is proved and what is only estimated about the size and roughness of the Mandelbrot set, and collects the numbers hidden in it, from π to Feigenbaum’s constants.</li>
+<li><a href="beyond.html"><strong>Beyond <var>z</var><sup>2</sup> + <var>c</var></strong></a> changes one ingredient of the quadratic family at a time, from higher degrees and the tricorn to Newton’s method and the Burning Ship, and explains why copies of the Mandelbrot set appear in almost every family of rational maps.</li>
+<li><a href="combinatorics.html"><strong>Angles, addresses and trees</strong></a> turns external angles into an exact arithmetic: which rays land together, internal addresses, Hubbard trees, the spider algorithm, and a model of the whole set (advanced).</li>
+<li><a href="open-questions.html"><strong>Open questions</strong></a> states what is unknown about the Mandelbrot set as of October 2026, from local connectivity to the area of its boundary, what Yoccoz and his successors proved, and the recent progress (advanced).</li>
+</ol>
+<p><strong>Compute, explore and look up:</strong> <a href="computing.html"><strong>computing the pictures</strong></a> explains how the images are made and what they can and cannot prove; <a href="deep-zoom.html"><strong>deep zoom</strong></a> explains how programs reach magnifications of 10<sup>1000</sup> and beyond; the <a href="gallery.html"><strong>gallery and interactive lab</strong></a> lets you choose a parameter, calculate a Julia picture, and zoom into the Mandelbrot set; the <a href="glossary.html"><strong>glossary</strong></a> defines the terms used throughout; and the <a href="sources.html"><strong>sources</strong></a> page collects every work cited at the ends of the chapters.</p>
+<h3>Ways to read</h3>
+<ul>
+<li><strong>For the big picture,</strong> read this page, <a href="julia.html">Julia sets</a> and <a href="mandelbrot.html">the Mandelbrot set</a>, then explore the <a href="gallery.html">gallery</a> and its zoom viewer.</li>
+<li><strong>To understand why,</strong> read the chapters in order and work through their questions.</li>
+<li><strong>If you know some complex analysis,</strong> start with <a href="julia.html">Julia sets</a> and <a href="mandelbrot.html">the Mandelbrot set</a>, then continue with the intermediate chapters, and use the <a href="mathematics.html">foundations</a> and <a href="orbits.html">orbits</a> chapters for reference.</li>
+<li><strong>To reach the research frontier,</strong> read <a href="rays.html">external rays</a> and <a href="minibrots.html">minibrots</a>, then <a href="combinatorics.html">angles, addresses and trees</a> and <a href="open-questions.html">open questions</a>; <a href="numbers.html">area, dimension and famous numbers</a> shows which numbers are proved and which are only estimated.</li>
+<li><strong>To compute for yourself,</strong> read <a href="computing.html">computing the pictures</a> and <a href="deep-zoom.html">how deep zooms are computed</a>, then try the interactive figures, which compute everything they show in your browser.</li>
+</ul>
+<h2 id="look-for">What to look for</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>What it means</th>
+<th>Where to explore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A heart-shaped central region</td>
+<td>The main cardioid: parameters with an attracting fixed point.</td>
+<td><a href="periodicity.html#cardioid">The main cardioid</a></td>
+</tr>
+<tr>
+<td>Bulbs attached to bulbs</td>
+<td>Hyperbolic components, organized by attracting-cycle periods and bifurcations.</td>
+<td><a href="periodicity.html#rotation-numbers">Periods of the bulbs</a></td>
+</tr>
+<tr>
+<td>Tiny Mandelbrot silhouettes</td>
+<td>Minibrots: small copies associated with renormalized return dynamics.</td>
+<td><a href="minibrots.html">Minibrots</a></td>
+</tr>
+<tr>
+<td>Antennae, branches, and landing rays</td>
+<td>Fine structure organized by external angles and special boundary parameters.</td>
+<td><a href="rays.html">External rays</a></td>
+</tr>
+<tr>
+<td>Rabbit shapes, pinched loops, or disconnected dust</td>
+<td>Different dynamical planes produced by different constants c.</td>
+<td><a href="julia.html">Julia sets</a></td>
+</tr>
+<tr>
+<td>Spirals and “seahorse valleys”</td>
+<td>Visual patterns related to local dynamics and parameter-space organization; the names are descriptive.</td>
+<td><a href="tour.html">Guided tour</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="reading-pictures">Reading the pictures honestly</h2>
+<p>All raster fractal pictures in this site were computed for this atlas, from <var>z</var> ↦ <var>z</var>² + <var>c</var> except in the interactive figures of <a href="beyond.html">Beyond <var>z</var>² + <var>c</var></a>, which draw its relatives. They are accompanied by coordinate windows and iteration budgets. SVG diagrams illustrate equations or concepts; captions distinguish schematics from computed plots.</p>
+<p>A computer follows only finitely many iterations at finitely many sample points. An orbit that has not escaped by a cutoff may still escape later. Thin filaments can fall between pixels, and a zero-area Julia set can be almost invisible in a straightforward escape-time image. <a href="computing.html">Computing the pictures</a> explains how such images are made and what they prove, and the <a href="gallery.html#image-method">image-method notes</a> record how this atlas’s plates were made.</p>
+<div class="callout">
+<p><strong>Proof, picture, and conjecture are different.</strong> A picture suggests structure; a theorem establishes it. The Mandelbrot set is connected, as Douady and Hubbard proved in 1982. Whether it is also locally connected, the MLC conjecture, is still open as of October 2026. This atlas marks open questions explicitly. <a href="https://arxiv.org/abs/2512.24171">Dzmitry Dudko’s overview of MLC</a>.</p>
+</div>
+<h2 id="about">Scope and further study</h2>
+<p>The main subject is the complex quadratic family <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var>² + <var>c</var>. Julia sets exist for much more general maps, but many properties described here, such as the dichotomy between connected sets and dust, fail for general maps; <a href="beyond.html">Beyond <var>z</var><sup>2</sup> + <var>c</var></a> explains which ones survive.</p>
+<p>Chapters were researched against mathematical papers and university resources, with links near specialized claims and further reading at the end. Each chapter ends with the date on which its sources and the research status were last checked. The site works offline, including its optional local search and its interactive figures; following external references requires a connection. No libraries, fonts, or equations are loaded from a remote service.</p>
+<p>If a term is unfamiliar, use the <a href="glossary.html">glossary</a>. For background on chaos and fractals in general, start with <a href="chaos.html">Chaos, nature, and fractals</a>. The <a href="mathematics.html">foundations chapter</a> assumes only basic algebra and explains the complex-number notation along the way.</p>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-next" href="chaos.html" rel="next"><small>Next</small> Chaos &amp; fractals</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

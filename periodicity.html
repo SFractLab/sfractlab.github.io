@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The Mandelbrot set’s large smooth regions form a map of stable repeating behavior. Their shapes and attachment points encode the periods and rotations of attracting orbits.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Cardioids, bulbs &amp; periods — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/orbits.js" defer></script>
+<script src="assets/js/multiplier-map.js" defer></script>
+<script src="assets/js/cobweb.js" defer></script>
+</head>
+<body data-page="periodicity">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html" aria-current="page"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 07</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#components">From an attracting cycle to a visible region</a></li><li><a href="#cardioid">Why the main region is a cardioid</a></li><li><a href="#period-two">An exact calculation for the period-two disk</a></li><li><a href="#centers">Centers and multiplier coordinates</a></li><li><a href="#counting">How many components of each period?</a></li><li><a href="#rotation-numbers">Rational angles and the periods of satellite bulbs</a></li><li><a href="#roots">Roots, primitive components, and satellites</a></li><li><a href="#doubling">Period doubling and its limit</a></li><li><a href="#parabolic-boundaries">Neutral boundaries and slow dynamics</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<h1>Cardioids, bulbs, and periodicity</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="mandelbrot.html">The Mandelbrot set</a></span></p>
+<p class="lead">The Mandelbrot set’s large smooth regions form a map of stable repeating behavior. Their shapes and attachment points encode the periods and rotations of attracting orbits.</p>
+<h2 id="components">From an attracting cycle to a visible region</h2>
+<p>The parameters <var>c</var> for which <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var> has a finite attracting cycle form an open set inside the Mandelbrot set. Each of its connected components is a <strong>hyperbolic component</strong>. The cycle persists under small changes to <var>c</var>, and its exact period is constant throughout that component. The largest component has period one; the large round region to its left has period two.</p>
+<p>A <strong>bulb</strong> is an informal name for one of these rounded components, especially a satellite component attached to another. A <strong>limb</strong> includes the associated part of the Mandelbrot set beyond an attachment point: the bulb together with its smaller components and filaments. Confusing the two leads to false statements about period, because a limb contains many different components. Usage varies: some authors, Devaney among them, use “bulb” for the whole limb.</p>
+<p>Period is a dynamical label, not a count of visible bumps. It says how many distinct points belong to the attracting cycle. The critical orbit approaches those points, and it repeats exactly only at one parameter of the component, its center. Devaney’s <a href="https://math.bu.edu/DYSYS/FRACGEOM/node3.html">discussion of bulb periods</a> connects these attracting cycles to the main decorations.</p>
+<figure>
+<a href="assets/images/period-components.png"><img alt="Computed Mandelbrot set showing the main cardioid and several hyperbolic components labeled by the exact period of their attracting cycle." class="fractal-image" loading="lazy" src="assets/images/period-components.png" width="1440" height="1196"></a>
+<figcaption>Periods label individual attracting components. Smaller components attached to one of them can have larger periods, while the thin surrounding boundary contains other types of dynamics. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<figure class="widget" data-widget="orbits" data-example="rabbit" hidden>
+<figcaption>Periods in action: inside a component the orbit of 0 settles into a cycle of that component’s period, and at the center it repeats exactly. Try the examples, or drag <var>c</var> into another bulb and press “Play”.</figcaption>
+</figure>
+<h2 id="cardioid">Why the main region is a cardioid</h2>
+<p>The heart-shaped boundary is the <strong>main cardioid</strong>. Its shape follows directly from the fixed-point equation. If <var>a</var> is a fixed point, then <var>a</var> = <var>a</var><sup>2</sup> + <var>c</var>, so <var>c</var> = <var>a</var> − <var>a</var><sup>2</sup>. The multiplier at that point is λ = 2<var>a</var>. Substitution gives</p>
+<div class="equation"><var>c</var>(λ) = λ/2 − λ<sup>2</sup>/4.</div>
+<p>An attracting fixed point has |λ| &lt; 1. Mapping the open unit disk of multipliers through this formula therefore gives the period-one component. Mapping the unit circle gives its boundary:</p>
+<div class="equation"><var>c</var>(θ) = ½e<sup>iθ</sup> − ¼e<sup>2iθ</sup>,   0 ≤ θ &lt; 2π.</div>
+<p>This is the exact boundary. The center occurs at λ = 0, hence <var>c</var> = 0. The cusp occurs at λ = 1, hence <var>c</var> = 1/4. At the opposite end, λ = −1 gives <var>c</var> = −3/4, where the period-two component attaches. Lyubich’s book <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf"><cite>Conformal Geometry and Dynamics of Quadratic Polynomials</cite></a> states this parameterization as Exercise 33.2 (§33.3), with the angle measured in turns.</p>
+<figure>
+<svg aria-labelledby="cardioid-title cardioid-desc" role="img" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+<title id="cardioid-title">The multiplier disk maps to the main cardioid</title>
+<desc id="cardioid-desc">On the left a unit disk represents attracting fixed-point multipliers. The map c equals lambda over two minus lambda squared over four sends its center to zero, lambda one to the cusp at one quarter, and lambda minus one to minus three quarters. The exact period-two disk lies to the left of the cardioid.</desc>
+<defs>
+<marker id="cardioid-arrow" markerHeight="6" markerWidth="6" orient="auto" refX="9" refY="5" viewBox="0 0 10 10">
+<path d="M0 0 L10 5 L0 10Z" fill="#526a78"></path>
+</marker>
+</defs>
+<rect fill="#eef5f7" height="420" rx="18" width="900"></rect>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="18" font-weight="700">
+<text x="48" y="42">Multiplier plane · λ</text>
+<text x="490" y="42">Parameter plane · c</text>
+</g>
+<g stroke="#b8cbd3" stroke-width="1.5">
+<path d="M42 220 H288 M165 92 V346"></path>
+<path d="M405 220 H798 M630 85 V352"></path>
+</g>
+<circle cx="165" cy="220" fill="#a2d9da" fill-opacity="0.65" r="95" stroke="#087e85" stroke-width="3"></circle>
+<circle cx="460" cy="220" fill="#f5d59e" r="42.5" stroke="#bd7d20" stroke-width="3"></circle>
+<path d="M672.500 220.000 L672.529 219.999 L672.616 219.994 L672.761 219.979 L672.963 219.951 L673.221 219.905 L673.534 219.836 L673.899 219.741 L674.317 219.614 L674.784 219.452 L675.298 219.250 L675.856 219.006 L676.457 218.714 L677.096 218.373 L677.771 217.977 L678.478 217.524 L679.213 217.011 L679.974 216.435 L680.755 215.794 L681.552 215.085 L682.362 214.306 L683.180 213.455 L684.001 212.531 L684.820 211.533 L685.633 210.458 L686.435 209.307 L687.221 208.079 L687.986 206.774 L688.725 205.391 L689.433 203.932 L690.104 202.396 L690.734 200.785 L691.319 199.100 L691.852 197.342 L692.328 195.514 L692.745 193.617 L693.095 191.653 L693.375 189.626 L693.581 187.539 L693.707 185.393 L693.750 183.194 L693.706 180.944 L693.570 178.648 L693.340 176.309 L693.011 173.932 L692.580 171.522 L692.045 169.084 L691.402 166.622 L690.650 164.141 L689.785 161.647 L688.806 159.146 L687.711 156.643 L686.498 154.144 L685.167 151.654 L683.717 149.180 L682.147 146.727 L680.456 144.302 L678.646 141.910 L676.716 139.559 L674.667 137.253 L672.500 135.000 L670.217 132.805 L667.819 130.674 L665.308 128.614 L662.686 126.629 L659.957 124.727 L657.123 122.913 L654.187 121.193 L651.153 119.571 L648.025 118.054 L644.806 116.646 L641.502 115.353 L638.117 114.179 L634.655 113.129 L631.122 112.208 L627.524 111.418 L623.865 110.765 L620.153 110.252 L616.392 109.881 L612.589 109.657 L608.750 109.582 L604.882 109.658 L600.992 109.887 L597.086 110.272 L593.171 110.814 L589.255 111.513 L585.344 112.371 L581.445 113.389 L577.566 114.566 L573.714 115.901 L569.896 117.396 L566.119 119.048 L562.390 120.857 L558.717 122.820 L555.106 124.936 L551.565 127.203 L548.100 129.618 L544.719 132.178 L541.427 134.880 L538.231 137.720 L535.138 140.694 L532.153 143.798 L529.284 147.028 L526.534 150.378 L523.911 153.844 L521.418 157.420 L519.062 161.101 L516.847 164.880 L514.777 168.753 L512.857 172.712 L511.090 176.750 L509.481 180.863 L508.032 185.041 L506.746 189.279 L505.627 193.570 L504.675 197.905 L503.894 202.279 L503.285 206.683 L502.849 211.109 L502.587 215.551 L502.500 220.000 L502.587 224.449 L502.849 228.891 L503.285 233.317 L503.894 237.721 L504.675 242.095 L505.627 246.430 L506.746 250.721 L508.032 254.959 L509.481 259.137 L511.090 263.250 L512.857 267.288 L514.777 271.247 L516.847 275.120 L519.062 278.899 L521.418 282.580 L523.911 286.156 L526.534 289.622 L529.284 292.972 L532.153 296.202 L535.138 299.306 L538.231 302.280 L541.427 305.120 L544.719 307.822 L548.100 310.382 L551.565 312.797 L555.106 315.064 L558.717 317.180 L562.390 319.143 L566.119 320.952 L569.896 322.604 L573.714 324.099 L577.566 325.434 L581.445 326.611 L585.344 327.629 L589.255 328.487 L593.171 329.186 L597.086 329.728 L600.992 330.113 L604.882 330.342 L608.750 330.418 L612.589 330.343 L616.392 330.119 L620.153 329.748 L623.865 329.235 L627.524 328.582 L631.122 327.792 L634.655 326.871 L638.117 325.821 L641.502 324.647 L644.806 323.354 L648.025 321.946 L651.153 320.429 L654.187 318.807 L657.123 317.087 L659.957 315.273 L662.686 313.371 L665.308 311.386 L667.819 309.326 L670.217 307.195 L672.500 305.000 L674.667 302.747 L676.716 300.441 L678.646 298.090 L680.456 295.698 L682.147 293.273 L683.717 290.820 L685.167 288.346 L686.498 285.856 L687.711 283.357 L688.806 280.854 L689.785 278.353 L690.650 275.859 L691.402 273.378 L692.045 270.916 L692.580 268.478 L693.011 266.068 L693.340 263.691 L693.570 261.352 L693.706 259.056 L693.750 256.806 L693.707 254.607 L693.581 252.461 L693.375 250.374 L693.095 248.347 L692.745 246.383 L692.328 244.486 L691.852 242.658 L691.319 240.900 L690.734 239.215 L690.104 237.604 L689.433 236.068 L688.725 234.609 L687.986 233.226 L687.221 231.921 L686.435 230.693 L685.633 229.542 L684.820 228.467 L684.001 227.469 L683.180 226.545 L682.362 225.694 L681.552 224.915 L680.755 224.206 L679.974 223.565 L679.213 222.989 L678.478 222.476 L677.771 222.023 L677.096 221.627 L676.457 221.286 L675.856 220.994 L675.298 220.750 L674.784 220.548 L674.317 220.386 L673.899 220.259 L673.534 220.164 L673.221 220.095 L672.963 220.049 L672.761 220.021 L672.616 220.006 L672.529 220.001 L672.500 220.000 Z" fill="#a2d9da" fill-opacity="0.75" id="analytic-cardioid" stroke="#087e85" stroke-width="3"></path>
+<path d="M296 185 H407" fill="none" marker-end="url(#cardioid-arrow)" stroke="#526a78" stroke-width="2"></path>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="16">
+<text x="283" y="162">c = λ/2 − λ²/4</text>
+<text x="112" y="363">|λ| &lt; 1</text>
+<text x="600" y="363">period 1</text>
+<text x="420" y="294">period 2</text>
+<text x="638" y="245">0</text>
+<text x="166" y="245">0</text>
+<text x="251" y="249">1</text>
+<text x="47" y="249">−1</text>
+<text x="731" y="183">cusp</text>
+<text x="731" y="207">c = 1/4</text>
+<text x="424" y="108">attachment</text>
+<text x="424" y="132">c = −3/4</text>
+</g>
+<g fill="#087e85">
+<circle cx="165" cy="220" r="4"></circle>
+<circle cx="70" cy="220" r="4"></circle>
+<circle cx="260" cy="220" r="4"></circle>
+<circle cx="630" cy="220" r="4"></circle>
+<circle cx="502.5" cy="220" r="4"></circle>
+<circle cx="672.5" cy="220" r="4"></circle>
+</g>
+<g fill="none" stroke="#526a78" stroke-width="1.5">
+<path d="M673 220 L720 187"></path>
+<path d="M503 220 L477 144"></path>
+</g>
+</svg>
+<figcaption>The cardioid outline is sampled from its exact analytic equation. The circle on its left is the exact period-two component. Other Mandelbrot decorations are omitted to expose the geometry.</figcaption>
+</figure>
+<figure class="widget" data-widget="multiplier-map" data-lambda="0.5,0.5" hidden>
+<figcaption>Try it: drag <var>λ</var> in the unit disk or <var>c</var> in the parameter plane, or type <var>λ</var>. The marked angles on the unit circle map to the roots where bulbs attach; at angle <var>p</var>/<var>q</var> the bulb has period <var>q</var>, as explained under <a href="#rotation-numbers">Rational angles and the periods of satellite bulbs</a>. Outside the unit circle this fixed point repels.</figcaption>
+</figure>
+<p>The word “cardioid” also appears when describing the large heart-shaped component of a miniature Mandelbrot copy. Such components resemble the main cardioid, but are generally distorted in the original parameter coordinates. The exact formula above belongs to the main period-one component of the quadratic family.</p>
+<h2 id="period-two">An exact calculation for the period-two disk</h2>
+<p>Points that return after two steps satisfy <var>f</var><sub>c</sub><sup>2</sup>(<var>z</var>) − <var>z</var> = 0. Factoring separates the fixed points from the two-cycle:</p>
+<div class="equation">(<var>z</var><sup>2</sup> + <var>c</var>)<sup>2</sup> + <var>c</var> − <var>z</var> = (<var>z</var><sup>2</sup> − <var>z</var> + <var>c</var>)(<var>z</var><sup>2</sup> + <var>z</var> + <var>c</var> + 1).</div>
+<p>Away from the collision at <var>c</var> = −3/4, the roots <var>a</var>, <var>b</var> of the second factor form a genuine two-cycle. Their product is <var>a</var><var>b</var> = <var>c</var> + 1, so the cycle multiplier is λ = (2<var>a</var>)(2<var>b</var>) = 4(<var>c</var> + 1). Attraction is therefore equivalent to</p>
+<div class="equation">|<var>c</var> + 1| &lt; 1/4.</div>
+<p>The period-two component is exactly the open disk of radius 1/4 centered at −1. At its center, the critical point belongs to the cycle 0 ↔ −1. At its rightmost point −3/4, the cycle merges with a fixed point whose multiplier is −1. At its leftmost point −5/4, the two-cycle has multiplier −1 and the period-four satellite attaches.</p>
+<p>Higher-period bulbs may look round at a distance, but their boundaries are not in general circles.</p>
+<h2 id="centers">Centers and multiplier coordinates</h2>
+<p>Every hyperbolic component in the quadratic Mandelbrot set has one <strong>center</strong>: the parameter where its attracting cycle is superattracting. Since the multiplier is a product of factors 2<var>a</var><sub>j</sub>, it vanishes exactly when one cycle point is zero. Thus a period-<var>n</var> center satisfies <var>f</var><sub>c</sub><sup>n</sup>(0) = 0, with no earlier return.</p>
+<p>For example, the period-three equation factors as</p>
+<div class="equation"><var>f</var><sub>c</sub><sup>3</sup>(0) = <var>c</var>(<var>c</var><sup>3</sup> + 2<var>c</var><sup>2</sup> + <var>c</var> + 1) = 0.</div>
+<p>The root zero already belongs to period one. The cubic factor gives three period-three centers: approximately −0.122561 ± 0.744862<var>i</var>, the rabbit and conjugate rabbit components, and −1.754878, the real period-three component. A single period can therefore occur in multiple places with different geometry and combinatorics.</p>
+<p>The multiplier is more than a stability test: within a quadratic hyperbolic component it is a conformal coordinate, mapping that component one-to-one onto the unit disk. The center maps to zero; boundary values have modulus one. This allows <strong>internal rays</strong> to be defined by keeping the multiplier’s argument fixed while increasing its modulus. This is the Multiplier Theorem of Douady and Hubbard; Lyubich’s book proves it as <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Theorem 35.3</a>.</p>
+<h2 id="counting">How many components of each period?</h2>
+<p>Centers can be counted exactly. The center condition <var>f</var><sub>c</sub><sup>n</sup>(0)&nbsp;=&nbsp;0 is a polynomial equation in <var>c</var> of degree 2<sup><var>n</var>−1</sup>: for <var>n</var>&nbsp;=&nbsp;3 it is the equation of degree 4 above. Its roots are the centers of all components whose period divides <var>n</var>. Each root is simple, so every center is counted exactly once, a fact known as Gleason’s lemma (<a href="https://pi.math.cornell.edu/~hubbard/OrsayEnglish.pdf">Douady and Hubbard’s Orsay notes</a>, Lemma 19.1). Writing ν(<var>n</var>) for the number of components of exact period <var>n</var>, this gives</p>
+<div class="equation">∑<sub><var>d</var> | <var>n</var></sub> ν(<var>d</var>) = 2<sup><var>n</var>−1</sup>.</div>
+<p>For <var>n</var>&nbsp;=&nbsp;3: ν(1) + ν(3)&nbsp;=&nbsp;4, so ν(3)&nbsp;=&nbsp;3, the three centers found above. For <var>n</var>&nbsp;=&nbsp;4: ν(1) + ν(2) + ν(4)&nbsp;=&nbsp;8, so ν(4)&nbsp;=&nbsp;6. The numbers grow quickly (<a href="https://oeis.org/A000740">OEIS A000740</a>):</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Period <var>n</var></th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">4</th>
+<th scope="col">5</th>
+<th scope="col">6</th>
+<th scope="col">7</th>
+<th scope="col">8</th>
+<th scope="col">9</th>
+<th scope="col">10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Components ν(<var>n</var>)</th>
+<td>1</td><td>1</td><td>3</td><td>6</td><td>15</td><td>27</td><td>63</td><td>120</td><td>252</td><td>495</td>
+</tr>
+<tr>
+<th scope="row">Satellites</th>
+<td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>7</td><td>6</td><td>12</td><td>12</td><td>23</td>
+</tr>
+<tr>
+<th scope="row">Primitive</th>
+<td>1</td><td>0</td><td>1</td><td>3</td><td>11</td><td>20</td><td>57</td><td>108</td><td>240</td><td>472</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The satellites are counted with the rule of the next section: a component of period <var>d</var> carries one satellite for each fraction <var>p</var>/<var>q</var> in lowest terms between 0 and 1, of period <var>dq</var>. The remaining components are primitive. Most components are primitive, and so most small copies of the Mandelbrot set are primitive too. In 2024 all centers up to period 41 were computed; for the prime period 41 there are 2<sup>40</sup> − 1 = 1,099,511,627,775 of them (<a href="https://arxiv.org/abs/2402.06083">Vigneron and Mihalache</a>).</p>
+<p>Where do all these centers lie? Give each of the 2<sup><var>n</var>−1</sup> centers of period dividing <var>n</var> the weight 2<sup>−(<var>n</var>−1)</sup>. As <var>n</var> grows, these weights spread out over the boundary of <var>M</var> in the same way as the <strong>harmonic measure</strong> of <var>M</var>, the distribution in which a random particle coming in from far away would hit the set (Genadi Levin, 1990; restated by <a href="https://arxiv.org/abs/math/0601612">Dujardin and Favre</a>, Corollary 2). So the centers of high period crowd near the parts of the boundary that are easy to reach from outside. The real axis is not one of them: its harmonic measure is zero (<a href="https://arxiv.org/abs/math/0210382">Zakeri</a>), and indeed the share of real components falls from 1/3 in period 3 to 170 of 2,010, about 8%, in period 12.</p>
+<aside class="callout">
+<p><strong>Why each center counts once.</strong> Write <var>G</var><sub>n</sub>(<var>c</var>) = <var>f</var><sub>c</sub><sup>n</sup>(0), so that <var>G</var><sub>n</sub> = <var>G</var><sub>n−1</sub><sup>2</sup> + <var>c</var>. Its coefficients are integers and its leading coefficient is 1, so every root is an algebraic integer. Differentiating gives <var>G</var><sub>n</sub>′ = 2<var>G</var><sub>n−1</sub><var>G</var><sub>n−1</sub>′ + 1, which is 1 plus twice an algebraic integer at a root. It cannot vanish, because 1/2 is not an algebraic integer. So no root is repeated.</p>
+</aside>
+<h2 id="rotation-numbers">Rational angles and the periods of satellite bulbs</h2>
+<p>Follow a period-<var>n</var> component to a boundary parameter where its cycle multiplier is λ = e<sup>2πi p/q</sup>, with <var>p</var>/<var>q</var> reduced and <var>q</var> ≥ 2. A satellite component of period <var>nq</var> attaches there. The old cycle has a rationally neutral multiplier; viewed after <var>q</var> returns, the multiplier is one. The bifurcation creates an attracting cycle with <var>q</var> times as many points on the satellite side.</p>
+<p>For satellites attached directly to the main cardioid, <var>n</var> = 1, so the denominator <var>q</var> is their period. The fraction <var>p</var>/<var>q</var> is the <strong>rotation number</strong>, and it can be seen in the Julia set. For every <var>c</var> in the <var>p</var>/<var>q</var> bulb, the repelling fixed point called α is a meeting point of <var>q</var> arms of the Julia set, and the map turns these arms like a wheel, advancing each by <var>p</var> places out of <var>q</var>. In Douady’s rabbit, from the 1/3 bulb, the three main lobes, the body and the two ears, meet at α&nbsp;≈&nbsp;−0.276&nbsp;+&nbsp;0.480<var>i</var>, and each step of the map carries one lobe to the next. The <a href="rays.html#dynamical-rays">external rays</a> at angles 1/7, 2/7 and 4/7 land at α, and doubling permutes them, 1/7 → 2/7 → 4/7 → 1/7: a rotation by one third (<a href="https://arxiv.org/abs/math/9905169">Milnor</a>).</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Internal angle</th>
+<th scope="col">Primary bulb period</th>
+<th scope="col">Attachment to the main cardioid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/2</td>
+<td>2</td>
+<td>−3/4</td>
+</tr>
+<tr>
+<td>1/3</td>
+<td>3</td>
+<td>−1/8 + (3√3/8)<var>i</var></td>
+</tr>
+<tr>
+<td>2/3</td>
+<td>3</td>
+<td>−1/8 − (3√3/8)<var>i</var></td>
+</tr>
+<tr>
+<td>1/4</td>
+<td>4</td>
+<td>1/4 + <var>i</var>/2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The coordinates follow by substituting e<sup>2πi p/q</sup> into the cardioid equation. Notice that the internal angle 1/3 is not the ordinary polar angle of its attachment measured from <var>c</var> = 0. Internal coordinates belong to multiplier space.</p>
+<p>These fractions have a Farey-tree organization. For neighboring fractions <var>p</var>/<var>q</var> and <var>r</var>/<var>s</var> with |<var>ps</var> − <var>rq</var>| = 1, their mediant is (<var>p</var> + <var>r</var>)/(<var>q</var> + <var>s</var>). Between 1/3 and 1/2, the next lowest-denominator label is 2/5; between 1/3 and 2/5 it is 3/8. Repeating this between neighbors gives the fractions 1/2, 1/3, 2/5, 3/8, 5/13, …, with the Fibonacci numbers as denominators (<a href="https://doi.org/10.1080/00029890.1999.12005046">Devaney, 1999</a>; <a href="https://math.bu.edu/DYSYS/explorer/tour9.html">Devaney’s exploration of bulb rotation numbers</a>). The bulbs with periods 2, 3, 5, 8, 13, … therefore approach, alternating from side to side, the boundary point with internal angle (3 − √5)/2 ≈ 0.382. It is the mirror image of the point with internal angle (√5 − 1)/2, where the map has the classical golden-mean <a href="neutral.html#golden-mean">Siegel disk</a>.</p>
+<h2 id="roots">Roots, primitive components, and satellites</h2>
+<p>The <strong>root</strong> of a hyperbolic component is its distinguished boundary point where the component’s multiplier coordinate tends to one. For a satellite, this is its point of attachment to its parent. At that shared parameter, the actual parabolic orbit has the parent’s smaller period: the child’s multiplier tends to one because it records a longer return.</p>
+<p>A <strong>primitive component</strong> does not meet a lower-period parent at its root. Its root has a parabolic orbit of the same exact period as the component. Primitive components supply the heart-shaped cores of primitive <a href="minibrots.html">miniature Mandelbrot copies</a>. “Primitive component” and “primitive period” are separate uses of the word: primitive period simply means least period for any cycle.</p>
+<p>Roots other than the main cardioid cusp are landing points of two periodic external parameter rays. The cusp at <var>c</var> = 1/4 has the single angle-zero ray. The pair of rays describes a <strong>wake</strong>, a region on the far side of the root that contains the corresponding limb. This is a precise combinatorial replacement for judging attachments by eye. See <a href="https://arxiv.org/abs/math/9905169">Milnor’s account of periodic orbits, external rays, and the Mandelbrot set</a>.</p>
+<h2 id="doubling">Period doubling and its limit</h2>
+<p>The real-axis chain starts with a stable fixed point, loses stability at <var>c</var> = −3/4, and continues with a stable two-cycle. At −5/4 a four-cycle appears. Further bifurcations produce periods 8, 16, 32, … . The parameter intervals become smaller and accumulate at the real <strong>Feigenbaum parameter</strong>, approximately −1.401155189.</p>
+<figure class="widget" data-widget="cobweb" data-c="-1.1" hidden>
+<figcaption>Try it: drag across the bifurcation diagram, type <var>c</var> or choose a preset. Above each real <var>c</var> the diagram plots the values the orbit of 0 keeps visiting, so the branches split at each period doubling; the dashed lines mark −3/4, −5/4 and the Feigenbaum point. The cobweb follows the orbit of 0 for the chosen <var>c</var>: vertically to the parabola <var>y</var> = <var>x</var><sup>2</sup> + <var>c</var>, then horizontally back to the diagonal <var>y</var> = <var>x</var>.</figcaption>
+</figure>
+<p>Period doubling is the satellite rule with <var>q</var> = 2 repeated indefinitely. Its limit, the <a href="special-points.html#feigenbaum">Feigenbaum point</a>, is an <strong>infinitely renormalizable</strong> parameter: it has no attracting cycle at all. The lengths of the doubling intervals shrink by a ratio approaching Feigenbaum’s δ ≈ 4.669, the universal number described in the <a href="minibrots.html#self-similarity-and-universality">minibrots chapter</a> and, for experiments, in the <a href="chaos.html#period-doubling">chapter on chaos</a>.</p>
+<p>Period-doubling cascades also occur inside other periodic structures. A period-three component can have a period-six child, then period twelve, and so on. Other rational satellite angles produce other period multiplications, so the periods of the Mandelbrot set are far richer than the single sequence 1, 2, 4, 8, … .</p>
+<h2 id="parabolic-boundaries">Neutral boundaries and slow dynamics</h2>
+<p>At a root-of-unity boundary multiplier, the cycle is <strong>parabolic</strong>. Attraction can persist through particular regions called petals, but is slower than the geometric convergence of a strictly attracting cycle. Nearby escaping orbits may spend a very long time near this almost-neutral cycle. Thin bright bands and elaborate patterns near cusps often reflect these large escape times.</p>
+<p>At irrational internal angles, the boundary cycle is irrationally neutral, and the map has a Siegel disk or a Cremer point. The rational angles, where satellites attach, are dense on the boundary of each component, but the irrational ones fill most of it. The <a href="neutral.html">chapter on neutral cycles</a> describes these cases.</p>
+<p>All of this concerns components with an attracting cycle. Whether every component of the interior of the Mandelbrot set is of this kind is the open problem of density of hyperbolicity; the <a href="open-questions.html#hyperbolicity">chapter on open questions</a> explains what is known about it.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>A hyperbolic component is a connected region of parameters with an attracting cycle of a fixed period; its center is the one parameter where the critical point lies on that cycle.</li>
+<li>The main cardioid is c = λ/2 − λ<sup>2</sup>/4 for |λ| &lt; 1, and the period-two component is the disk |<var>c</var> + 1| &lt; 1/4; both follow from a few lines of algebra.</li>
+<li>The multiplier is a coordinate on each component, and at the boundary point where it equals e<sup>2π<var>i</var><var>p</var>/<var>q</var></sup> a satellite with <var>q</var> times the period is attached.</li>
+<li>There are 2<sup><var>n</var>−1</sup> centers of period dividing <var>n</var>, each counted once; most components are primitive.</li>
+<li>The rotation number <var>p</var>/<var>q</var> of a bulb can be seen in its Julia sets, whose <var>q</var> arms at the fixed point α are turned by <var>p</var> places at each step.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>Find the point where the bulb with internal angle 1/2 is attached, and the period of that bulb.</summary><div class="answer"><p>With λ = e<sup>π<var>i</var></sup> = −1, <var>c</var> = −1/2 − 1/4 = −3/4. The denominator is 2, so the bulb has period 2: it is the period-two disk |<var>c</var> + 1| &lt; 1/4, which indeed touches −3/4.</p></div></details></li>
+<li><details><summary>For <var>c</var> = −1.2, what is the multiplier of the two-cycle? Is it attracting?</summary><div class="answer"><p>λ = 4(<var>c</var> + 1) = 4 · (−0.2) = −0.8. Its modulus is less than 1, so the two-cycle attracts; −1.2 lies in the period-two disk, since |−1.2 + 1| = 0.2 &lt; 1/4.</p></div></details></li>
+<li><details><summary>How many components of exact period 5 are there? Use the counting formula.</summary><div class="answer"><p>The divisors of 5 are 1 and 5, so ν(1) + ν(5) = 2<sup>4</sup> = 16 and ν(5) = 15. Of these, 4 are satellites of the main cardioid (internal angles 1/5, 2/5, 3/5, 4/5) and 11 are primitive.</p></div></details></li>
+<li><details><summary>Which period does the bulb between the 1/3 and 2/5 bulbs on the main cardioid have, the one with the smallest denominator?</summary><div class="answer"><p>The mediant of 1/3 and 2/5 is (1 + 2)/(3 + 5) = 3/8, so the bulb has period 8.</p></div></details></li>
+<li><details><summary>Why can the center of a hyperbolic component not lie on the boundary of the Mandelbrot set?</summary><div class="answer"><p>At the center the cycle is superattracting, with multiplier 0. Small changes of <var>c</var> change the multiplier only slightly, so it stays smaller than 1 in modulus, and the cycle stays attracting: all nearby parameters belong to the same component, so the center is an interior point.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://math.bu.edu/DYSYS/FRACGEOM/node3.html">Robert Devaney — Periods of the Bulbs</a>, and <a href="https://math.bu.edu/DYSYS/explorer/tour9.html">rotation numbers and Farey organization</a>.</li>
+<li><a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf">Mikhail Lyubich — Conformal Geometry and Dynamics of Quadratic Polynomials</a>, §33 (the parameter plane) and §35 (hyperbolic components); a book draft, 35 MB PDF.</li>
+<li><a href="https://arxiv.org/abs/math/9905169">John Milnor — Periodic orbits, external rays and the Mandelbrot set: an expository account</a>.</li>
+<li><a href="https://pi.math.cornell.edu/~hubbard/OrsayEnglish.pdf">Adrien Douady and John Hubbard — Exploring the Mandelbrot set: the Orsay notes</a>, with hyperbolic components (chapter 14) and Gleason’s lemma (chapter 19).</li>
+<li><a href="https://doi.org/10.1080/00029890.1999.12005046">Robert Devaney — The Mandelbrot set, the Farey tree, and the Fibonacci sequence</a> (American Mathematical Monthly, 1999).</li>
+<li><a href="https://people.math.harvard.edu/~ctm/papers/home/text/papers/real/book.pdf">Curtis McMullen — Complex Dynamics and Renormalization</a>, §1.2: density of hyperbolicity and related conjectures.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="history.html" rel="prev"><small>Previous</small> A short history</a><a class="pagination-next" href="rays.html" rel="next"><small>Next</small> External rays &amp; angles</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

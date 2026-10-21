@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Choose a parameter, compare its dynamical plane, and investigate how a finite picture relates to an infinite definition. These experiments run locally in your browser and require no external service.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Gallery &amp; interactive lab — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/explorer.js" defer></script>
+<script src="assets/js/zoom.js" defer></script>
+</head>
+<body data-page="gallery">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
+<li><a href="gallery.html" aria-current="page"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 19</span> · Compute, explore &amp; look up</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#explorer">A point becomes a Julia picture</a></li><li><a href="#julia-gallery">Six dynamical worlds</a></li><li><a href="#zoom-gallery">A copy, a boundary point, and a cusp</a></li><li><a href="#zoom-viewer">Zoom in yourself</a></li><li><a href="#image-method">How these illustrations were made</a></li><li><a href="#learning-more">Continue the experiments mathematically</a></li></ol></nav></details>
+<article class="chapter">
+<h1>Gallery &amp; interactive lab</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></span><span class="visually-hidden">Level: </span>Introductory</span></p>
+<p class="lead">Choose a parameter, compare its dynamical plane, and investigate how a finite picture relates to an infinite definition. These experiments run locally in your browser and require no external service.</p>
+<h2 id="explorer">A point becomes a Julia picture</h2>
+<p>Click the Mandelbrot image to choose <var>c</var>, choose a named example, or enter real and imaginary coordinates. The Julia view redraws the corresponding filled-Julia approximation and its exterior. Watch how connected-looking forms break into dust as the parameter leaves the Mandelbrot set.</p>
+<div class="explorer" hidden id="fractal-lab">
+<div class="explorer-controls">
+<label>Example<select id="lab-example">
+<option value="basilica">Basilica · c = −1</option>
+<option value="circle">Circle · c = 0</option>
+<option value="rabbit">Douady rabbit</option>
+<option value="cauliflower">Parabolic · c = 1/4</option>
+<option value="dendrite">Misiurewicz · c = i</option>
+<option value="dust">Cantor dust · c = 1</option>
+<option value="interval">Interval · c = −2</option>
+<option value="custom">Custom parameter</option>
+</select></label>
+<label>Real part of c<input id="lab-real" max="3" min="-3" step="any" type="number" value="-1"></label>
+<label>Imaginary part of c<input id="lab-imag" max="3" min="-3" step="any" type="number" value="0"></label>
+<label>Julia iteration budget<select id="lab-iterations">
+<option value="100">100</option>
+<option selected value="250">250</option>
+<option value="600">600</option>
+</select></label>
+<button id="lab-render" type="button">Render Julia view</button>
+</div>
+<div class="explorer-grid">
+<div>
+<h3>Parameter plane · click to select <var>c</var></h3>
+<canvas aria-label="Interactive Mandelbrot parameter image. Use the coordinate fields or example selector as a keyboard-accessible alternative." height="360" id="lab-mandelbrot" role="img" width="480">A Mandelbrot parameter map. Use the static comparison below if canvas is unavailable.</canvas>
+<p class="plate-caption">Re(c): −2.2 to 1.0 · Im(c): −1.2 to 1.2 · 350 iterations</p>
+</div>
+<div>
+<h3>Dynamical plane · selected Julia view</h3>
+<canvas aria-label="Computed Julia escape-time image for the selected parameter." height="360" id="lab-julia" role="img" width="480">A Julia escape-time image. Static examples follow below.</canvas>
+<p class="plate-caption">Re(z): −2.1 to 2.1 · Im(z): −1.575 to 1.575</p>
+</div>
+</div>
+<p aria-live="polite" class="explorer-status" id="lab-status" role="status">Preparing the experiment…</p>
+</div>
+<noscript>
+<p class="callout">JavaScript is disabled. The computed image gallery, equations, and all chapters remain available; the interactive experiment requires JavaScript.</p>
+</noscript>
+<div class="callout">
+<p><strong>This is a finite experiment, not a membership oracle.</strong> Dark samples have not escaped within their budget: 350 iterations in the parameter map, and the selected budget in the Julia view. The live renderer does not identify every basin or classify every neutral orbit. Zero-area Julia sets can be almost invisible because they fall between sample points. The c = −2 example adds its exact interval as a visibility guide; the static dust plate below uses inverse-iteration points.</p>
+</div>
+<h3>Experiments to try</h3>
+<ol>
+<li>Start with <var>c</var> = 0. The filled Julia set is the unit disk; its boundary is the unit circle. Set <var>c</var> = −1 to see the basilica and its attracting two-cycle.</li>
+<li>Move <var>c</var> along the real axis from −0.7 to −0.8. This crosses the main cardioid’s period-doubling attachment at −3/4. Compare the orbit explanation in <a href="periodicity.html">Cardioids, bulbs &amp; periods</a>.</li>
+<li>Compare <var>c</var> = 0.24, 0.25, and 0.26. Near the parabolic cusp, increase the iteration budget and look for slow exterior escape.</li>
+<li>Choose the rabbit example. The decimal approximates a superattracting period-three center; its dynamical arrangement reflects a three-cycle.</li>
+<li>Choose <var>c</var> = 1 and then <var>c</var> = <var>i</var>. Both can look sparse, but one is outside the Mandelbrot set and gives Cantor dust, while the other is a connected Misiurewicz example. A picture’s apparent thickness is not its connectedness.</li>
+</ol>
+<h2 id="julia-gallery">Six dynamical worlds</h2>
+<figure>
+<a href="assets/images/julia-grid.png"><img alt="Six Julia examples: unit circle, basilica, interval, Douady rabbit, parabolic cauliflower, and disconnected Cantor dust." class="fractal-image" loading="lazy" src="assets/images/julia-grid.png" width="2184" height="1262"></a>
+<figcaption>All six panels use the same dynamical window. Dark regions represent finite-time non-escape, and colored regions encode exterior escape time. The interval and dust receive explicit visibility overlays explained below. <a href="julia.html">Read the mathematical interpretations.</a> <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Exact or intended model</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>c</var> = 0</td>
+<td><var>f</var>(<var>z</var>) = <var>z</var>²</td>
+<td><var>K</var> is the closed unit disk; <var>J</var> is its boundary circle.</td>
+</tr>
+<tr>
+<td><var>c</var> = −1</td>
+<td>Basilica</td>
+<td>The critical point belongs to the superattracting cycle 0 ↔ −1.</td>
+</tr>
+<tr>
+<td><var>c</var> = −2</td>
+<td>Chebyshev interval</td>
+<td><var>K</var> = <var>J</var> = [−2, 2]; no two-dimensional filled interior.</td>
+</tr>
+<tr>
+<td><var>c</var> ≈ −0.122561166876 + 0.744861766620i</td>
+<td>Douady rabbit center, to within 10<sup>−12</sup></td>
+<td>The exact root of the period-three center equation is superattracting. The plotted decimal is nearby.</td>
+</tr>
+<tr>
+<td><var>c</var> = 1/4</td>
+<td>Parabolic cauliflower</td>
+<td>The critical orbit approaches the neutral fixed point 1/2.</td>
+</tr>
+<tr>
+<td><var>c</var> = 1</td>
+<td>Escaping critical orbit</td>
+<td>0 → 1 → 2 → 5 → …; the Julia set is a totally disconnected Cantor set.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="zoom-gallery">A copy, a boundary point, and a cusp</h2>
+<figure>
+<a href="assets/images/minibrot-triptych.png"><img alt="Three increasingly close views of a period-three Mandelbrot copy on the real antenna near c=-1.754877666." class="fractal-image" loading="lazy" src="assets/images/minibrot-triptych.png" width="1944" height="606"></a>
+<figcaption>The real period-three minibrot. Gold rectangles identify the next window; each panel is computed independently at 1,600 iterations. Similarity is not exact Euclidean rescaling. <a href="gallery.html#zoom=-1.765,0,0.07">Open this window in the zoom viewer</a>. <a href="minibrots.html">Why copies occur</a>. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<div class="image-grid">
+<figure>
+<a href="assets/images/misiurewicz-detail.png"><img alt="Mandelbrot filaments ending around the marked Misiurewicz parameter c=i." class="fractal-image" loading="lazy" src="assets/images/misiurewicz-detail.png" width="1200" height="1016"></a>
+<figcaption><var>c</var> = <var>i</var>: a strictly preperiodic critical orbit. <a href="special-points.html">Follow its exact orbit.</a> <a href="gallery.html#zoom=0,1,0.14">Open this window in the zoom viewer</a>. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+<figure>
+<a href="assets/images/parabolic-detail.png"><img alt="Close view of the Mandelbrot main cardioid cusp around c=1/4." class="fractal-image" loading="lazy" src="assets/images/parabolic-detail.png" width="1200" height="1016"></a>
+<figcaption><var>c</var> = 1/4: a parabolic fixed point and nearby slow escape. <a href="neutral.html#implosion">Understand the bottleneck.</a> <a href="gallery.html#zoom=0.25,0,0.1">Open this window in the zoom viewer</a>. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
+</figure>
+</div>
+<h2 id="zoom-viewer">Zoom in yourself</h2>
+<p>The plates above are fixed windows. The viewer below lets you choose your own: drag the picture to move it, click to zoom in and Shift-click to zoom out, or use the buttons, the arrow and +/− keys, or the wheel with Ctrl or ⌘ held. The window list includes the windows of the plates in this atlas.</p>
+<figure class="widget" data-widget="zoom" hidden>
+<figcaption>Dark pixels have not escaped within the iteration budget shown, which grows with the magnification. The viewer uses ordinary double-precision numbers, which run out at a width of roughly 10<sup>−12</sup> around the set: there neighboring pixels are only a few representable numbers apart, and the viewer stops zooming. Deeper zooms need arithmetic with more digits.</figcaption>
+</figure>
+<h2 id="image-method">How these illustrations were made</h2>
+<p>The methods themselves, and what each of them proves, are explained in the chapter on <a href="computing.html">computing the pictures</a>. This section records how the atlas’s own plates were made.</p>
+<p>The raster plates use the recurrence directly in binary64 arithmetic, sampling the center of each image pixel. Mandelbrot images start at zero and vary <var>c</var>; Julia images fix <var>c</var> and vary the initial point. Analytic tests mark the main cardioid and period-two disk in Mandelbrot plots. Other samples stop when they escape or reach the iteration budget.</p>
+<p>Mandelbrot escape uses |<var>z</var>| &gt; 2. For Julia plots the chosen radius is max(2, |<var>c</var>| + 1). Any radius of at least max(2, |<var>c</var>|) certifies escape for every <var>c</var> (see the <a href="mathematics.html#escape-proof">escape proof</a>), so this slightly larger one is valid too. After a detected escape, a fractional count based on <var>n</var> + 1 − log₂(log|<var>z</var><sub>n</sub>|) selects a cyclic blue–teal–gold palette. The count’s additive normalization and palette are artistic choices, not additional set membership rules.</p>
+<p>Two cases need visible geometric guides. For <var>c</var> = −2, the exact line segment [−2, 2] is drawn over the escape-time image, since a two-dimensional sample grid may miss it entirely. For <var>c</var> = 1, a pseudo-random backward orbit with a fixed seed repeatedly chooses a branch of <var>z</var> ← ±√(<var>z</var> − 1), starting at a repelling fixed point. Its plotted points make the Cantor Julia set visible. They are finite numerical samples, not filled disks or a proof that all Julia points were found.</p>
+<p>Labels, markers, period badges, and zoom rectangles are explanatory overlays. No picture is copied from a source publication; all were computed for this atlas. Exact sample sizes, coordinates, iteration budgets, and overlay notes are recorded in the local <a href="assets/data/image-data.json">image data manifest</a>.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Plate</th>
+<th>Parameter or window</th>
+<th>Iteration budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mandelbrot overview / period labels</td>
+<td>Re(c) ∈ [−2.2, 0.8]; Im(c) ∈ [−1.125, 1.125]</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td>Julia gallery</td>
+<td>Re(z) ∈ [−2.1, 2.1]; Im(z) ∈ [−1.575, 1.575]; parameters listed above</td>
+<td>1,200</td>
+</tr>
+<tr>
+<td>Minibrot middle / close panel</td>
+<td>[−1.95, −1.55] × [−0.15, 0.15] / [−1.8, −1.73] × [−0.02625, 0.02625]</td>
+<td>1,600</td>
+</tr>
+<tr>
+<td>Misiurewicz detail</td>
+<td>Re(c) ∈ [−0.07, 0.07]; Im(c) ∈ [0.9475, 1.0525]</td>
+<td>1,800</td>
+</tr>
+<tr>
+<td>Seahorse valley</td>
+<td>Re(c) ∈ [−0.79, −0.71]; Im(c) ∈ [0.06, 0.12]</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>Cusp detail</td>
+<td>Re(c) ∈ [0.20, 0.30]; Im(c) ∈ [−0.0375, 0.0375]</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>Iteration-budget comparison</td>
+<td>Re(c) ∈ [0.245, 0.285]; Im(c) ∈ [−0.015, 0.015]</td>
+<td>30 / 100 / 1,500</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="learning-more">Continue the experiments mathematically</h2>
+<p>The <a href="mathematics.html#escape-proof">escape proof</a> explains why crossing the radius can certify escape. <a href="orbits.html">Orbits and stability</a> explains why a long apparently quiet orbit need not be periodic. <a href="julia.html">Julia sets</a> distinguishes the boundary from the filled set, and <a href="numbers.html#dimension">dimension and area</a> explains why counting dark pixels cannot settle a geometric theorem.</p>
+<p class="chapter-checked">Sources checked on 20 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="deep-zoom.html" rel="prev"><small>Previous</small> Deep zoom</a><a class="pagination-next" href="glossary.html" rel="next"><small>Next</small> Glossary &amp; notation</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>
