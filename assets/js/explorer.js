@@ -4,8 +4,9 @@
 
    A finite experiment, not a membership test: every sample is iterated at most
    a fixed number of times, and dark pixels are samples that have not escaped
-   yet. Rendering yields to the browser every few rows, and a newer request
-   stops an older Julia render. The escape-time drawing itself is shared with
+   yet. The Julia view is drawn again whenever c or the budget changes: at once
+   for an example, a click on the map or Enter, and a moment after the typing
+   stops in a number field. A newer request stops an older Julia render. The escape-time drawing itself is shared with
    the orbit figures in atlas-kit.js, listed before this script in site.toml. */
 (() => {
   'use strict';
@@ -42,10 +43,12 @@
     interval: [-2, 0],
   };
 
+  const TYPING_PAUSE = 400;  // milliseconds after the last keystroke in a number field
   const MARKER_COLOUR = '#fff1c8';
   const INTERVAL_COLOUR = '#74dddc';
 
   let generation = 0;        // counts Julia requests; a render stops when it is no longer the latest
+  let typingTimer = null;    // the render waiting for the typing in a number field to stop
   let mapImage = null;       // the finished map, without the marker
   let selected = {re: -1, im: 0};
 
@@ -114,6 +117,7 @@
 
   // Renders the Julia view for the parameter in the input fields.
   async function render() {
+    clearTimeout(typingTimer);
     const re = Number(realInput.value);
     const im = Number(imaginaryInput.value);
     const budget = Number(budgetSelect.value);
@@ -142,7 +146,6 @@
     render();
   }
 
-  document.getElementById('lab-render').addEventListener('click', renderCustom);
   exampleSelect.addEventListener('change', () => {
     const example = EXAMPLES[exampleSelect.value];
     if (!example) return;
@@ -151,6 +154,10 @@
   });
   budgetSelect.addEventListener('change', render);
   for (const input of [realInput, imaginaryInput]) {
+    input.addEventListener('input', () => {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(renderCustom, TYPING_PAUSE);
+    });
     input.addEventListener('keydown', event => {
       if (event.key === 'Enter') renderCustom();
     });
