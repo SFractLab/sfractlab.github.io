@@ -406,7 +406,7 @@ button, input, select { font: inherit; color: inherit; }
 
 /* ---- Chapter text ------------------------------------------------------- */
 
-.chapter > :is(p, ul, ol, dl, h1, h2, h3, header, aside, noscript, .callout, .equation) { max-width: var(--measure); }
+.chapter > :is(p, ul, ol, dl, h1, h2, h3, header, aside, noscript, .callout, .equation, .key-equation) { max-width: var(--measure); }
 .chapter p { margin: 0 0 1.1em; }
 .chapter :is(ul, ol) { margin: 0 0 1.1em; padding-left: 1.4em; }
 .chapter li { margin: .35em 0; }
@@ -482,6 +482,24 @@ button, input, select { font: inherit; color: inherit; }
 }
 
 /* ---- Components --------------------------------------------------------- */
+
+/* The equation of the whole atlas, on the start page, in a tinted box. Its <h2>
+   stays in the table of contents but is drawn as the box's title. */
+.key-equation {
+  margin: 1.8em 0 2em;
+  padding: 1em 1.25em .55em;
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  text-align: center;
+}
+.chapter .key-equation h2 {
+  margin: 0;
+  padding-top: 0;
+  border-top: 0;
+  font: 650 1rem/1.4 var(--font-ui);
+  color: var(--accent-strong);
+}
+.key-equation .equation { margin: .2em 0 0; font-size: 1.3em; }
 
 .callout {
   margin: 1.6em 0;
@@ -623,9 +641,9 @@ figcaption var { font-size: 1.05em; }
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
-  transition: border-color .15s, translate .15s;
+  transition: border-color .15s, box-shadow .15s;
 }
-.card:hover { border-color: var(--accent); color: var(--ink); translate: 0 -2px; }
+.card:hover { border-color: var(--accent); color: var(--ink); box-shadow: var(--shadow); }
 .card .eyebrow { display: block; margin-bottom: .5rem; }
 .chapter .card h3 { margin: 0 0 .4rem; font: 700 1.3rem/1.25 var(--font-text); color: var(--accent); }
 .chapter .card p { margin: 0; font-size: .95em; color: var(--ink-soft); }
@@ -1009,7 +1027,8 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .sources a[href^="http"]::after { content: " <" attr(href) ">"; font-size: .85em; overflow-wrap: anywhere; }
   .chapter h2 { margin-top: 1.6em; }
   :is(h2, h3) { break-after: avoid; }
-  :is(figure, .equation, .callout, tr, .card, .key-ideas, .exercises > li) { break-inside: avoid; }
+  :is(figure, .equation, .key-equation, .callout, tr, .card, .key-ideas, .exercises > li) { break-inside: avoid; }
+  .key-equation { border: 1px solid var(--line-strong); }
   /* ui.js opens the answers before printing; ::details-content covers printing without it. */
   .exercises details::details-content { display: block; content-visibility: visible; }
   .exercises :is(summary, details[open] > summary)::after { content: none; }

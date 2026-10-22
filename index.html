@@ -74,7 +74,7 @@
 </div>
 </div>
 <div class="page">
-<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#two-worlds">The essential distinction</a></li><li><a href="#reading-path">A route through the atlas</a></li><li><a href="#look-for">What to look for</a></li><li><a href="#reading-pictures">Reading the pictures honestly</a></li><li><a href="#about">Scope and further study</a></li></ol></nav></details>
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#equation">The equation behind the Mandelbrot set and Julia sets</a></li><li><a href="#two-worlds">The essential distinction</a></li><li><a href="#reading-path">A route through the atlas</a></li><li><a href="#look-for">What to look for</a></li><li><a href="#reading-pictures">Reading the pictures</a></li><li><a href="#about">Scope and further study</a></li></ol></nav></details>
 <article class="chapter">
 <p class="eyebrow">An illustrated atlas of complex dynamics</p>
 <h1>Two worlds in one equation</h1>
@@ -82,10 +82,15 @@
 <figure class="widget" data-widget="place" data-window="-0.7,0,3" data-no-link hidden>
 <figcaption>The Mandelbrot set: the familiar outline is a map of parameters. Each point <var>c</var> selects its own dynamical system—and its own Julia set. Exterior colors visualize escape time; they are not intrinsic colors of the mathematical set.</figcaption>
 </figure>
+<div class="key-equation">
+<h2 id="equation">The equation behind the Mandelbrot set and Julia sets</h2>
 <div class="equation"><var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var><sup>2</sup> + <var>c</var>,    <var>z</var><sub>n+1</sub> = <var>f</var><sub>c</sub>(<var>z</var><sub>n</sub>).</div>
+</div>
 <h2 id="two-worlds">The essential distinction</h2>
-<div class="cards"><a class="card" href="mandelbrot.html"><span class="eyebrow">Parameter plane · vary <var>c</var></span><h3>The Mandelbrot set</h3><p>Start at zero. Which choices of the constant c keep that orbit bounded? The answers make one set in the parameter plane.</p></a><a class="card" href="julia.html"><span class="eyebrow">Dynamical plane · vary <var>z</var><sub>0</sub></span><h3>A Julia set</h3><p>Fix c. Which starting points have bounded orbits, and where is the boundary between bounded and escaping behavior?</p></a></div>
-<p>The bounded starting points form the <strong>filled Julia set</strong> <var>K</var><sub>c</sub>. Its boundary is the <strong>Julia set</strong> <var>J</var><sub>c</sub>. The filled set and its boundary are different objects, though many pictures are casually called “Julia sets.” A fundamental theorem links the two planes: <var>J</var><sub>c</sub> is connected exactly when <var>c</var> belongs to the Mandelbrot set. <a href="julia.html">See the definitions, examples, and source references.</a></p>
+<p>A complex number is a point in a plane, with its real and imaginary parts as coordinates. So both kinds of set are drawn as pictures in a plane: the Mandelbrot set in the plane of all values of <var>c</var>, the <strong>parameter plane</strong>, and each Julia set in the plane of all starting points <var>z</var><sub>0</sub>, the <strong>dynamical plane</strong>.</p>
+<div class="cards"><a class="card" href="mandelbrot.html"><span class="eyebrow">Parameter plane · vary <var>c</var></span><h3>The Mandelbrot set</h3><p>Start with <var>z</var><sub>0</sub> = 0. For which values of the constant <var>c</var> do the numbers <var>z</var><sub>n</sub> stay bounded? These values of <var>c</var> form one set in the parameter plane.</p></a><a class="card" href="julia.html"><span class="eyebrow">Dynamical plane · vary <var>z</var><sub>0</sub></span><h3>A Julia set</h3><p>Fix <var>c</var>. For which starting points <var>z</var><sub>0</sub> do the numbers <var>z</var><sub>n</sub> stay bounded, and where is the boundary between bounded and escaping behavior?</p></a></div>
+<p>The sequence <var>z</var><sub>0</sub>, <var>z</var><sub>1</sub>, <var>z</var><sub>2</sub>, <var>z</var><sub>3</sub>, … is called the <strong>orbit</strong> of <var>z</var><sub>0</sub>. The orbit <strong>stays bounded</strong> if the distance of <var>z</var><sub>n</sub> from 0 stays below some fixed number for every <var>n</var>, and it <strong>escapes</strong> if that distance grows towards infinity. For <var>z</var><sup>2</sup> + <var>c</var>, every orbit does one or the other.</p>
+<p>The starting points with bounded orbits form the <strong>filled Julia set</strong> <var>K</var><sub>c</sub>. Its boundary is the <strong>Julia set</strong> <var>J</var><sub>c</sub>. The filled set and its boundary are different objects, although pictures of the filled set are often loosely called “Julia sets.” A fundamental theorem links the two planes: <var>J</var><sub>c</sub> is connected exactly when <var>c</var> belongs to the Mandelbrot set.</p>
 <figure class="widget" data-widget="place" data-window="-0.7,0,3" data-marks="-1,0,c = −1,n" data-julia="-1,0" data-no-link hidden>
 <figcaption>A point in one plane selects a whole picture in the other: the marked parameter <var>c</var> = −1 in the parameter plane selects the basilica, its filled Julia set in the dynamical plane. The gallery’s <a href="gallery.html#explorer">explorer</a> draws the Julia set of any parameter you choose. Elsewhere in the atlas, clicking an image opens its full-resolution version.</figcaption>
 </figure>
@@ -116,7 +121,14 @@
 <li><a href="combinatorics.html"><strong>Angles, addresses and trees</strong></a> turns external angles into an exact arithmetic: which rays land together, internal addresses, Hubbard trees, the spider algorithm, and a model of the whole set (advanced).</li>
 <li><a href="open-questions.html"><strong>Open questions</strong></a> states what is unknown about the Mandelbrot set as of October 2026, from local connectivity to the area of its boundary, what Yoccoz and his successors proved, and the recent progress (advanced).</li>
 </ol>
-<p><strong>Compute, explore and look up:</strong> <a href="computing.html"><strong>computing the pictures</strong></a> explains how the images are made and what they can and cannot prove; <a href="deep-zoom.html"><strong>deep zoom</strong></a> explains how programs reach magnifications of 10<sup>1000</sup> and beyond; the <a href="gallery.html"><strong>gallery and interactive lab</strong></a> lets you choose a parameter, calculate a Julia picture, and zoom into the Mandelbrot set; the <a href="glossary.html"><strong>glossary</strong></a> defines the terms used throughout; and the <a href="sources.html"><strong>sources</strong></a> page collects every work cited at the ends of the chapters.</p>
+<p><strong>Compute, explore and look up</strong> (intermediate, with an introductory gallery and two reference pages)</p>
+<ol start="17">
+<li><a href="computing.html"><strong>Computing the pictures</strong></a> explains how the images are made and what they can and cannot prove.</li>
+<li><a href="deep-zoom.html"><strong>Deep zoom</strong></a> explains how programs reach magnifications of 10<sup>1000</sup> and beyond.</li>
+<li><a href="gallery.html"><strong>Gallery and interactive lab</strong></a> lets you choose a parameter, calculate a Julia picture, and zoom into the Mandelbrot set.</li>
+<li><a href="glossary.html"><strong>Glossary and notation</strong></a> defines the terms and symbols used throughout.</li>
+<li><a href="sources.html"><strong>Sources</strong></a> collects every work cited at the ends of the chapters.</li>
+</ol>
 <h3>Ways to read</h3>
 <ul>
 <li><strong>For the big picture,</strong> read this page, <a href="julia.html">Julia sets</a> and <a href="mandelbrot.html">the Mandelbrot set</a>, then explore the <a href="gallery.html">gallery</a> and its zoom viewer.</li>
@@ -169,11 +181,11 @@
 </tbody>
 </table>
 </div>
-<h2 id="reading-pictures">Reading the pictures honestly</h2>
-<p>All raster fractal pictures in this site were computed for this atlas, from <var>z</var> ↦ <var>z</var>² + <var>c</var> except in the interactive figures of <a href="beyond.html">Beyond <var>z</var>² + <var>c</var></a>, which draw its relatives. They are accompanied by coordinate windows and iteration budgets. SVG diagrams illustrate equations or concepts; captions distinguish schematics from computed plots.</p>
-<p>A computer follows only finitely many iterations at finitely many sample points. An orbit that has not escaped by a cutoff may still escape later. Thin filaments can fall between pixels, and a zero-area Julia set can be almost invisible in a straightforward escape-time image. <a href="computing.html">Computing the pictures</a> explains how such images are made and what they prove, and the <a href="gallery.html#image-method">image-method notes</a> record how this atlas’s plates were made.</p>
+<h2 id="reading-pictures">Reading the pictures</h2>
+<p>Every fractal picture in this atlas was computed for it; most are drawn live in your browser. Captions or status lines give the window shown and the number of iterations. The diagrams explain ideas; their captions say whether they are sketches or computed plots.</p>
+<p>A computer follows each orbit for only finitely many steps, and only at finitely many points. An orbit that has not escaped by the last step may still escape later, thin filaments can fall between pixels, and a Julia set of zero area can be almost invisible. <a href="computing.html">Computing the pictures</a> explains how the images are made and what they can prove; the gallery’s <a href="gallery.html#image-method">image-method notes</a> describe the few precomputed plates.</p>
 <div class="callout">
-<p><strong>Proof, picture, and conjecture are different.</strong> A picture suggests structure; a theorem establishes it. The Mandelbrot set is connected, as Douady and Hubbard proved in 1982. Whether it is also locally connected, the MLC conjecture, is still open as of October 2026. This atlas marks open questions explicitly. <a href="https://arxiv.org/abs/2512.24171">Dzmitry Dudko’s overview of MLC</a>.</p>
+<p><strong>Proof, picture, and conjecture are different.</strong> A picture suggests structure; a theorem establishes it. The Mandelbrot set is connected, as Douady and Hubbard proved in 1982. Whether it is also locally connected, the MLC conjecture, is still open as of October 2026. This atlas marks open questions explicitly.</p>
 </div>
 <h2 id="about">Scope and further study</h2>
 <p>The main subject is the complex quadratic family <var>f</var><sub>c</sub>(<var>z</var>) = <var>z</var>² + <var>c</var>. Julia sets exist for much more general maps, but many properties described here, such as the dichotomy between connected sets and dust, fail for general maps; <a href="beyond.html">Beyond <var>z</var><sup>2</sup> + <var>c</var></a> explains which ones survive.</p>
