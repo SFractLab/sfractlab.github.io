@@ -346,6 +346,9 @@
     });
     closeButton.addEventListener('click', () => setView(true));
     window.addEventListener('resize', drawRays);
+    kit.whenResized(() => {
+      if (!kit.fitsScreen(canvas, WIDTH, HEIGHT)) renderPicture();
+    });
     wholeButton.addEventListener('click', () => setView(false));
 
     const caption = figure.querySelector('figcaption');

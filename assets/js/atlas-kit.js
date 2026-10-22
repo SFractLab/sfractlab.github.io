@@ -271,27 +271,53 @@
   // at most 6000. The zoom viewer and the tour's pictures use it.
   const iterationBudget = width => Math.round(Math.min(6000, 300 + 150 * Math.max(0, Math.log2(3.2 / width))));
 
-  // The pixel size for a picture designed at width × height pixels and shown in `element`: sharp
-  // on large screens, without more work on small ones. A picture shown at most `width` points
-  // wide, as on a phone, keeps its size; a wider one gets as many pixels as the screen has across
-  // it, counting the pixel density at most twice, up to 1.5 times its size. The width is rounded
-  // down to a multiple of 16, so that a preview at a quarter of the size keeps the shape exactly.
+  // The pixel size for a picture designed at width × height pixels and shown in `element`: one
+  // pixel of the picture for each pixel of the screen, so that the browser need not resample it.
+  // (Resampled by a factor close to 1, a picture is crisp in some places and blurred in bands
+  // between them.) Where that would be more than twice the design width, or 1.25 times it for a
+  // picture shown narrower than its design, as on a phone, the picture gets one pixel for each
+  // k × k pixels of the screen instead, for the smallest k = 2, 3, … that is enough; `blocks` is k.
   function pictureSize(element, width, height) {
     const shown = element.getBoundingClientRect().width;
-    const density = Math.min(2, window.devicePixelRatio || 1);
-    const wanted = shown <= width ? width : Math.min(1.5 * width, shown * density);
-    const pixels = Math.max(16, 16 * Math.floor(wanted / 16));
-    return {width: pixels, height: Math.round(pixels * height / width)};
+    if (!shown) return {width, height, blocks: 1};
+    const screen = shown * (window.devicePixelRatio || 1);
+    const limit = (shown > width ? 2 : 1.25) * width;
+    let blocks = 1;
+    while (screen / blocks > limit) blocks++;
+    const pixels = Math.max(1, Math.round(screen / blocks));
+    return {width: pixels, height: Math.max(1, Math.round(pixels * height / width)), blocks};
+  }
+
+  // Whether a canvas designed at width × height pixels has the size pictureSize chooses for it.
+  function fitsScreen(canvas, width, height) {
+    const size = pictureSize(canvas, width, height);
+    return canvas.width === size.width && canvas.height === size.height;
   }
 
   // Gives a canvas, designed at width × height pixels, the size pictureSize chooses for it where it
-  // is shown; returns whether its size changed, which clears it.
+  // is shown, with blocks of k × k screen pixels drawn without smoothing; returns whether its size
+  // changed, which clears it.
   function fitCanvas(canvas, width, height) {
     const size = pictureSize(canvas, width, height);
+    canvas.style.imageRendering = size.blocks > 1 ? 'pixelated' : '';
     if (canvas.width === size.width && canvas.height === size.height) return false;
     canvas.width = size.width;
     canvas.height = size.height;
     return true;
+  }
+
+  // Calls `callback` once the window has stopped changing its size or its zoom for a moment, so
+  // that a figure can draw its pictures again at the size that now fits (see fitsScreen).
+  const resizeCallbacks = [];
+  let resizeTimer = null;
+  function whenResized(callback) {
+    if (!resizeCallbacks.length) {
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => resizeCallbacks.forEach(call => call()), 300);
+      });
+    }
+    resizeCallbacks.push(callback);
   }
 
   // Parameters inside the main cardioid or the period-two disk belong to the
@@ -877,7 +903,8 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, pictureSize, fitCanvas, paint, workerPool, inCardioidOrPeriodTwoDisk,
+    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, paint, workerPool,
+    inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,
     coloringDetail, workSummary,
     workerCount: () => workersRunning,

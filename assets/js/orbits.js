@@ -170,10 +170,17 @@
 
     // --- drawing -----------------------------------------------------------
 
+    // Both pictures at the size the screen calls for (AtlasKit.fitCanvas); the overlays keep the
+    // units of 480 × 360.
     let generation = 0;
     function renderJulia() {
       const request = ++generation;
+      kit.fitCanvas(dynamics.context.canvas, WIDTH, HEIGHT);
       kit.renderEscapeTime(dynamics.context, ORBIT_VIEW, state.c, JULIA_BUDGET, () => request === generation);
+    }
+    function renderMap() {
+      kit.fitCanvas(map.context.canvas, WIDTH, HEIGHT);
+      kit.renderEscapeTime(map.context, MAP_VIEW, null, MAP_BUDGET, () => true);
     }
 
     function drawMarker() {
@@ -295,7 +302,11 @@
 
     const caption = figure.querySelector('figcaption');
     for (const part of [controls, fieldRow, panels, stepLine, verdictLine]) figure.insertBefore(part, caption);
-    kit.renderEscapeTime(map.context, MAP_VIEW, null, MAP_BUDGET, () => true);
+    renderMap();
     setC(state.c);
+    kit.whenResized(() => {
+      if (!kit.fitsScreen(map.context.canvas, WIDTH, HEIGHT)) renderMap();
+      if (!kit.fitsScreen(dynamics.context.canvas, WIDTH, HEIGHT)) renderJulia();
+    });
   });
 })();

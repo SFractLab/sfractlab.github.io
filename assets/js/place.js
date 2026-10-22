@@ -124,15 +124,15 @@
     async function draw(isCurrent = () => true) {
       kit.fitCanvas(canvas, WIDTH, HEIGHT);
       const preview = document.createElement('canvas');
-      preview.width = canvas.width / PREVIEW;
-      preview.height = canvas.height / PREVIEW;
+      preview.width = Math.max(1, Math.round(canvas.width / PREVIEW));
+      preview.height = Math.max(1, Math.round(canvas.height / PREVIEW));
       const quick = await kit.renderEscapeTime(preview.getContext('2d'), view, julia, budget, isCurrent, {repeats: true});
       if (!quick) return null;
       context.imageSmoothingEnabled = true;
       context.drawImage(preview, 0, 0, canvas.width, canvas.height);
       return kit.renderEscapeTime(context, view, julia, budget, isCurrent, {repeats: true});
     }
-    return {parts: [holder, status], draw};
+    return {parts: [holder, status], draw, fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
   }
 
   // Calls `then` once, when the figure first comes within 300 pixels of the screen, or at once
@@ -194,6 +194,9 @@
       near = true;
       draw();
     });
+    kit.whenResized(() => {
+      if (shown && !shown.fits()) draw();
+    });
   }
 
   kit.setUp('place', (figure) => {
@@ -234,10 +237,19 @@
       pictures.push(shown);
     }
 
-    // The pictures are computed once, when the figure first comes near the screen.
-    whenNear(figure, async () => {
+    // The pictures are computed when the figure first comes near the screen, and again when a
+    // change of the window's size or zoom calls for another size.
+    let near = false;
+    async function draw() {
       const images = await Promise.all(pictures.map(shown => shown.draw()));
       if (images.every(Boolean)) figure.dataset.drawn = '';
+    }
+    whenNear(figure, () => {
+      near = true;
+      draw();
+    });
+    kit.whenResized(() => {
+      if (near && !pictures.every(shown => shown.fits())) draw();
     });
   });
 })();

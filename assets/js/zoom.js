@@ -204,8 +204,8 @@
       const request = ++generation;
       const isCurrent = () => request === generation;
       if (kit.fitCanvas(canvas, WIDTH, HEIGHT)) {
-        preview.width = canvas.width / PREVIEW;
-        preview.height = canvas.height / PREVIEW;
+        preview.width = Math.max(1, Math.round(canvas.width / PREVIEW));
+        preview.height = Math.max(1, Math.round(canvas.height / PREVIEW));
       }
       state.data = null;
       describe(null);
@@ -396,6 +396,9 @@
       return true;
     };
     if (linkable) window.addEventListener('hashchange', showLinked);
+    kit.whenResized(() => {
+      if (!kit.fitsScreen(canvas, WIDTH, HEIGHT)) render();
+    });
     if (!showLinked()) render();
   });
 })();

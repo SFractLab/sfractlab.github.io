@@ -886,6 +886,9 @@ figcaption var { font-size: 1.05em; }
 .pi-table tr.pi-worse :is(td, th) { color: var(--focus); font-weight: 600; }
 /* The computing chapter: the certified map (certified.js) shows its pixels sharply. */
 figure[data-widget="certified"] canvas { image-rendering: pixelated; }
+/* Inverse iteration plots points on its fixed 720 × 540 grid, which the chapter's counts refer to;
+   without smoothing they stay sharp at any scale. */
+figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .certified-swatch { display: inline-block; width: .8em; height: .8em; margin: 0 .3em 0 .9em; border-radius: 2px; vertical-align: -.05em; }
 .certified-swatch:first-child { margin-left: 0; }
 .certified-outside { background: rgb(20 42 72); box-shadow: 0 0 0 1px var(--plate-line); }

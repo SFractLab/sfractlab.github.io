@@ -29,6 +29,8 @@
   const MAP_VIEW = {left: -2.2, width: 3.2, top: 1.2, height: 2.4};
   const JULIA_VIEW = {left: -2.1, width: 4.2, top: 1.575, height: 3.15};
   const MAP_BUDGET = 350;
+  const WIDTH = 480;   // the canvases are designed at 480 × 360 and drawn at the size the screen
+  const HEIGHT = 360;  // calls for (AtlasKit.fitCanvas)
 
   const EXAMPLES = {
     circle: [0, 0],
@@ -127,6 +129,7 @@
     selected = c;
     drawMarker();
     status.textContent = 'Computing the selected Julia picture…';
+    kit.fitCanvas(juliaCanvas, WIDTH, HEIGHT);
     const image = await kit.renderEscapeTime(julia, JULIA_VIEW, c, budget, () => request === generation);
     if (!image) return;
     const showsInterval = re === -2 && im === 0;
@@ -159,9 +162,17 @@
     renderCustom();
   });
 
-  kit.renderEscapeTime(map, MAP_VIEW, null, MAP_BUDGET, () => true).then(image => {
-    mapImage = image;
+  async function renderMap() {
+    kit.fitCanvas(mapCanvas, WIDTH, HEIGHT);
+    mapImage = null;
+    mapImage = await kit.renderEscapeTime(map, MAP_VIEW, null, MAP_BUDGET, () => true);
     drawMarker();
-  });
+  }
+
+  renderMap();
   render();
+  kit.whenResized(() => {
+    if (!kit.fitsScreen(mapCanvas, WIDTH, HEIGHT)) renderMap();
+    if (!kit.fitsScreen(juliaCanvas, WIDTH, HEIGHT)) render();
+  });
 })();

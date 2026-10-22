@@ -283,20 +283,23 @@
 
     // --- drawing -------------------------------------------------------------
 
-    // Draws one plane row by row, a few rows per frame. In the parameter plane
+    // Draws one plane row by row, a few rows per frame, at the size the screen calls for
+    // (AtlasKit.fitCanvas; the overlays keep the units of 480 × 360). In the parameter plane
     // each pixel is c and the orbit starts at the critical point 0; in the
     // dynamical plane each pixel is a starting point z for the chosen c.
     async function render(target, view, parameter, budget, isCurrent) {
       const {context} = target;
-      const image = context.createImageData(WIDTH, HEIGHT);
+      kit.fitCanvas(context.canvas, WIDTH, HEIGHT);
+      const {width: columns, height: rows} = context.canvas;
+      const image = context.createImageData(columns, rows);
       const {family: kind, degree: d} = state;
       const fixedRoots = parameter && kind === 'newton' ? newtonRoots(parameter.re, parameter.im) : null;
-      for (let row = 0; row < HEIGHT; row++) {
-        const y = view.top - (row + .5) * view.height / HEIGHT;
-        for (let col = 0; col < WIDTH; col++) {
-          const x = view.left + (col + .5) * view.width / WIDTH;
+      for (let row = 0; row < rows; row++) {
+        const y = view.top - (row + .5) * view.height / rows;
+        for (let col = 0; col < columns; col++) {
+          const x = view.left + (col + .5) * view.width / columns;
           const [zx, zy, cx, cy] = parameter ? [x, y, parameter.re, parameter.im] : [0, 0, x, y];
-          const offset = 4 * (row * WIDTH + col);
+          const offset = 4 * (row * columns + col);
           if (kind === 'newton') {
             const [index, steps] = newtonFate(zx, zy, cx, cy, fixedRoots || newtonRoots(cx, cy), budget);
             if (index < 0) paintInterior(image.data, offset);
@@ -308,7 +311,7 @@
             kit.paint(image.data, offset, n < 0 ? null : n, last.size, kind === 'ship' ? 2 : d);
           }
         }
-        if (row % ROWS_PER_FRAME === ROWS_PER_FRAME - 1 || row === HEIGHT - 1) {
+        if (row % ROWS_PER_FRAME === ROWS_PER_FRAME - 1 || row === rows - 1) {
           if (!isCurrent()) return false;
           context.putImageData(image, 0, 0);
           await new Promise(requestAnimationFrame);
@@ -417,5 +420,9 @@
     degreeSelect.disabled = state.family === 'ship' || state.family === 'newton';
     drawMap();
     drawJulia();
+    kit.whenResized(() => {
+      if (!kit.fitsScreen(map.context.canvas, WIDTH, HEIGHT)) drawMap();
+      if (!kit.fitsScreen(julia.context.canvas, WIDTH, HEIGHT)) drawJulia();
+    });
   });
 })();

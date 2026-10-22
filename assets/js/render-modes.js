@@ -262,7 +262,7 @@
       if (!moves[event.key]) return;
       event.preventDefault();
       const step = event.shiftKey ? 1 : 8;
-      const {col, row} = state.picked || {col: canvas.width / 2, row: canvas.height / 2};
+      const {col, row} = state.picked || {col: Math.floor(canvas.width / 2), row: Math.floor(canvas.height / 2)};
       state.picked = {col: Math.min(canvas.width - 1, Math.max(0, col + moves[event.key][0] * step)),
         row: Math.min(canvas.height - 1, Math.max(0, row + moves[event.key][1] * step))};
       inspect(state.picked);
@@ -271,5 +271,8 @@
     const caption = figure.querySelector('figcaption');
     for (const part of [controls, view, status, inspector]) figure.insertBefore(part, caption);
     compute();
+    kit.whenResized(() => {
+      if (!kit.fitsScreen(canvas, WIDTH, HEIGHT)) compute();
+    });
   });
 })();
