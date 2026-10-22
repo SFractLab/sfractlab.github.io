@@ -594,6 +594,8 @@ button, input, select { font: inherit; color: inherit; }
 
 figcaption { max-width: var(--measure); margin-top: .8em; font: .82rem/1.55 var(--font-ui); color: var(--muted); }
 figcaption var { font-size: 1.05em; }
+.chapter figcaption p { margin: 0 0 .6em; }
+.chapter figcaption p:last-child { margin-bottom: 0; }
 
 .table-wrap { margin: 1.8em 0; overflow-x: auto; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line-strong); }
 .chapter table { width: 100%; border-collapse: collapse; font-size: .9em; line-height: 1.5; }
@@ -655,8 +657,8 @@ figcaption var { font-size: 1.05em; }
   font-family: var(--font-ui);
 }
 /* Every figure the reader can change, on either panel, is outlined in coral;
-   the pictures of the set (place.js) are not. */
-:is(.widget:not([data-widget="place"]), .explorer) { border: 1.5px solid var(--interactive); }
+   the pictures of the set (place.js) are not, unless they offer a menu of windows. */
+:is(.widget:not([data-widget="place"]), .place-choices, .explorer) { border: 1.5px solid var(--interactive); }
 .widget-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; margin-bottom: .9rem; font-size: .85rem; }
 .widget-modes { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
 .widget-modes label { position: relative; cursor: pointer; }
@@ -868,6 +870,8 @@ figcaption var { font-size: 1.05em; }
 .place-label { font: 700 18px var(--font-ui); fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-width: 4px; stroke-linejoin: round; }
 .place-badge { fill: #f2b35e; stroke: #2b1904; stroke-width: 1.5; }
 .place-badge-label { font: 700 13px var(--font-ui); fill: #2b1904; }
+.place-ring { fill: none; stroke: #fff1c8; stroke-width: 2; }
+.place-ring-halo { fill: none; stroke: #091320; stroke-opacity: .65; stroke-width: 5; }
 /* The angle explorer (angle-explorer.js): Lavaurs’ chords and the landing point. */
 .angle-input { width: 7rem; padding: .25rem .4rem; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--paper); color: var(--ink); font-size: .85rem; }
 .angle-input.angle-invalid { border-color: var(--focus); }

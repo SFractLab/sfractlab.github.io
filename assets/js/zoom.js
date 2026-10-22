@@ -1,10 +1,23 @@
-/* Interactive figure: zoom into the Mandelbrot set.
+/* Interactive figure: zoom into the Mandelbrot set, or into the filled Julia
+   set of one of its parameters.
 
    One canvas shows a window of the parameter plane, described by its centre
    and width (the height is three quarters of the width). Drag to move,
    click to zoom in and Shift-click to zoom out, or use the buttons, the
    keyboard (arrows, + and −), or the wheel with Ctrl or ⌘ held. The
    iteration budget grows with the magnification.
+
+   The coloring menu offers AtlasKit's colorings of the whole orbit, those of
+   the render modes in "Computing the pictures", all from one pass with
+   escape radius R = 1000. The pass computes only what the coloring chosen
+   needs: the distance estimate needs the derivative, the stripe average its
+   stripes and the orbit trap its distances, and the stripe average makes the
+   pass several times slower. Choosing a coloring whose numbers the picture
+   lacks draws again; any other change of coloring only repaints.
+   "Switch to
+   Julia set" shows the filled Julia set of the parameter at the centre of the
+   picture, in the same coloring and with at least the same budget; the
+   button then switches back to the Mandelbrot window that was left.
 
    Ordinary double-precision numbers run out when neighbouring pixels are
    only a few representable numbers apart; the viewer stops zooming there
@@ -25,6 +38,8 @@
   const HEIGHT = 540;
   const PREVIEW = 4;           // the preview is drawn at a quarter of the resolution
   const FULL_WIDTH = 3.2;      // the whole set
+  const JULIA_WIDTH = 4.2;     // a whole filled Julia set, as in the gallery's Julia pictures
+  const RADIUS = 1000;         // the escape radius of the colorings
   const ZOOM_STEP = 2;
   const PAN_STEP = .1;         // arrow keys move by a tenth of the width
   const CLICK_DISTANCE = 4;    // pointer movement below this counts as a click
@@ -35,7 +50,7 @@
     ['whole', 'The whole set', -.7, 0, FULL_WIDTH],
     ['minibrot', 'Period-3 copy (plate in Minibrots)', -1.765, 0, .07],
     ['seahorse', 'Seahorse valley (a stop of the tour)', -.75, .09, .08],
-    ['misiurewicz', 'Around c = i (plate in Special points)', 0, 1, .14],
+    ['misiurewicz', 'Around c = i (plate in the gallery)', 0, 1, .14],
     ['cusp', 'The cusp c = 1/4 (plate in the gallery)', .25, 0, .1],
     ['spiral', 'A deep spiral in seahorse valley', -.743643887037151, .131825904205330, 2e-9],
   ];
@@ -62,6 +77,9 @@
     return WIDTH * LIMIT_PIXEL_ULPS * Number.EPSILON * size;
   }
 
+  // The decimals of the centre in the status line, more as the window shrinks.
+  const decimalsFor = width => Math.max(4, Math.ceil(-Math.log10(width)) + 3);
+
   // A positive number for the status line: plain between 0.01 and 100 000,
   // otherwise as "2 × 10⁻⁹".
   function magnitude(x) {
@@ -74,7 +92,11 @@
   kit.setUp('zoom', (figure) => {
     figure.classList.add('widget-plate');
     const first = EXAMPLES.find(example => example[0] === figure.dataset.example) || EXAMPLES[0];
-    const state = {centre: {re: first[2], im: first[3]}, width: first[4]};
+    // julia is null in the parameter plane, or the parameter c of the Julia set shown; left is the
+    // Mandelbrot window that was left for it. data is the finished pass of the picture shown, and
+    // drawingHas the numbers that the pass being drawn computes (AtlasKit.numbersFor).
+    const state = {centre: {re: first[2], im: first[3]}, width: first[4], coloring: 'smooth',
+      julia: null, left: null, juliaBudget: 0, juliaDecimals: 4, data: null, seconds: null, drawingHas: null};
     let generation = 0;
 
     // --- controls ------------------------------------------------------------
@@ -92,6 +114,15 @@
     select.append(custom);
     select.value = first[0];
     exampleLabel.append(select);
+    const coloringLabel = element('label', null, 'Coloring');
+    const coloringSelect = element('select');
+    for (const [key, name] of kit.COLORINGS) {
+      const option = element('option', null, name);
+      option.value = key;
+      coloringSelect.append(option);
+    }
+    coloringSelect.value = state.coloring;
+    coloringLabel.append(coloringSelect);
     const buttons = element('div', 'plate-buttons');
     function button(text, onClick, quiet = false) {
       const node = element('button', quiet ? 'plate-button-quiet' : null, text);
@@ -102,16 +133,19 @@
     }
     const zoomInButton = button('Zoom in', () => zoomAt(state.centre, 1 / ZOOM_STEP));
     button('Zoom out', () => zoomAt(state.centre, ZOOM_STEP));
-    button('Whole set', () => show(EXAMPLES[0]), true);
-    controls.append(exampleLabel, buttons);
+    button('Whole set', () => (state.julia ? setWindow({re: 0, im: 0}, JULIA_WIDTH, null) : show(EXAMPLES[0])), true);
+    const planeButton = button('Switch to Julia set', () => (state.julia ? leaveJulia(state.left) : enterJulia()));
+    controls.append(exampleLabel, coloringLabel, buttons);
 
     // --- the view ------------------------------------------------------------
 
     const view = element('div', 'plate-view zoom-view');
     view.tabIndex = 0;
     view.setAttribute('role', 'img');
-    view.setAttribute('aria-label', 'Zoomable picture of the Mandelbrot set. Arrow keys move the window, '
-      + 'plus and minus zoom in and out; the status below gives the window.');
+    const describeView = () => view.setAttribute('aria-label', `Zoomable picture of ${state.julia ? 'a filled Julia set'
+      : 'the Mandelbrot set'}. Arrow keys move the window, plus and minus zoom in and out; the status below gives `
+      + 'the window.');
+    describeView();
     const canvas = element('canvas');
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
@@ -128,6 +162,12 @@
     hint.hidden = true;
 
     const height = () => state.width * HEIGHT / WIDTH;
+    const fullWidth = () => (state.julia ? JULIA_WIDTH : FULL_WIDTH);
+    const magnification = () => fullWidth() / state.width;
+    // The budget for the magnification; a Julia set keeps at least that of the window it came from.
+    const budget = () => Math.max(kit.iterationBudget(FULL_WIDTH / magnification()), state.julia ? state.juliaBudget : 0);
+    // Any radius of at least max(2, |c|) proves escape in a Julia set.
+    const radius = () => (state.julia ? Math.max(RADIUS, Math.hypot(state.julia.re, state.julia.im) + 1) : RADIUS);
     const windowOf = () => ({left: state.centre.re - state.width / 2, top: state.centre.im + height() / 2,
       width: state.width, height: height()});
     // The parameter c under a canvas position (in canvas pixels).
@@ -136,13 +176,16 @@
 
     function describe(seconds) {
       const atLimit = state.width <= minimumWidth(state.centre) * 1.0001;
-      const magnification = FULL_WIDTH / state.width;
-      const decimals = Math.max(4, Math.ceil(-Math.log10(state.width)) + 3);
-      const shownMagnification = magnification >= 10 && magnification < 1e5
-        ? Math.round(magnification).toLocaleString('en') : magnitude(magnification);
-      let text = `Center ${format(state.centre, decimals)} · width ${magnitude(state.width)} · magnification `
-        + `${shownMagnification} · ${kit.iterationBudget(state.width).toLocaleString('en')} iterations per pixel.`;
+      const times = magnification();
+      const shownMagnification = times >= 10 && times < 1e5 ? Math.round(times).toLocaleString('en') : magnitude(times);
+      const plane = state.julia ? `Filled Julia set of <var>c</var> = ${format(state.julia, state.juliaDecimals)}`
+        : 'Mandelbrot set';
+      const coloring = kit.COLORINGS.find(([key]) => key === state.coloring)[1];
+      let text = `${plane} · Center ${format(state.centre, decimalsFor(state.width))} · width ${magnitude(state.width)} · `
+        + `magnification ${shownMagnification} · ${budget().toLocaleString('en')} iterations per pixel · ${coloring} · `
+        + `R = ${formatNumber(radius(), 0)}${kit.coloringDetail(state.coloring)}.`;
       text += seconds === null ? ' Drawing…' : ` Drawn in ${formatNumber(seconds, 1)} s.`;
+      if (seconds !== null && state.coloring === 'work' && state.data) text += ` ${kit.workSummary(state.data)}`;
       if (atLimit) {
         text += ' Zooming stops here: neighboring pixels are now only a few representable numbers apart, so '
           + 'further zooming would show rounding errors rather than the set.';
@@ -153,19 +196,41 @@
       status.innerHTML = text;  // built only from numbers formatted above
     }
 
+    // A preview at a quarter of the resolution, scaled up, then the full picture.
     async function render() {
       const request = ++generation;
       const isCurrent = () => request === generation;
-      const budget = kit.iterationBudget(state.width);
+      state.data = null;
       describe(null);
       const started = performance.now();
-      const quick = await kit.renderEscapeTime(previewContext, windowOf(), null, budget, isCurrent, {repeats: true});
+      const coloring = state.coloring;
+      state.drawingHas = kit.numbersFor(coloring);
+      const pass = (width, height) => kit.orbitPass(windowOf(), state.julia, budget(), radius(), width, height,
+        isCurrent, {coloring});
+      const quick = await pass(WIDTH / PREVIEW, HEIGHT / PREVIEW);
       if (!quick) return;
+      kit.paintOrbits(previewContext, quick, state.coloring);
       context.imageSmoothingEnabled = true;
       context.drawImage(preview, 0, 0, WIDTH, HEIGHT);
-      const image = await kit.renderEscapeTime(context, windowOf(), null, budget, isCurrent, {repeats: true});
-      if (image) describe((performance.now() - started) / 1000);
+      const data = await pass(WIDTH, HEIGHT);
+      if (!data) return;
+      state.data = data;
+      state.seconds = (performance.now() - started) / 1000;
+      kit.paintOrbits(context, data, state.coloring);
+      describe(state.seconds);
     }
+
+    // Changing the coloring repaints the finished picture, unless the picture, finished or still
+    // being drawn, lacks numbers the coloring needs; a picture being drawn gets the coloring when done.
+    coloringSelect.addEventListener('change', () => {
+      state.coloring = coloringSelect.value;
+      if (!kit.canPaint(state.data ? state.data.has : state.drawingHas, state.coloring)) {
+        render();
+        return;
+      }
+      if (state.data) kit.paintOrbits(context, state.data, state.coloring);
+      describe(state.data ? state.seconds : null);
+    });
 
     // Shows the old picture moved and scaled at once, while the new one is drawn.
     function transformPicture(dx, dy, scale) {
@@ -181,11 +246,36 @@
     function setWindow(centre, width, picture) {
       const limited = Math.max(width, minimumWidth(centre));
       state.centre = centre;
-      state.width = Math.min(limited, 4 * FULL_WIDTH);
-      const example = EXAMPLES.find(([, , re, im, w]) => re === centre.re && im === centre.im && w === state.width);
+      state.width = Math.min(limited, 4 * fullWidth());
+      const example = !state.julia && EXAMPLES.find(([, , re, im, w]) => re === centre.re && im === centre.im
+        && w === state.width);
       select.value = example ? example[0] : 'custom';
       if (picture) transformPicture(...picture);
       render();
+    }
+
+    // Switches between the planes; the other plane's picture is not moved or scaled into the new one.
+    function switchPlane(julia) {
+      state.julia = julia;
+      planeButton.textContent = julia ? 'Switch back to last Mandelbrot set' : 'Switch to Julia set';
+      describeView();
+      context.fillStyle = '#091320';
+      context.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    // The filled Julia set of the parameter at the centre, whole.
+    function enterJulia() {
+      state.left = {centre: state.centre, width: state.width};
+      state.juliaBudget = budget();
+      state.juliaDecimals = decimalsFor(state.width);
+      switchPlane(state.centre);
+      setWindow({re: 0, im: 0}, JULIA_WIDTH, null);
+    }
+
+    // Back to the parameter plane, on the window `to`.
+    function leaveJulia(to) {
+      switchPlane(null);
+      setWindow(to.centre, to.width, null);
     }
 
     // Zooms by `factor` (below 1 zooms in) keeping the point `fixed` in place.
@@ -205,9 +295,12 @@
 
     // --- input ---------------------------------------------------------------
 
+    // The windows are windows of the Mandelbrot set: choosing one leaves a Julia set.
     select.addEventListener('change', () => {
       const example = EXAMPLES.find(([key]) => key === select.value);
-      if (example) show(example);
+      if (!example) return;
+      if (state.julia) leaveJulia({centre: {re: example[2], im: example[3]}, width: example[4]});
+      else show(example);
     });
 
     // Positions are measured against the view, not the canvas: while dragging,
@@ -283,12 +376,13 @@
     const caption = figure.querySelector('figcaption');
     for (const part of [controls, view, hint, status]) figure.insertBefore(part, caption);
 
-    // Only the page's first viewer answers to #zoom= links.
+    // Only the page's first viewer answers to #zoom= links, which are windows of the Mandelbrot set.
     const linkable = figure === document.querySelector('figure[data-widget="zoom"]');
     const showLinked = () => {
       const linked = linkable && linkedWindow();
       if (!linked) return false;
-      setWindow(linked.centre, linked.width, null);
+      if (state.julia) leaveJulia(linked);
+      else setWindow(linked.centre, linked.width, null);
       // After the figure is revealed: it is still hidden while being built.
       requestAnimationFrame(() => figure.scrollIntoView({block: 'start'}));
       return true;

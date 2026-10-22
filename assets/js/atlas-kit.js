@@ -478,9 +478,6 @@
     return pixels;
   }
 
-  const escapeTimePool = workerPool(escapeTimeRows,
-    {helpers: [inCardioidOrPeriodTwoDisk, paint], constants: {INTERIOR, PALETTE}});
-
   // Draws the escape-time image of one plane into a canvas context. Without a
   // Julia parameter each pixel is a parameter c and the orbit starts at 0
   // (the parameter plane); with one, each pixel is a starting point z for that
@@ -506,11 +503,305 @@
         juliaParameter, budget, repeats, width, height, firstRow, rows: Math.min(ROWS_PER_TASK, height - firstRow),
       });
     }
-    const done = await escapeTimePool.run(tasks, isCurrent,
+    const done = await picturePool.run(tasks, isCurrent,
       (task, pixels) => image.data.set(pixels, task.firstRow * width * 4), {parallel});
     if (!done || !isCurrent()) return null;
     context.putImageData(image, 0, 0);
     return image;
+  }
+
+  // --- Colorings that use the whole orbit (the render modes, the zoom viewer) ---
+  //
+  // One pass follows every pixel's orbit once, with its derivative, until |z|
+  // exceeds the escape radius R or the budget is used up, and keeps per pixel
+  // the escape step n, log|z_n|, the sign of Im z_n, |z'_n|, the stripe
+  // average, the orbit's closest approach to the axes and the steps spent.
+  // The colorings only color these numbers differently:
+  //   escape    bands by the escape step n
+  //   smooth    the smooth count ν = n + 1 − log₂ log|z_n|
+  //   binary    the sign of Im z_n: the n-th binary digit of the external angle
+  //   distance  the distance estimate b = 2|z_n| log|z_n| / |z'_n|, with
+  //             pixels where b is below the pixel size drawn as the set
+  //   stripe    Härkönen's stripe average: the mean of ½ sin(s·arg z_k) + ½
+  //             over z_1 … z_n, interpolated between the means up to z_(n−1)
+  //             and z_n by the fractional part of the smooth count
+  //   trap      an orbit trap: the orbit's closest approach to the real and
+  //             imaginary axes, Pickover's cross, on a logarithmic scale
+  //   work      the steps each pixel cost, with the cardioid and period-two
+  //             tests (in the parameter plane) and exact periodicity checking
+
+  const COLORINGS = [
+    ['escape', 'Escape time'],
+    ['smooth', 'Smooth count'],
+    ['binary', 'Binary decomposition'],
+    ['distance', 'Distance estimate'],
+    ['stripe', 'Stripe average'],
+    ['trap', 'Orbit trap'],
+    ['work', 'Work per pixel'],
+  ];
+  const STRIPE_DENSITY = 5;  // s, an integer: other values make the stripes jump where arg z does
+  const TRAP_RANGE = 4;      // the trap's color runs over distances 1 to 10⁻⁴
+  const ORBIT_ROWS_PER_TASK = 16;
+  const CREAM = [244, 236, 214];  // the two colors of binary decomposition
+  const NIGHT = [20, 42, 72];
+
+  // The stripe addend ½ sin(s·arg z) + ½ of one orbit point, as ½ Im((z/|z|)^s) + ½: s
+  // multiplications cost less than atan2 and sin at every step of every pixel.
+  function stripeAddend(x, y) {
+    const r = Math.sqrt(x * x + y * y);
+    const ux = x / r, uy = y / r;
+    let px = ux, py = uy;
+    for (let k = 1; k < STRIPE_DENSITY; k++) {
+      const next = px * ux - py * uy;
+      py = px * uy + py * ux;
+      px = next;
+    }
+    return .5 * py + .5;
+  }
+
+  // Härkönen's interpolation between the stripe means S_(n−1) and S_n, from the sum of the
+  // addends of z_1 … z_n, the last of them, and the fractional part d of the smooth count.
+  function stripeAverage(sum, last, n, radius, logSize) {
+    const full = sum / n;
+    const before = n > 1 ? (sum - last) / (n - 1) : full;
+    const d = Math.min(1, Math.max(0, 1 + Math.log2(Math.log(radius) / logSize)));
+    return d * full + (1 - d) * before;
+  }
+
+  // The pass over rows firstRow … firstRow + rows − 1 of a picture of width × height pixels over
+  // `view`, with escape radius `radius`: per pixel the numbers listed above, in typed arrays.
+  // Without a Julia parameter each pixel is a parameter c, the orbit starts at 0 and the
+  // derivative is taken with respect to c; with one, each pixel is a starting point z_0 for that
+  // c, and the derivative is taken with respect to z_0. Of the derivative, the stripe average and
+  // the trap, only those named in `has` are computed: the stripe addend alone costs about four
+  // plain steps. Runs in a worker.
+  function orbitRows({view, julia, budget, radius, has, width, height, firstRow, rows}) {
+    const size = width * rows;
+    const limit = radius * radius;
+    const strip = {
+      steps: new Int32Array(size),      // escape step, or −1 if the orbit did not escape
+      logSize: new Float64Array(size),  // log|z_n| at escape
+      upper: new Uint8Array(size),      // 1 if Im z_n > 0 at escape
+      derivative: new Float64Array(size),
+      stripe: new Float32Array(size),   // the stripe average, from 0 to 1
+      trap: new Float32Array(size),     // the orbit's closest approach to the axes
+      spent: new Int32Array(size),      // steps computed, with the shortcuts
+      shortcut: new Uint8Array(size),   // 1 if a shortcut decided the pixel
+    };
+    for (let row = firstRow; row < firstRow + rows; row++) {
+      const y = view.top - (row + .5) * view.height / height;
+      for (let col = 0; col < width; col++) {
+        const x = view.left + (col + .5) * view.width / width;
+        const index = (row - firstRow) * width + col;
+        strip.steps[index] = -1;
+        if (!julia && inCardioidOrPeriodTwoDisk(x, y)) {
+          strip.shortcut[index] = 1;
+          continue;
+        }
+        const cx = julia ? julia.re : x, cy = julia ? julia.im : y;
+        let zx = julia ? x : 0, zy = julia ? y : 0;
+        let dx = julia ? 1 : 0, dy = 0;
+        const added = julia ? 0 : 1;  // d(z² + c)/dc adds 1; d(z² + c)/dz_0 does not
+        let keptX = zx, keptY = zy, keepAt = 8;
+        let n = 0;
+        let escaped = false;
+        let stripeSum = 0, addend = 0, nearest = Infinity;
+        while (n < budget) {
+          if (has.derivative) {
+            const ndx = 2 * (zx * dx - zy * dy) + added;
+            dy = 2 * (zx * dy + zy * dx);
+            dx = ndx;
+          }
+          const nx = zx * zx - zy * zy + cx;
+          zy = 2 * zx * zy + cy;
+          zx = nx;
+          n++;
+          if (has.stripe) {
+            addend = stripeAddend(zx, zy);
+            stripeSum += addend;
+          }
+          if (has.trap) nearest = Math.min(nearest, Math.abs(zx), Math.abs(zy));
+          if (zx * zx + zy * zy > limit) {
+            escaped = true;
+            break;
+          }
+          if (zx === keptX && zy === keptY) {
+            strip.shortcut[index] = 1;  // an exact repeat: the orbit never escapes
+            break;
+          }
+          if (n === keepAt) {
+            keptX = zx;
+            keptY = zy;
+            keepAt *= 2;
+          }
+        }
+        strip.spent[index] = n;
+        if (!escaped) continue;
+        strip.steps[index] = n;
+        strip.logSize[index] = .5 * Math.log(zx * zx + zy * zy);
+        strip.upper[index] = zy > 0 ? 1 : 0;
+        if (has.derivative) strip.derivative[index] = Math.sqrt(dx * dx + dy * dy);
+        if (has.stripe) strip.stripe[index] = stripeAverage(stripeSum, addend, n, radius, strip.logSize[index]);
+        if (has.trap) strip.trap[index] = nearest;
+      }
+    }
+    return strip;
+  }
+
+  // A strip of either kind of picture, by the task's kind: one pool of background threads computes
+  // the escape-time pictures and the orbit passes, so that a page with both starts one thread per
+  // processor thread, not two.
+  function pictureRows(task) {
+    return task.kind === 'orbits' ? orbitRows(task) : escapeTimeRows(task);
+  }
+
+  const picturePool = workerPool(pictureRows, {
+    helpers: [escapeTimeRows, orbitRows, inCardioidOrPeriodTwoDisk, paint, stripeAddend, stripeAverage],
+    constants: {INTERIOR, PALETTE, STRIPE_DENSITY},
+  });
+
+  // The numbers beyond the escape step that each coloring needs; the others need none.
+  const EXTRA = {distance: 'derivative', stripe: 'stripe', trap: 'trap'};
+
+  // Which of the derivative, the stripe average and the trap a pass computes for `coloring`, or
+  // for every coloring if it is null.
+  const numbersFor = coloring => Object.fromEntries(Object.values(EXTRA)
+    .map(name => [name, coloring === null || EXTRA[coloring] === name]));
+
+  // Whether a pass that computed the numbers `has` can be painted in `coloring`.
+  const canPaint = (has, coloring) => !EXTRA[coloring] || has[EXTRA[coloring]];
+
+  // The pass over a whole picture of width × height pixels, computed in strips of
+  // ORBIT_ROWS_PER_TASK rows on the background threads. With {coloring} it computes only what
+  // that coloring needs, otherwise what every coloring needs; data.has records which.
+  // onStrip(data) is called as strips arrive, which they do in any order; data.rows counts the
+  // rows above the first one still missing. Resolves to the data, with the seconds it took, or to
+  // null once isCurrent() is false.
+  async function orbitPass(view, julia, budget, radius, width, height, isCurrent,
+    {coloring = null, onStrip = () => {}} = {}) {
+    const has = numbersFor(coloring);
+    const size = width * height;
+    const data = {
+      view: {left: view.left, top: view.top, width: view.width, height: view.height},
+      julia, budget, radius, has, width, height, rows: 0,
+      steps: new Int32Array(size), logSize: new Float64Array(size), upper: new Uint8Array(size),
+      derivative: new Float64Array(size), stripe: new Float32Array(size), trap: new Float32Array(size),
+      spent: new Int32Array(size), shortcut: new Uint8Array(size),
+    };
+    const tasks = [];
+    for (let firstRow = 0; firstRow < height; firstRow += ORBIT_ROWS_PER_TASK) {
+      tasks.push({kind: 'orbits', view: data.view, julia, budget, radius, has, width, height, firstRow,
+        rows: Math.min(ORBIT_ROWS_PER_TASK, height - firstRow)});
+    }
+    const arrived = new Set();
+    const started = performance.now();
+    const done = await picturePool.run(tasks, isCurrent, (task, strip) => {
+      for (const [key, values] of Object.entries(strip)) data[key].set(values, task.firstRow * width);
+      arrived.add(task.firstRow);
+      while (arrived.has(data.rows)) data.rows = Math.min(height, data.rows + ORBIT_ROWS_PER_TASK);
+      onStrip(data);
+    });
+    if (!done || !isCurrent()) return null;
+    data.seconds = (performance.now() - started) / 1000;
+    return data;
+  }
+
+  // A cyclic position (any real number) as a palette color.
+  function cyclic(position) {
+    const t = ((position % 1) + 1) % 1 * 5;
+    const index = Math.min(4, Math.floor(t));
+    let blend = t - index;
+    blend = blend * blend * (3 - 2 * blend);
+    return PALETTE[index].map((value, k) => value * (1 - blend) + PALETTE[index + 1][k] * blend);
+  }
+
+  // The color of pixel `index` of a pass in one of the COLORINGS.
+  function orbitColor(data, index, coloring) {
+    const n = data.steps[index];
+    if (coloring === 'work') {
+      const t = Math.log1p(data.spent[index]) / Math.log1p(data.budget);
+      return t === 0 ? INTERIOR : cyclic(.62 * t);
+    }
+    if (n < 0) return INTERIOR;
+    switch (coloring) {
+      case 'escape':
+        return cyclic(n * .05);
+      case 'smooth': {
+        const smooth = n + 1 - Math.log2(Math.max(1e-300, data.logSize[index]));
+        return cyclic(smooth * .05);
+      }
+      case 'binary':
+        return data.upper[index] ? CREAM : NIGHT;
+      case 'stripe': {
+        // Stretched over the values in the picture: deep in, the stripes span a narrow range.
+        const [low, high] = data.stripeRange;
+        return cyclic(.62 * Math.min(1, Math.max(0, (data.stripe[index] - low) / (high - low))));
+      }
+      case 'trap': {
+        const t = Math.min(1, Math.max(0, -Math.log10(data.trap[index]) / TRAP_RANGE));
+        return cyclic(.62 * t);
+      }
+      default: {  // distance
+        const b = 2 * Math.exp(data.logSize[index]) * data.logSize[index] / data.derivative[index];
+        const pixel = data.view.width / data.width;
+        if (b < pixel) return CREAM;
+        const t = Math.min(1, Math.log(b / pixel) / Math.log(400));
+        return [13 + 40 * t, 26 + 90 * t, 45 + 110 * t];
+      }
+    }
+  }
+
+  // The 1st and 99th percentiles of the stripe averages computed so far, from every 7th pixel.
+  function stripeRange(data) {
+    const values = [];
+    for (let index = 0; index < data.rows * data.width; index += 7) {
+      if (data.steps[index] >= 0) values.push(data.stripe[index]);
+    }
+    if (values.length < 2) return [0, 1];
+    values.sort((a, b) => a - b);
+    const low = values[Math.floor(.01 * (values.length - 1))], high = values[Math.ceil(.99 * (values.length - 1))];
+    return high > low ? [low, high] : [0, 1];
+  }
+
+  // Draws the rows of a pass computed so far into a canvas context of the pass's size, in one of
+  // the COLORINGS; the rows still missing stay transparent.
+  function paintOrbits(context, data, coloring) {
+    if (coloring === 'stripe') data.stripeRange = stripeRange(data);
+    const image = context.createImageData(data.width, data.height);
+    for (let index = 0; index < data.rows * data.width; index++) {
+      const [r, g, b] = orbitColor(data, index, coloring);
+      image.data[4 * index] = r;
+      image.data[4 * index + 1] = g;
+      image.data[4 * index + 2] = b;
+      image.data[4 * index + 3] = 255;
+    }
+    context.putImageData(image, 0, 0);
+  }
+
+  // What a status line adds to the name of a coloring: its fixed settings.
+  function coloringDetail(coloring) {
+    if (coloring === 'stripe') return ` · stripe density <var>s</var> = ${STRIPE_DENSITY}`;
+    if (coloring === 'trap') return ' · trap: the real and imaginary axes';
+    return '';
+  }
+
+  // For the work coloring: the steps a finished pass took, compared with the steps it would
+  // have taken without its shortcuts.
+  function workSummary(data) {
+    let spent = 0, without = 0;
+    for (let index = 0; index < data.width * data.height; index++) {
+      spent += data.spent[index];
+      without += data.steps[index] < 0 ? data.budget : data.steps[index];
+    }
+    const shortcuts = data.julia ? 'the periodicity check'
+      : 'the cardioid and period-two tests and the periodicity check';
+    const ratio = formatNumber(without / Math.max(1, spent), without < 10 * spent ? 2 : 1);
+    if (ratio === '1') {
+      return `The picture took ${spent.toLocaleString('en')} steps; ${shortcuts} saved `
+        + `${without === spent ? 'none' : 'almost none'} of them here.`;
+    }
+    return `The picture took ${spent.toLocaleString('en')} steps; without ${shortcuts} it would have taken `
+      + `${without.toLocaleString('en')}, ${ratio} times as many.`;
   }
 
   // The Mandelbrot set as a mask of width × height pixels over `view`: white
@@ -563,7 +854,9 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, paint, workerPool,
+    doublingOrbit, binary, iterationBudget, paint, workerPool, inCardioidOrPeriodTwoDisk,
+    COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,
+    coloringDetail, workSummary,
     workerCount: () => workersRunning,
   };
 })();

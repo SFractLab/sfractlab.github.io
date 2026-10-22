@@ -11,13 +11,21 @@
                   quarters of the width)
      data-marks   optional points to mark and label, as "re,im,label,side"
                   separated by semicolons; side is n, e, s or w (default e)
-                  for a dot with the label beside it, or "in" for a round
-                  badge centred on the point, to label a component from inside
+                  for a dot with the label beside it, "in" for a round
+                  badge centred on the point, to label a component from
+                  inside, or "ring" for an unfilled circle centred on the
+                  point, which leaves it visible (its label may be empty)
      data-no-link optional: the picture does not open the zoom viewer
      data-julia   optional "re,im": a parameter c. Its filled Julia set is then
                   drawn beside the Mandelbrot set, on the window of the
                   gallery's Julia pictures, and each picture is titled with
-                  its plane */
+                  its plane
+
+   A figure can instead offer several windows. Each is an element inside it,
+   usually a part of the caption, with data-choice (a key), data-name (its
+   entry in the menu), data-window and data-marks. A menu, labelled by the
+   figure's data-menu (default "Window"), chooses one: it is drawn, its
+   element is shown and the others are hidden. */
 (() => {
   'use strict';
   const kit = window.AtlasKit;
@@ -29,6 +37,7 @@
   const PREVIEW = 4;  // a quick preview is drawn first, at a quarter of the resolution
   const LABEL_OFFSET = {n: [0, -12], e: [10, 5], s: [0, 20], w: [-10, 5]};
   const BADGE_RADIUS = 10;
+  const RING_RADIUS = 14;
   const JULIA_WINDOW = [0, 0, 4.2];  // 4.2 × 3.15, as the Julia gallery
 
   function element(name, className, text) {
@@ -45,9 +54,10 @@
 
   function parseMarks(text) {
     return (text || '').split(';').map(part => part.split(',').map(item => item.trim()))
-      .filter(([re, im, label]) => Number.isFinite(Number(re)) && Number.isFinite(Number(im)) && label)
+      .filter(([re, im, label, side]) => Number.isFinite(Number(re)) && Number.isFinite(Number(im))
+        && (label || side === 'ring'))
       .map(([re, im, label, side]) => ({c: {re: Number(re), im: Number(im)}, label,
-        side: side === 'in' || LABEL_OFFSET[side] ? side : 'e'}));
+        side: side === 'in' || side === 'ring' || LABEL_OFFSET[side] ? side : 'e'}));
   }
 
   // One picture of the parameter plane, or of the dynamical plane of `julia`:
@@ -84,6 +94,11 @@
       const plane = new kit.Plane(view, WIDTH, HEIGHT);
       for (const {c, label, side} of marks) {
         const {x, y} = plane.toScreen(c);
+        if (side === 'ring') {
+          kit.svg('circle', {cx: x, cy: y, r: RING_RADIUS, class: 'place-ring-halo'}, overlay);
+          kit.svg('circle', {cx: x, cy: y, r: RING_RADIUS, class: 'place-ring'}, overlay);
+          continue;
+        }
         if (side === 'in') {
           kit.svg('circle', {cx: x, cy: y, r: BADGE_RADIUS, class: 'place-badge'}, overlay);
           kit.svg('text', {x, y, class: 'place-badge-label', 'text-anchor': 'middle',
@@ -101,29 +116,95 @@
     const status = element('p', 'plate-caption place-status');
     status.textContent = `Center ${centre} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
 
-    // A preview at a quarter of the resolution, scaled up, then the full picture.
-    async function draw() {
+    // A preview at a quarter of the resolution, scaled up, then the full picture; resolves to
+    // the image, or to null if isCurrent() turned false on the way.
+    async function draw(isCurrent = () => true) {
       const preview = document.createElement('canvas');
       preview.width = WIDTH / PREVIEW;
       preview.height = HEIGHT / PREVIEW;
-      const quick = await kit.renderEscapeTime(preview.getContext('2d'), view, julia, budget, () => true, {repeats: true});
-      if (quick) {
-        context.imageSmoothingEnabled = true;
-        context.drawImage(preview, 0, 0, WIDTH, HEIGHT);
-      }
-      return kit.renderEscapeTime(context, view, julia, budget, () => true, {repeats: true});
+      const quick = await kit.renderEscapeTime(preview.getContext('2d'), view, julia, budget, isCurrent, {repeats: true});
+      if (!quick) return null;
+      context.imageSmoothingEnabled = true;
+      context.drawImage(preview, 0, 0, WIDTH, HEIGHT);
+      return kit.renderEscapeTime(context, view, julia, budget, isCurrent, {repeats: true});
     }
     return {parts: [holder, status], draw};
   }
 
+  // Calls `then` once, when the figure first comes within 300 pixels of the screen, or at once
+  // without an IntersectionObserver.
+  function whenNear(figure, then) {
+    if (!('IntersectionObserver' in window)) {
+      then();
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      observer.disconnect();
+      then();
+    }, {rootMargin: '300px'});
+    observer.observe(figure);
+  }
+
+  // A figure with several windows: the menu, and the chosen window's picture and caption part.
+  function offerChoices(figure, choices, linked, caption) {
+    figure.classList.add('place-choices');
+    const controls = element('div', 'plate-controls');
+    const menu = element('label', null, figure.dataset.menu || 'Window');
+    const select = element('select');
+    for (const choice of choices) {
+      const option = element('option', null, choice.dataset.name);
+      option.value = choice.dataset.choice;
+      select.append(option);
+    }
+    menu.append(select);
+    controls.append(menu);
+    figure.insertBefore(controls, caption);
+
+    let shown = null;
+    let near = false;
+    let generation = 0;
+    function draw() {
+      if (!near || !shown) return;
+      const request = ++generation;
+      const isCurrent = () => request === generation;
+      shown.draw(isCurrent).then(image => {
+        if (image && isCurrent()) figure.dataset.drawn = '';
+      });
+    }
+    function choose() {
+      const choice = choices.find(item => item.dataset.choice === select.value);
+      for (const item of choices) item.hidden = item !== choice;
+      const area = parseNumbers(choice.dataset.window, 3);
+      const next = area && area[2] > 0 ? picture(area, null, parseMarks(choice.dataset.marks), linked) : null;
+      for (const part of shown ? shown.parts : []) part.remove();
+      shown = next;
+      for (const part of shown ? shown.parts : []) figure.insertBefore(part, caption);
+      delete figure.dataset.drawn;
+      generation++;  // a drawing of the window before stops
+      draw();
+    }
+    select.addEventListener('change', choose);
+    choose();
+    whenNear(figure, () => {
+      near = true;
+      draw();
+    });
+  }
+
   kit.setUp('place', (figure) => {
     figure.classList.add('widget-plate', 'place');
+    const linked = !('noLink' in figure.dataset);
+    const caption = figure.querySelector('figcaption');
+    const choices = [...figure.querySelectorAll('[data-choice]')];
+    if (choices.length) {
+      offerChoices(figure, choices, linked, caption);
+      return;
+    }
     const area = parseNumbers(figure.dataset.window, 3);
     if (!area || area[2] <= 0) return;
     const marks = parseMarks(figure.dataset.marks);
     const julia = parseNumbers(figure.dataset.julia, 2);
-    const linked = !('noLink' in figure.dataset);
-    const caption = figure.querySelector('figcaption');
 
     const pictures = [];
     if (julia) {
@@ -150,19 +231,9 @@
     }
 
     // The pictures are computed once, when the figure first comes near the screen.
-    async function draw() {
+    whenNear(figure, async () => {
       const images = await Promise.all(pictures.map(shown => shown.draw()));
       if (images.every(Boolean)) figure.dataset.drawn = '';
-    }
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(entries => {
-        if (!entries.some(entry => entry.isIntersecting)) return;
-        observer.disconnect();
-        draw();
-      }, {rootMargin: '300px'});
-      observer.observe(figure);
-    } else {
-      draw();
-    }
+    });
   });
 })();

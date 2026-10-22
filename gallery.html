@@ -195,9 +195,9 @@
 </figure>
 </div>
 <h2 id="zoom-viewer">Zoom in yourself</h2>
-<p>The plates above are fixed windows. The viewer below lets you choose your own: drag the picture to move it, click to zoom in and Shift-click to zoom out, or use the buttons, the arrow and +/− keys, or the wheel with Ctrl or ⌘ held. The window list includes the windows of the plates in this atlas.</p>
+<p>The plates above are fixed windows. The viewer below lets you choose your own: drag the picture to move it, click to zoom in and Shift-click to zoom out, or use the buttons, the arrow and +/− keys, or the wheel with Ctrl or ⌘ held. The window list includes the windows of the plates in this atlas. The coloring menu offers the seven colorings of the first figure in <a href="computing.html#escape-time">computing the pictures</a>, and “Switch to Julia set” shows the filled Julia set of the parameter at the center of the picture, in the same coloring. Zoom into it in the same way; the button then takes you back to the Mandelbrot window you left.</p>
 <figure class="widget" data-widget="zoom" hidden>
-<figcaption>Dark pixels have not escaped within the iteration budget shown, which grows with the magnification. The viewer uses ordinary double-precision numbers, which run out at a width of roughly 10<sup>−12</sup> around the set: there neighboring pixels are only a few representable numbers apart, and the viewer stops zooming. Deeper zooms need arithmetic with more digits.</figcaption>
+<figcaption>In every coloring except the work per pixel, dark pixels have not escaped within the iteration budget shown, which grows with the magnification; a Julia set keeps at least the budget of the Mandelbrot window it came from. Every coloring uses the escape radius <var>R</var> = 1000. The viewer uses ordinary double-precision numbers, which run out at a width of roughly 10<sup>−12</sup> around the set: there neighboring pixels are only a few representable numbers apart, and the viewer stops zooming. Deeper zooms need arithmetic with more digits.</figcaption>
 </figure>
 <h2 id="image-method">How these illustrations were made</h2>
 <p>The methods themselves, and what each of them proves, are explained in the chapter on <a href="computing.html">computing the pictures</a>. This section records how the atlas’s own plates were made.</p>
