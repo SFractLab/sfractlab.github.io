@@ -238,6 +238,8 @@
       }
       const [, , cr, ci] = state.example;
       const share = state.boundaryCount ? Math.round(100 * covered / state.boundaryCount) : 0;
+      // Without points the figure would print as an empty picture; the print styles leave it out.
+      figure.toggleAttribute('data-empty', state.random + state.modified === 0);
       status.textContent = `c = ${format({re: cr, im: ci}, 4)}. Random backward orbit: `
         + `${state.random.toLocaleString('en')} points; modified method: ${state.modified.toLocaleString('en')} `
         + `preimages followed. Points within one pixel of ${share}% of the ${state.boundaryCount.toLocaleString('en')} `

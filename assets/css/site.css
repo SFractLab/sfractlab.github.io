@@ -995,7 +995,7 @@ figure[data-widget="certified"] canvas { image-rendering: pixelated; }
   }
   body { font-size: 10.5pt; }
   .layout, .page { display: block; }
-  .site-header, .page-bar, .toc, .pagination, .skip-link, .explorer, .widget { display: none !important; }
+  .site-header, .page-bar, .toc, .pagination, .skip-link { display: none !important; }
   .site-main { padding: 0; }
   a { color: inherit; text-decoration: none; }
   .sources a[href^="http"]::after { content: " <" attr(href) ">"; font-size: .85em; overflow-wrap: anywhere; }
@@ -1004,15 +1004,34 @@ figure[data-widget="certified"] canvas { image-rendering: pixelated; }
   :is(figure, .equation, .callout, tr, .card, .key-ideas, .exercises > li) { break-inside: avoid; }
   /* ui.js opens the answers before printing; ::details-content covers printing without it. */
   .exercises details::details-content { display: block; content-visibility: visible; }
-  .exercises summary::after { content: none; }
+  .exercises :is(summary, details[open] > summary)::after { content: none; }
   .exercises .answer::before { content: "Answer. "; font-weight: 700; }
   .fractal-image { width: auto; max-height: 110mm; margin-inline: auto; }
   .table-wrap { overflow: visible; }
-  /* A finished place.js picture is a plain image, so it prints, on white like the
-     other figures; live figures with controls, and pictures not yet drawn, do not. */
-  .widget[data-widget="place"][data-drawn] { display: block !important; }
-  .chapter .place { padding: 0; border: 0; background: none; box-shadow: none; color: var(--ink); color-scheme: light; }
-  .chapter .place :is(h3, .plate-caption, figcaption) { color: var(--muted); }
-  .chapter .place a { color: inherit; }
+  /* Live figures print as the reader left them: the drawings, the text that states
+     their setting and the caption, on white like the other figures, without buttons,
+     menus or fields. Drawings keep the light theme's colours, which the captions
+     name. A figure that would print empty (data-empty) and a place.js picture not
+     yet drawn are left out. */
+  .chapter :is(.widget, .explorer) {
+    --accent: #0b6a77;
+    --gold: #8a5a14;
+    --focus: #c26a00;
+    margin: 1.2em 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .chapter :is(.widget-plate, .explorer) { color: var(--ink); color-scheme: light; }
+  .chapter :is(.widget-plate, .explorer) :is(h3, figcaption, .plate-caption) { color: var(--muted); }
+  .chapter :is(.widget-plate, .explorer) :is(.plate-step, .plate-verdict, .explorer-status) { color: var(--ink); }
+  .chapter :is(.widget, .explorer) a { color: inherit; }
+  :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
+  .chapter :is(.widget, .explorer) :is(button, select, input),
+  .widget[data-empty], .widget[data-widget="place"]:not([data-drawn]) { display: none !important; }
+  /* Browsers leave out backgrounds in print, and these swatches are the legend. */
+  .certified-swatch { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
 }

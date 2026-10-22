@@ -27,6 +27,13 @@
     ['vertical', 'c = −5/4 + ti, straight up', 't', [1, 2, 3, 4, 5, 6], t => [-1.25, t], (n, t) => n * t, 'N·t', null, 'π/2'],
   ];
 
+  // Where the counts are taken, as the readout begins (straight up has its own sentence).
+  const PLACES = {
+    neck: 'At the neck, <var>c</var> = −3/4 + <var>ε</var>i',
+    cusp: 'At the cusp, <var>c</var> = 1/4 + <var>ε</var>',
+    parabola: 'Along the parabola <var>c</var> = −5/4 − <var>t</var><sup>2</sup> + <var>t</var>i',
+  };
+
   function element(name, className, text) {
     const node = document.createElement(name);
     if (className) node.className = className;
@@ -128,12 +135,13 @@
         readout.innerHTML = `Straight up from −5/4, <var>N</var>·<var>t</var> does not settle down: it lands near `
           + 'different multiples of π/2. Along the parabola it comes close to π/2, at least for these values of <var>t</var>.';
       } else if (firstWorse === null) {
-        readout.innerHTML = `${rescaled} approaches ${limitName}: at <var>${name}</var> = ${power(lastBetter)} `
-          + `the difference is ${small(previous)}.`
+        readout.innerHTML = `${PLACES[key]}, ${rescaled} approaches ${limitName}: at <var>${name}</var> = `
+          + `${power(lastBetter)} the difference is ${small(previous)}.`
           + (key === 'parabola' ? ' Not for every <var>t</var>, though: for a few percent of the other small values, '
             + '<var>N</var>·<var>t</var> lands near a larger multiple of π/2.' : '');
       } else {
-        readout.innerHTML = `${rescaled} approaches ${limitName} until <var>${name}</var> = ${power(lastBetter)}; `
+        readout.innerHTML = `${PLACES[key]}, ${rescaled} approaches ${limitName} until <var>${name}</var> = `
+          + `${power(lastBetter)}; `
           + `from ${power(firstWorse)} on, the difference grows instead `
           + 'of shrinking (marked): the rounding errors of double precision now dominate the count.';
       }

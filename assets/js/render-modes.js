@@ -370,7 +370,9 @@
     function describe() {
       const data = state.data;
       const [, name] = state.window;
-      let text = `${name} · ${data.budget.toLocaleString('en')} iterations per pixel at most · R = ${data.radius}`;
+      const coloring = MODES.find(([key]) => key === state.mode)[1];
+      let text = `${coloring} · ${name} · ${data.budget.toLocaleString('en')} iterations per pixel at most · `
+        + `R = ${data.radius}`;
       if (state.mode === 'stripe') text += ` · stripe density <var>s</var> = ${STRIPE_DENSITY}`;
       if (state.mode === 'trap') text += ' · trap: the real and imaginary axes';
       text += '.';
