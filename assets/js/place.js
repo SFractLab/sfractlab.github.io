@@ -68,8 +68,9 @@
     const height = width * HEIGHT / WIDTH;
     const view = {left: re - width / 2, top: im + height / 2, width, height};
     const budget = kit.iterationBudget(width);
-    const centre = format({re, im}, 4);
-    const shownWidth = formatNumber(width, 4);
+    const decimals = Math.max(4, Math.ceil(-Math.log10(width)) + 2);  // two significant digits of the width at least
+    const centre = format({re, im}, decimals);
+    const shownWidth = formatNumber(width, decimals);
 
     const canvas = element('canvas');
     canvas.width = WIDTH;
