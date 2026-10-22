@@ -118,8 +118,14 @@
       const request = ++generation;
       const v = windowView();
       status.textContent = 'Computing…';
+      // At the size the screen calls for; a new size forgets the inspected pixel.
+      if (kit.fitCanvas(canvas, WIDTH, HEIGHT) && state.picked) {
+        state.picked = null;
+        overlay.replaceChildren();
+        inspector.textContent = 'Click a pixel to inspect its orbit.';
+      }
       // The picture is painted as strips arrive, down to the first one still missing.
-      const data = await kit.orbitPass(v, null, kit.iterationBudget(v.width), state.radius, WIDTH, HEIGHT,
+      const data = await kit.orbitPass(v, null, kit.iterationBudget(v.width), state.radius, canvas.width, canvas.height,
         () => request === generation, {onStrip: partial => {
           state.data = partial;
           paintSoon();
@@ -137,7 +143,7 @@
       paintPending = true;
       requestAnimationFrame(() => {
         paintPending = false;
-        if (state.data.rows < HEIGHT) paint();
+        if (state.data.rows < state.data.height) paint();
       });
     }
 
@@ -155,7 +161,7 @@
       const coloring = MODES.find(([key]) => key === state.mode)[1];
       let text = `${coloring} · ${name} · ${data.budget.toLocaleString('en')} iterations per pixel at most · `
         + `R = ${data.radius}${kit.coloringDetail(state.mode)}.`;
-      if (data.rows < HEIGHT) {
+      if (data.rows < data.height) {
         status.innerHTML = `${text} Computing…`;  // built from numbers and fixed text
         return;
       }
@@ -166,11 +172,13 @@
 
     // --- inspector -----------------------------------------------------------
 
+    // A pixel of the canvas, whatever its size; the overlay keeps the units of 640 × 480.
     function inspect({col, row}) {
       const v = windowView();
-      const c = {re: v.left + (col + .5) * v.width / WIDTH, im: v.top - (row + .5) * v.height / HEIGHT};
+      const c = {re: v.left + (col + .5) * v.width / canvas.width, im: v.top - (row + .5) * v.height / canvas.height};
       overlay.replaceChildren();
-      kit.svg('circle', {cx: col + .5, cy: row + .5, r: 7, class: 'orbit-marker'}, overlay);
+      kit.svg('circle', {cx: (col + .5) * WIDTH / canvas.width, cy: (row + .5) * HEIGHT / canvas.height, r: 7,
+        class: 'orbit-marker'}, overlay);
       const budget = kit.iterationBudget(v.width);
       const where = `<var>c</var> ≈ ${format(c, 4 + Math.max(0, Math.ceil(-Math.log10(v.width))))}`;
       if (kit.inCardioidOrPeriodTwoDisk(c.re, c.im)) {
@@ -241,8 +249,9 @@
 
     view.addEventListener('click', event => {
       const box = view.getBoundingClientRect();
-      const col = Math.min(WIDTH - 1, Math.max(0, Math.floor((event.clientX - box.left) / box.width * WIDTH)));
-      const row = Math.min(HEIGHT - 1, Math.max(0, Math.floor((event.clientY - box.top) / box.height * HEIGHT)));
+      const col = Math.min(canvas.width - 1, Math.max(0, Math.floor((event.clientX - box.left) / box.width * canvas.width)));
+      const row = Math.min(canvas.height - 1,
+        Math.max(0, Math.floor((event.clientY - box.top) / box.height * canvas.height)));
       state.picked = {col, row};
       inspect(state.picked);
     });
@@ -253,9 +262,9 @@
       if (!moves[event.key]) return;
       event.preventDefault();
       const step = event.shiftKey ? 1 : 8;
-      const {col, row} = state.picked || {col: WIDTH / 2, row: HEIGHT / 2};
-      state.picked = {col: Math.min(WIDTH - 1, Math.max(0, col + moves[event.key][0] * step)),
-        row: Math.min(HEIGHT - 1, Math.max(0, row + moves[event.key][1] * step))};
+      const {col, row} = state.picked || {col: canvas.width / 2, row: canvas.height / 2};
+      state.picked = {col: Math.min(canvas.width - 1, Math.max(0, col + moves[event.key][0] * step)),
+        row: Math.min(canvas.height - 1, Math.max(0, row + moves[event.key][1] * step))};
       inspect(state.picked);
     });
 

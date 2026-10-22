@@ -204,6 +204,7 @@
 
     async function renderPicture() {
       const request = ++generation;
+      kit.fitCanvas(canvas, WIDTH, HEIGHT);  // the rays are drawn in the overlay's own units
       const budget = state.close ? 1200 : 400;
       await kit.renderEscapeTime(context, state.view, null, budget, () => request === generation, {repeats: true});
     }

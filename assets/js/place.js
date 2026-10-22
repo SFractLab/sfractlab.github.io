@@ -3,9 +3,10 @@
    parameter.
 
    The pictures are computed in the browser when the figure first comes into
-   view, with the zoom viewer's escape-time drawing and iteration budget;
-   clicking the Mandelbrot picture opens the gallery's zoom viewer on the same
-   window. Built by AtlasKit.setUp for every <figure data-widget="place">.
+   view, at the size AtlasKit.fitCanvas chooses for the screen (640 × 480 or
+   more), with the zoom viewer's iteration budget; clicking the Mandelbrot
+   picture opens the gallery's zoom viewer on the same window. Built by
+   AtlasKit.setUp for every <figure data-widget="place">.
    Data attributes:
      data-window  "re,im,width": the centre and width (the height is three
                   quarters of the width)
@@ -116,16 +117,18 @@
     const status = element('p', 'plate-caption place-status');
     status.textContent = `Center ${centre} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
 
-    // A preview at a quarter of the resolution, scaled up, then the full picture; resolves to
-    // the image, or to null if isCurrent() turned false on the way.
+    // At the size the screen calls for (AtlasKit.fitCanvas), a preview at a quarter of the
+    // resolution, scaled up, then the full picture; resolves to the image, or to null if
+    // isCurrent() turned false on the way.
     async function draw(isCurrent = () => true) {
+      kit.fitCanvas(canvas, WIDTH, HEIGHT);
       const preview = document.createElement('canvas');
-      preview.width = WIDTH / PREVIEW;
-      preview.height = HEIGHT / PREVIEW;
+      preview.width = canvas.width / PREVIEW;
+      preview.height = canvas.height / PREVIEW;
       const quick = await kit.renderEscapeTime(preview.getContext('2d'), view, julia, budget, isCurrent, {repeats: true});
       if (!quick) return null;
       context.imageSmoothingEnabled = true;
-      context.drawImage(preview, 0, 0, WIDTH, HEIGHT);
+      context.drawImage(preview, 0, 0, canvas.width, canvas.height);
       return kit.renderEscapeTime(context, view, julia, budget, isCurrent, {repeats: true});
     }
     return {parts: [holder, status], draw};

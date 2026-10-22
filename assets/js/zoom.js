@@ -2,10 +2,11 @@
    set of one of its parameters.
 
    One canvas shows a window of the parameter plane, described by its centre
-   and width (the height is three quarters of the width). Drag to move,
-   click to zoom in and Shift-click to zoom out, or use the buttons, the
-   keyboard (arrows, + and −), or the wheel with Ctrl or ⌘ held. The
-   iteration budget grows with the magnification.
+   and width (the height is three quarters of the width), at 720 × 540
+   pixels or, on a larger screen, at up to 1.5 times that (AtlasKit.fitCanvas).
+   Drag to move, click to zoom in and Shift-click to zoom out, or use the
+   buttons, the keyboard (arrows, + and −), or the wheel with Ctrl or ⌘ held.
+   The iteration budget grows with the magnification.
 
    The coloring menu offers AtlasKit's colorings of the whole orbit, those of
    the render modes in "Computing the pictures", all from one pass with
@@ -70,11 +71,11 @@
     return [re, im, width].every(Number.isFinite) && width > 0 ? {centre: {re, im}, width} : null;
   }
 
-  // The smallest width at which pixels are still LIMIT_PIXEL_ULPS
-  // representable steps apart near the centre.
-  function minimumWidth(centre) {
+  // The smallest width at which `pixels` pixels across are still
+  // LIMIT_PIXEL_ULPS representable steps apart near the centre.
+  function minimumWidth(centre, pixels) {
     const size = Math.max(1, Math.abs(centre.re), Math.abs(centre.im));
-    return WIDTH * LIMIT_PIXEL_ULPS * Number.EPSILON * size;
+    return pixels * LIMIT_PIXEL_ULPS * Number.EPSILON * size;
   }
 
   // The decimals of the centre in the status line, more as the window shrinks.
@@ -171,11 +172,12 @@
     const windowOf = () => ({left: state.centre.re - state.width / 2, top: state.centre.im + height() / 2,
       width: state.width, height: height()});
     // The parameter c under a canvas position (in canvas pixels).
-    const pointAt = (x, y) => ({re: state.centre.re + (x / WIDTH - .5) * state.width,
-      im: state.centre.im - (y / HEIGHT - .5) * height()});
+    const pointAt = (x, y) => ({re: state.centre.re + (x / canvas.width - .5) * state.width,
+      im: state.centre.im - (y / canvas.height - .5) * height()});
+    const smallest = centre => minimumWidth(centre, canvas.width);
 
     function describe(seconds) {
-      const atLimit = state.width <= minimumWidth(state.centre) * 1.0001;
+      const atLimit = state.width <= smallest(state.centre) * 1.0001;
       const times = magnification();
       const shownMagnification = times >= 10 && times < 1e5 ? Math.round(times).toLocaleString('en') : magnitude(times);
       const plane = state.julia ? `Filled Julia set of <var>c</var> = ${format(state.julia, state.juliaDecimals)}`
@@ -189,17 +191,22 @@
       if (atLimit) {
         text += ' Zooming stops here: neighboring pixels are now only a few representable numbers apart, so '
           + 'further zooming would show rounding errors rather than the set.';
-      } else if (state.width < 100 * minimumWidth(state.centre)) {
+      } else if (state.width < 100 * smallest(state.centre)) {
         text += ' This is close to the limit of the computer’s arithmetic.';
       }
       zoomInButton.disabled = atLimit;
       status.innerHTML = text;  // built only from numbers formatted above
     }
 
-    // A preview at a quarter of the resolution, scaled up, then the full picture.
+    // At the size the screen calls for (AtlasKit.fitCanvas), a preview at a quarter of the
+    // resolution, scaled up, then the full picture.
     async function render() {
       const request = ++generation;
       const isCurrent = () => request === generation;
+      if (kit.fitCanvas(canvas, WIDTH, HEIGHT)) {
+        preview.width = canvas.width / PREVIEW;
+        preview.height = canvas.height / PREVIEW;
+      }
       state.data = null;
       describe(null);
       const started = performance.now();
@@ -207,12 +214,12 @@
       state.drawingHas = kit.numbersFor(coloring);
       const pass = (width, height) => kit.orbitPass(windowOf(), state.julia, budget(), radius(), width, height,
         isCurrent, {coloring});
-      const quick = await pass(WIDTH / PREVIEW, HEIGHT / PREVIEW);
+      const quick = await pass(preview.width, preview.height);
       if (!quick) return;
       kit.paintOrbits(previewContext, quick, state.coloring);
       context.imageSmoothingEnabled = true;
-      context.drawImage(preview, 0, 0, WIDTH, HEIGHT);
-      const data = await pass(WIDTH, HEIGHT);
+      context.drawImage(preview, 0, 0, canvas.width, canvas.height);
+      const data = await pass(canvas.width, canvas.height);
       if (!data) return;
       state.data = data;
       state.seconds = (performance.now() - started) / 1000;
@@ -235,16 +242,16 @@
     // Shows the old picture moved and scaled at once, while the new one is drawn.
     function transformPicture(dx, dy, scale) {
       const copy = document.createElement('canvas');
-      copy.width = WIDTH;
-      copy.height = HEIGHT;
+      copy.width = canvas.width;
+      copy.height = canvas.height;
       copy.getContext('2d').drawImage(canvas, 0, 0);
       context.fillStyle = '#091320';
-      context.fillRect(0, 0, WIDTH, HEIGHT);
-      context.drawImage(copy, dx, dy, WIDTH * scale, HEIGHT * scale);
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(copy, dx, dy, canvas.width * scale, canvas.height * scale);
     }
 
     function setWindow(centre, width, picture) {
-      const limited = Math.max(width, minimumWidth(centre));
+      const limited = Math.max(width, smallest(centre));
       state.centre = centre;
       state.width = Math.min(limited, 4 * fullWidth());
       const example = !state.julia && EXAMPLES.find(([, , re, im, w]) => re === centre.re && im === centre.im
@@ -260,7 +267,7 @@
       planeButton.textContent = julia ? 'Switch back to last Mandelbrot set' : 'Switch to Julia set';
       describeView();
       context.fillStyle = '#091320';
-      context.fillRect(0, 0, WIDTH, HEIGHT);
+      context.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     // The filled Julia set of the parameter at the centre, whole.
@@ -280,12 +287,12 @@
 
     // Zooms by `factor` (below 1 zooms in) keeping the point `fixed` in place.
     function zoomAt(fixed, factor) {
-      const width = Math.max(state.width * factor, minimumWidth(state.centre));
+      const width = Math.max(state.width * factor, smallest(state.centre));
       const actual = width / state.width;
       const centre = {re: fixed.re + (state.centre.re - fixed.re) * actual, im: fixed.im + (state.centre.im - fixed.im) * actual};
       const scale = 1 / actual;
-      const fixedX = (fixed.re - state.centre.re) / state.width * WIDTH + WIDTH / 2;
-      const fixedY = (state.centre.im - fixed.im) / height() * HEIGHT + HEIGHT / 2;
+      const fixedX = (fixed.re - state.centre.re) / state.width * canvas.width + canvas.width / 2;
+      const fixedY = (state.centre.im - fixed.im) / height() * canvas.height + canvas.height / 2;
       setWindow(centre, width, [fixedX - fixedX * scale, fixedY - fixedY * scale, scale]);
     }
 
@@ -307,8 +314,8 @@
     // the canvas itself is shifted with a CSS transform.
     const toCanvas = event => {
       const box = view.getBoundingClientRect();
-      return {x: (event.clientX - box.left) / box.width * WIDTH, y: (event.clientY - box.top) / box.height * HEIGHT,
-        scale: WIDTH / box.width};
+      return {x: (event.clientX - box.left) / box.width * canvas.width,
+        y: (event.clientY - box.top) / box.height * canvas.height, scale: canvas.width / box.width};
     };
     let drag = null;
     view.addEventListener('pointerdown', event => {
@@ -333,7 +340,8 @@
       } else {
         const dx = end.x - drag.start.x;
         const dy = end.y - drag.start.y;
-        setWindow({re: state.centre.re - dx / WIDTH * state.width, im: state.centre.im + dy / HEIGHT * height()},
+        setWindow({re: state.centre.re - dx / canvas.width * state.width,
+          im: state.centre.im + dy / canvas.height * height()},
           state.width, [dx, dy, 1]);
       }
       drag = null;
@@ -362,7 +370,7 @@
       if (moves[event.key]) {
         const [right, up] = moves[event.key];
         setWindow({re: state.centre.re + right * PAN_STEP * state.width, im: state.centre.im + up * PAN_STEP * state.width},
-          state.width, [-right * PAN_STEP * WIDTH, up * PAN_STEP * state.width / height() * HEIGHT, 1]);
+          state.width, [-right * PAN_STEP * canvas.width, up * PAN_STEP * state.width / height() * canvas.height, 1]);
       } else if (event.key === '+' || event.key === '=') {
         zoomAt(state.centre, 1 / ZOOM_STEP);
       } else if (event.key === '-' || event.key === '_') {
