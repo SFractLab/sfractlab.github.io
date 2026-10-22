@@ -18,8 +18,9 @@
                imaginary axes, Pickover's cross, on a logarithmic scale
      work      the steps each pixel cost, with the cardioid and period-two
                tests and exact periodicity checking
-   Clicking a pixel inspects its orbit. Built by AtlasKit.setUp for every
-   <figure data-widget="render-modes">; data-mode chooses the first mode. */
+   The pass runs on the background threads of AtlasKit.workerPool, in strips
+   of rows. Clicking a pixel inspects its orbit. Built by AtlasKit.setUp for
+   every <figure data-widget="render-modes">; data-mode chooses the first mode. */
 (() => {
   'use strict';
   const kit = window.AtlasKit;
@@ -28,7 +29,7 @@
 
   const WIDTH = 640;
   const HEIGHT = 480;
-  const ROWS_PER_FRAME = 16;
+  const ROWS_PER_TASK = 16;  // a strip of the pass
   const DIGITS_RADIUS = 1e6;  // the inspector reads angle digits past this radius
 
   const MODES = [
@@ -110,6 +111,81 @@
     return q * (q + x - .25) < .25 * y * y || (x + 1) ** 2 + y * y < .0625;
   }
 
+  // The pass over rows firstRow … firstRow + rows − 1 of a picture of width × height pixels over
+  // `view`, with escape radius `radius`: per pixel the numbers listed above, in typed arrays. Runs
+  // in a worker.
+  function passRows({view, budget, radius, width, height, firstRow, rows}) {
+    const size = width * rows;
+    const limit = radius * radius;
+    const strip = {
+      steps: new Int32Array(size),      // escape step, or −1 if the orbit did not escape
+      logSize: new Float64Array(size),  // log|z_n| at escape
+      upper: new Uint8Array(size),      // 1 if Im z_n > 0 at escape
+      derivative: new Float64Array(size),
+      stripe: new Float32Array(size),   // the stripe average, from 0 to 1
+      trap: new Float32Array(size),     // the orbit's closest approach to the axes
+      spent: new Int32Array(size),      // steps computed, with the shortcuts
+      shortcut: new Uint8Array(size),   // 1 if a shortcut decided the pixel
+    };
+    for (let row = firstRow; row < firstRow + rows; row++) {
+      const cy = view.top - (row + .5) * view.height / height;
+      for (let col = 0; col < width; col++) {
+        const cx = view.left + (col + .5) * view.width / width;
+        const index = (row - firstRow) * width + col;
+        if (inCardioidOrDisk(cx, cy)) {
+          strip.steps[index] = -1;
+          strip.shortcut[index] = 1;
+          continue;
+        }
+        let zx = 0, zy = 0, dx = 0, dy = 0;
+        let keptX = 0, keptY = 0, keepAt = 8;
+        let n = 0;
+        let escaped = false;
+        let stripeSum = 0, addend = 0, nearest = Infinity;
+        while (n < budget) {
+          const ndx = 2 * (zx * dx - zy * dy) + 1;
+          dy = 2 * (zx * dy + zy * dx);
+          dx = ndx;
+          const nx = zx * zx - zy * zy + cx;
+          zy = 2 * zx * zy + cy;
+          zx = nx;
+          n++;
+          addend = stripeAddend(zx, zy);
+          stripeSum += addend;
+          nearest = Math.min(nearest, Math.abs(zx), Math.abs(zy));
+          if (zx * zx + zy * zy > limit) {
+            escaped = true;
+            break;
+          }
+          if (zx === keptX && zy === keptY) {
+            strip.shortcut[index] = 1;  // an exact repeat: the orbit never escapes
+            break;
+          }
+          if (n === keepAt) {
+            keptX = zx;
+            keptY = zy;
+            keepAt *= 2;
+          }
+        }
+        strip.spent[index] = n;
+        if (escaped) {
+          strip.steps[index] = n;
+          strip.logSize[index] = .5 * Math.log(zx * zx + zy * zy);
+          strip.upper[index] = zy > 0 ? 1 : 0;
+          strip.derivative[index] = Math.sqrt(dx * dx + dy * dy);
+          strip.stripe[index] = stripeAverage(stripeSum, addend, n, radius, strip.logSize[index]);
+          strip.trap[index] = nearest;
+        } else {
+          strip.steps[index] = -1;
+        }
+      }
+    }
+    return strip;
+  }
+
+  const pool = kit.workerPool(passRows,
+    {helpers: [stripeAddend, stripeAverage, inCardioidOrDisk], constants: {STRIPE_DENSITY}});
+
   kit.setUp('render-modes', (figure) => {
     figure.classList.add('widget-plate');
     const state = {
@@ -186,84 +262,44 @@
       const request = ++generation;
       const v = windowView();
       const budget = kit.iterationBudget(v.width);
-      const limit = state.radius * state.radius;
       const size = WIDTH * HEIGHT;
       const data = {
         view: v, budget, radius: state.radius, rows: 0,
-        steps: new Int32Array(size),      // escape step, or −1 if the orbit did not escape
-        logSize: new Float64Array(size),  // log|z_n| at escape
-        upper: new Uint8Array(size),      // 1 if Im z_n > 0 at escape
-        derivative: new Float64Array(size),
-        stripe: new Float32Array(size),   // the stripe average, from 0 to 1
-        trap: new Float32Array(size),     // the orbit's closest approach to the axes
-        spent: new Int32Array(size),      // steps computed, with the shortcuts
-        shortcut: new Uint8Array(size),   // 1 if a shortcut decided the pixel
+        steps: new Int32Array(size), logSize: new Float64Array(size), upper: new Uint8Array(size),
+        derivative: new Float64Array(size), stripe: new Float32Array(size), trap: new Float32Array(size),
+        spent: new Int32Array(size), shortcut: new Uint8Array(size),
       };
       state.data = data;
       status.textContent = 'Computing…';
-      const started = performance.now();
-      for (let row = 0; row < HEIGHT; row++) {
-        const cy = v.top - (row + .5) * v.height / HEIGHT;
-        for (let col = 0; col < WIDTH; col++) {
-          const cx = v.left + (col + .5) * v.width / WIDTH;
-          const index = row * WIDTH + col;
-          if (inCardioidOrDisk(cx, cy)) {
-            data.steps[index] = -1;
-            data.shortcut[index] = 1;
-            continue;
-          }
-          let zx = 0, zy = 0, dx = 0, dy = 0;
-          let keptX = 0, keptY = 0, keepAt = 8;
-          let n = 0;
-          let escaped = false;
-          let stripeSum = 0, addend = 0, nearest = Infinity;
-          while (n < budget) {
-            const ndx = 2 * (zx * dx - zy * dy) + 1;
-            dy = 2 * (zx * dy + zy * dx);
-            dx = ndx;
-            const nx = zx * zx - zy * zy + cx;
-            zy = 2 * zx * zy + cy;
-            zx = nx;
-            n++;
-            addend = stripeAddend(zx, zy);
-            stripeSum += addend;
-            nearest = Math.min(nearest, Math.abs(zx), Math.abs(zy));
-            if (zx * zx + zy * zy > limit) {
-              escaped = true;
-              break;
-            }
-            if (zx === keptX && zy === keptY) {
-              data.shortcut[index] = 1;  // an exact repeat: the orbit never escapes
-              break;
-            }
-            if (n === keepAt) {
-              keptX = zx;
-              keptY = zy;
-              keepAt *= 2;
-            }
-          }
-          data.spent[index] = n;
-          if (escaped) {
-            data.steps[index] = n;
-            data.logSize[index] = .5 * Math.log(zx * zx + zy * zy);
-            data.upper[index] = zy > 0 ? 1 : 0;
-            data.derivative[index] = Math.sqrt(dx * dx + dy * dy);
-            data.stripe[index] = stripeAverage(stripeSum, addend, n, state.radius, data.logSize[index]);
-            data.trap[index] = nearest;
-          } else {
-            data.steps[index] = -1;
-          }
-        }
-        data.rows = row + 1;
-        if (row % ROWS_PER_FRAME === ROWS_PER_FRAME - 1 || row === HEIGHT - 1) {
-          paint();
-          await new Promise(requestAnimationFrame);
-          if (request !== generation) return;
-        }
+      const tasks = [];
+      for (let firstRow = 0; firstRow < HEIGHT; firstRow += ROWS_PER_TASK) {
+        tasks.push({view: v, budget, radius: state.radius, width: WIDTH, height: HEIGHT, firstRow,
+          rows: Math.min(ROWS_PER_TASK, HEIGHT - firstRow)});
       }
+      // Strips arrive in any order; data.rows counts the rows above the first missing one.
+      const arrived = new Set();
+      const started = performance.now();
+      const done = await pool.run(tasks, () => request === generation, (task, strip) => {
+        for (const [key, values] of Object.entries(strip)) data[key].set(values, task.firstRow * WIDTH);
+        arrived.add(task.firstRow);
+        while (arrived.has(data.rows)) data.rows = Math.min(HEIGHT, data.rows + ROWS_PER_TASK);
+        paintSoon();
+      });
+      if (!done) return;
       data.seconds = (performance.now() - started) / 1000;
       paint();
       if (state.picked) inspect(state.picked);
+    }
+
+    // Paints at the next animation frame, once however many strips arrive before it.
+    let paintPending = false;
+    function paintSoon() {
+      if (paintPending) return;
+      paintPending = true;
+      requestAnimationFrame(() => {
+        paintPending = false;
+        if (state.data.rows < HEIGHT) paint();
+      });
     }
 
     // --- coloring ------------------------------------------------------------

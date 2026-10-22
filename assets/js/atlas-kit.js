@@ -264,7 +264,7 @@
   // palette by their smoothed escape time (the last colour equals the first).
   const INTERIOR = [9, 19, 32];
   const PALETTE = [[13, 26, 45], [27, 75, 119], [30, 135, 151], [227, 232, 196], [236, 166, 100], [13, 26, 45]];
-  const ROWS_PER_FRAME = 12;
+  const ROWS_PER_TASK = 12;  // the rows of a picture that one background thread computes at a time
 
   // The iteration budget for a window of the parameter plane `width` wide: 300
   // steps for the whole set (3.2 wide), 150 more for each halving of the width,
@@ -302,24 +302,147 @@
     data[offset + 3] = 255;
   }
 
-  // Draws the escape-time image of one plane into a canvas context. Without a
-  // Julia parameter each pixel is a parameter c and the orbit starts at 0
-  // (the parameter plane); with one, each pixel is a starting point z for that
-  // fixed c (the dynamical plane). Every pixel is sampled at its centre. The
-  // sampling radius, max(2, |c| + 1), is generous; any radius of at least
-  // escapeRadius(c) would do. Yields to the browser every few rows; returns
-  // the image, or null if isCurrent() turned false on the way.
+  // --- Background threads ----------------------------------------------------
+
+  const MAX_WORKERS = 16;
+  let workersRunning = 0;
+
+  // Runs work(task) for each task on the page itself, one task per animation
+  // frame so that the page stays responsive, while isCurrent() holds; resolves
+  // to whether all tasks were done.
+  async function workOnPage(work, tasks, isCurrent, onResult) {
+    for (const task of tasks) {
+      if (!isCurrent()) return false;
+      onResult(task, work(task));
+      await new Promise(requestAnimationFrame);
+    }
+    return isCurrent();
+  }
+
+  // A pool of background threads (Web Workers), one per processor thread up
+  // to MAX_WORKERS, that run work(task) for queued tasks: a picture split into
+  // strips of rows is computed on all processor cores at once. The workers run
+  // the source text of `work`, of the `helpers` it calls and of the
+  // `constants` it reads, from a Blob URL, because browsers refuse worker
+  // scripts from files on file://. Tasks and results are copied between the
+  // threads, except the typed arrays of a result, which are moved. The workers
+  // start at the first run; if they cannot start, or one fails, the tasks run
+  // on the page instead.
   //
-  // With {repeats: true}, a sample whose orbit comes back exactly to an
-  // earlier value (checked against values kept at steps 8, 16, 32, …) stops
-  // early: an orbit that repeats exactly is periodic and never escapes, so
-  // the picture is the same, only faster where many samples do not escape.
-  async function renderEscapeTime(context, view, juliaParameter, budget, isCurrent, {repeats = false} = {}) {
-    const {width, height} = context.canvas;
-    const image = context.createImageData(width, height);
+  // pool.run(tasks, isCurrent, onResult) calls onResult(task, result) for each
+  // task as it is done, in any order, and resolves to true when all are done,
+  // or to false once isCurrent() is found false; the remaining tasks are then
+  // dropped. With {parallel: false} the tasks run on the page.
+  function workerPool(work, {helpers = [], constants = {}} = {}) {
+    const source = [
+      "'use strict';",
+      ...Object.entries(constants).map(([name, value]) => `const ${name} = ${JSON.stringify(value)};`),
+      ...[...helpers, work].map(String),
+      `onmessage = event => {
+        const result = ${work.name}(event.data);
+        const parts = ArrayBuffer.isView(result) ? [result] : Object.values(result);
+        postMessage(result, parts.filter(part => ArrayBuffer.isView(part)).map(part => part.buffer));
+      };`,
+    ].join('\n');
+    let workers = null;          // started at the first run; empty while the page does the work
+    const idle = [];
+    const running = new Map();   // worker → {task, job}
+    const queue = [];            // {task, job} waiting for a worker
+
+    function settle(job, done) {
+      if (job.settled) return;
+      job.settled = true;
+      job.resolve(done);
+    }
+
+    // Whether the job's results are still wanted; if not, it is settled as dropped.
+    function wanted(job) {
+      if (!job.settled && !job.isCurrent()) settle(job, false);
+      return !job.settled;
+    }
+
+    function dispatch() {
+      while (idle.length && queue.length) {
+        const entry = queue.shift();
+        if (!wanted(entry.job)) continue;
+        const worker = idle.pop();
+        running.set(worker, entry);
+        worker.postMessage(entry.task);
+      }
+    }
+
+    function finish(worker, result) {
+      const entry = running.get(worker);
+      if (!entry) return;
+      running.delete(worker);
+      idle.push(worker);
+      if (wanted(entry.job)) {
+        entry.job.onResult(entry.task, result);
+        if (--entry.job.remaining === 0) settle(entry.job, true);
+      }
+      dispatch();
+    }
+
+    // Stops the workers and does their unfinished tasks on the page.
+    function fail() {
+      for (const worker of workers) worker.terminate();
+      workersRunning -= workers.length;
+      workers = [];
+      idle.length = 0;
+      const unfinished = new Map();  // job → its tasks not yet done
+      for (const {task, job} of [...running.values(), ...queue]) {
+        if (!job.settled) unfinished.set(job, [...(unfinished.get(job) || []), task]);
+      }
+      running.clear();
+      queue.length = 0;
+      for (const [job, tasks] of unfinished) {
+        workOnPage(work, tasks, job.isCurrent, job.onResult).then(done => settle(job, done));
+      }
+    }
+
+    function start() {
+      workers = [];
+      try {
+        const url = URL.createObjectURL(new Blob([source], {type: 'text/javascript'}));
+        const count = Math.min(MAX_WORKERS, navigator.hardwareConcurrency || 4);
+        for (let k = 0; k < count; k++) {
+          const worker = new Worker(url);
+          worker.onmessage = event => finish(worker, event.data);
+          worker.onerror = () => {
+            if (workers.includes(worker)) fail();
+          };
+          workers.push(worker);
+          idle.push(worker);
+          workersRunning++;
+        }
+      } catch (error) {
+        fail();
+      }
+    }
+
+    return {
+      run(tasks, isCurrent, onResult, {parallel = true} = {}) {
+        if (parallel && !workers) start();
+        if (!parallel || !workers.length) return workOnPage(work, tasks, isCurrent, onResult);
+        return new Promise(resolve => {
+          const job = {isCurrent, onResult, resolve, remaining: tasks.length, settled: false};
+          if (!tasks.length) settle(job, isCurrent());
+          for (const task of tasks) queue.push({task, job});
+          dispatch();
+        });
+      },
+    };
+  }
+
+  // --- Escape-time pictures, computed in strips ------------------------------
+
+  // Rows firstRow … firstRow + rows − 1 of an escape-time picture of width ×
+  // height pixels, as RGBA bytes; see renderEscapeTime. Runs in a worker.
+  function escapeTimeRows({view, juliaParameter, budget, repeats, width, height, firstRow, rows}) {
+    const pixels = new Uint8ClampedArray(width * rows * 4);
     const radius = juliaParameter ? Math.max(2, Math.hypot(juliaParameter.re, juliaParameter.im) + 1) : 2;
     const limit = radius * radius;
-    for (let y = 0; y < height; y++) {
+    for (let y = firstRow; y < firstRow + rows; y++) {
       for (let x = 0; x < width; x++) {
         const re = view.left + (x + .5) * view.width / width;
         const im = view.top - (y + .5) * view.height / height;
@@ -349,14 +472,43 @@
           }
         }
         const size = zx * zx + zy * zy;
-        paint(image.data, (y * width + x) * 4, size > limit ? n : null, size);
-      }
-      if (y % ROWS_PER_FRAME === ROWS_PER_FRAME - 1) {
-        if (!isCurrent()) return null;
-        await new Promise(requestAnimationFrame);
+        paint(pixels, ((y - firstRow) * width + x) * 4, size > limit ? n : null, size);
       }
     }
-    if (!isCurrent()) return null;
+    return pixels;
+  }
+
+  const escapeTimePool = workerPool(escapeTimeRows,
+    {helpers: [inCardioidOrPeriodTwoDisk, paint], constants: {INTERIOR, PALETTE}});
+
+  // Draws the escape-time image of one plane into a canvas context. Without a
+  // Julia parameter each pixel is a parameter c and the orbit starts at 0
+  // (the parameter plane); with one, each pixel is a starting point z for that
+  // fixed c (the dynamical plane). Every pixel is sampled at its centre. The
+  // sampling radius, max(2, |c| + 1), is generous; any radius of at least
+  // escapeRadius(c) would do. The picture is computed in strips of
+  // ROWS_PER_TASK rows by the background threads, or on the page with
+  // {parallel: false}, and drawn when complete; returns the image, or null if
+  // isCurrent() turned false on the way.
+  //
+  // With {repeats: true}, a sample whose orbit comes back exactly to an
+  // earlier value (checked against values kept at steps 8, 16, 32, …) stops
+  // early: an orbit that repeats exactly is periodic and never escapes, so
+  // the picture is the same, only faster where many samples do not escape.
+  async function renderEscapeTime(context, view, juliaParameter, budget, isCurrent,
+    {repeats = false, parallel = true} = {}) {
+    const {width, height} = context.canvas;
+    const image = context.createImageData(width, height);
+    const tasks = [];
+    for (let firstRow = 0; firstRow < height; firstRow += ROWS_PER_TASK) {
+      tasks.push({
+        view: {left: view.left, top: view.top, width: view.width, height: view.height},
+        juliaParameter, budget, repeats, width, height, firstRow, rows: Math.min(ROWS_PER_TASK, height - firstRow),
+      });
+    }
+    const done = await escapeTimePool.run(tasks, isCurrent,
+      (task, pixels) => image.data.set(pixels, task.firstRow * width * 4), {parallel});
+    if (!done || !isCurrent()) return null;
     context.putImageData(image, 0, 0);
     return image;
   }
@@ -411,6 +563,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, paint,
+    doublingOrbit, binary, iterationBudget, paint, workerPool,
+    workerCount: () => workersRunning,
   };
 })();
