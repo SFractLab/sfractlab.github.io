@@ -37,7 +37,7 @@
   const PREVIEW = 4;  // a quick preview is drawn first, at a quarter of the resolution
   const LABEL_OFFSET = {n: [0, -12], e: [10, 5], s: [0, 20], w: [-10, 5]};
   const BADGE_RADIUS = 10;
-  const RING_RADIUS = 14;
+  const RING_RADIUS = 28;
   const JULIA_WINDOW = [0, 0, 4.2];  // 4.2 × 3.15, as the Julia gallery
 
   function element(name, className, text) {

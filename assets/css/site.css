@@ -870,8 +870,8 @@ figcaption var { font-size: 1.05em; }
 .place-label { font: 700 18px var(--font-ui); fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-width: 4px; stroke-linejoin: round; }
 .place-badge { fill: #f2b35e; stroke: #2b1904; stroke-width: 1.5; }
 .place-badge-label { font: 700 13px var(--font-ui); fill: #2b1904; }
-.place-ring { fill: none; stroke: #fff1c8; stroke-width: 2; }
-.place-ring-halo { fill: none; stroke: #091320; stroke-opacity: .65; stroke-width: 5; }
+.place-ring { fill: none; stroke: #fff1c8; stroke-width: 3; }
+.place-ring-halo { fill: none; stroke: #091320; stroke-opacity: .65; stroke-width: 7.5; }
 /* The angle explorer (angle-explorer.js): Lavaurs’ chords and the landing point. */
 .angle-input { width: 7rem; padding: .25rem .4rem; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--paper); color: var(--ink); font-size: .85rem; }
 .angle-input.angle-invalid { border-color: var(--focus); }
