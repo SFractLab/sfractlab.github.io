@@ -4,7 +4,10 @@
    Built by AtlasKit.setUp for every <figure data-widget="orbits">. The two
    planes stay separate, as the chapters insist: the left panel is the
    parameter plane (choose c), the right panel the dynamical plane of that c
-   (its filled Julia set, dimmed, with the orbit drawn on top).
+   (its filled Julia set, dimmed, with the orbit drawn on top). The parameter
+   plane can be zoomed, by 2 at a time around the chosen c, down to
+   magnification MAX_MAGNIFICATION, to choose c more finely; the dynamical
+   plane always shows the whole filled Julia set, since the orbit roams over it.
    Data attributes on the figure:
      data-example  the example selected at first (a key of EXAMPLES)
      data-z0       the starting point as "re,im" (default "0,0", the critical point)
@@ -17,7 +20,8 @@
   if (!kit) return;
   const {complex, format, formatNumber, subscript} = kit;
 
-  const MAP_VIEW = {left: -2.2, width: 3.2, top: 1.2, height: 2.4};
+  const MAP_VIEW = {left: -2.2, width: 3.2, top: 1.2, height: 2.4};  // the whole set
+  const MAX_MAGNIFICATION = 2 ** 13;  // about 10⁴: enough to choose a point, and quick to draw
   const ORBIT_VIEW = {left: -2.1, width: 4.2, top: 1.575, height: 3.15};
   const WIDTH = 480;
   const HEIGHT = 360;
@@ -56,7 +60,13 @@
     return Number.isFinite(re) && Number.isFinite(im) ? {re, im} : fallback;
   }
 
-  const round = value => Number(value.toFixed(4));
+  const round = (value, digits = 4) => Number(value.toFixed(digits));
+
+  // The window of the parameter plane `width` wide around `centre`, in the shape of the canvases.
+  const mapView = (centre, width) => ({left: centre.re - width / 2, top: centre.im + width * 3 / 8, width,
+    height: width * 3 / 4});
+  // Decimals that tell neighbouring pixels of a window `width` wide apart: 4 for the whole set.
+  const decimalsFor = width => Math.max(4, Math.ceil(-Math.log10(width / WIDTH)) + 1);
 
   kit.setUp('orbits', (figure, id) => {
     figure.classList.add('widget-plate');
@@ -68,6 +78,7 @@
       result: null,
       shown: SHOWN_AT_FIRST,
       timer: null,
+      map: MAP_VIEW,  // the window of the parameter plane shown
     };
     const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -137,7 +148,7 @@
 
     // --- panels --------------------------------------------------------------
 
-    function panel(title, caption, label) {
+    function panel(title, caption, label, tools = null) {
       const box = element('div', 'plate-panel');
       const heading = element('h3');
       heading.innerHTML = title;  // fixed markup with <var>
@@ -150,11 +161,26 @@
       canvas.setAttribute('aria-label', label);
       const overlay = kit.svg('svg', {viewBox: `0 0 ${WIDTH} ${HEIGHT}`, class: 'plate-overlay', 'aria-hidden': 'true'});
       view.append(canvas, overlay);
-      box.append(view, element('p', 'plate-caption', caption));
-      return {box, context: canvas.getContext('2d'), overlay};
+      const captionLine = element('p', 'plate-caption', caption);
+      box.append(view, captionLine);
+      if (tools) box.append(tools);
+      return {box, context: canvas.getContext('2d'), overlay, caption: captionLine};
     }
-    const map = panel('Parameter plane · choose <var>c</var>', 'Re(c): −2.2 to 1.0 · Im(c): −1.2 to 1.2',
-      'The Mandelbrot set; the ring marks the chosen parameter c.');
+    // The parameter plane's zoom buttons, below its picture and caption, so that both pictures
+    // stay level.
+    const zoomButtons = element('div', 'plate-buttons orbit-zoom');
+    function zoomButton(text, onClick) {
+      const node = element('button', 'plate-button-quiet', text);
+      node.type = 'button';
+      node.addEventListener('click', onClick);
+      zoomButtons.append(node);
+      return node;
+    }
+    const zoomInButton = zoomButton('Zoom in', () => zoomTo(state.map.width / 2));
+    const zoomOutButton = zoomButton('Zoom out', () => zoomTo(state.map.width * 2));
+    const wholeButton = zoomButton('Whole set', () => showMap(MAP_VIEW));
+    const map = panel('Parameter plane · choose <var>c</var>', '',
+      'The Mandelbrot set; the ring marks the chosen parameter c.', zoomButtons);
     const dynamics = panel('Dynamical plane · orbit of <var>z</var><sub>0</sub>', 'Re(z): −2.1 to 2.1 · Im(z): −1.575 to 1.575',
       'The filled Julia set of the chosen c, dimmed, with the orbit drawn on top.');
     if (!map.context || !dynamics.context) return;
@@ -162,7 +188,7 @@
     const panels = element('div', 'plate-grid');
     panels.append(map.box, dynamics.box);
 
-    const mapPlane = new kit.Plane(MAP_VIEW, WIDTH, HEIGHT);
+    let mapPlane = new kit.Plane(MAP_VIEW, WIDTH, HEIGHT);
     const orbitPlane = new kit.Plane(ORBIT_VIEW, WIDTH, HEIGHT);
     const stepLine = element('p', 'plate-step');
     const verdictLine = element('p', 'plate-verdict');
@@ -173,14 +199,44 @@
     // Both pictures at the size the screen calls for (AtlasKit.fitCanvas); the overlays keep the
     // units of 480 × 360.
     let generation = 0;
+    let mapGeneration = 0;
     function renderJulia() {
       const request = ++generation;
       kit.fitCanvas(dynamics.context.canvas, WIDTH, HEIGHT);
       kit.renderEscapeTime(dynamics.context, ORBIT_VIEW, state.c, JULIA_BUDGET, () => request === generation);
     }
+    // The budget grows with the magnification, as in the zoom viewer.
+    const mapBudget = () => Math.max(MAP_BUDGET, kit.iterationBudget(state.map.width));
     function renderMap() {
+      const request = ++mapGeneration;
       kit.fitCanvas(map.context.canvas, WIDTH, HEIGHT);
-      kit.renderEscapeTime(map.context, MAP_VIEW, null, MAP_BUDGET, () => true);
+      kit.renderEscapeTime(map.context, state.map, null, mapBudget(), () => request === mapGeneration,
+        {repeats: true});
+    }
+
+    // Shows a window of the parameter plane, with its range, its magnification and its budget
+    // in the caption; a zoom button that has nothing to do is greyed out.
+    function showMap(view) {
+      state.map = view;
+      mapPlane = new kit.Plane(view, WIDTH, HEIGHT);
+      const whole = view === MAP_VIEW;
+      const digits = decimalsFor(view.width) - 1;
+      const range = (low, high) => `${formatNumber(low, digits)} to ${formatNumber(high, digits)}`;
+      const magnification = MAP_VIEW.width / view.width;
+      map.caption.textContent = whole ? 'Re(c): −2.2 to 1.0 · Im(c): −1.2 to 1.2'
+        : `Re(c): ${range(view.left, view.left + view.width)} · Im(c): ${range(view.top - view.height, view.top)} · `
+          + `magnification ${magnification.toLocaleString('en')} · ${mapBudget().toLocaleString('en')} steps`;
+      zoomInButton.disabled = magnification >= MAX_MAGNIFICATION;
+      zoomOutButton.disabled = whole;
+      wholeButton.disabled = whole;
+      drawMarker();
+      renderMap();
+    }
+
+    // Zooms to a window `width` wide around the chosen c; as wide as the whole set, it is the whole set.
+    function zoomTo(width) {
+      if (width >= MAP_VIEW.width) showMap(MAP_VIEW);
+      else showMap(mapView(state.c, Math.max(width, MAP_VIEW.width / MAX_MAGNIFICATION)));
     }
 
     function drawMarker() {
@@ -220,7 +276,7 @@
       const n = state.shown;
       const point = state.result.points[n];
       const start = state.z0.re === 0 && state.z0.im === 0 ? 'the critical point 0' : `z₀ = ${format(state.z0, 3)}`;
-      stepLine.innerHTML = `Orbit of ${start} for c = ${format(state.c, 4)}. Step ${n}: `
+      stepLine.innerHTML = `Orbit of ${start} for c = ${format(state.c, decimalsFor(state.map.width))}. Step ${n}: `
         + `z${subscript(n)} = ${format(point, 3)}, |z${subscript(n)}| = ${formatNumber(complex.abs(point), 3)}.`;
       verdictLine.innerHTML = kit.describeOrbit(state.result);  // built only from numbers formatted above
     }
@@ -271,11 +327,15 @@
       show(SHOWN_AT_FIRST);
     }
 
+    // A c outside the window shown, from an example or the number fields, brings back the whole set.
     function setC(c) {
       state.c = c;
       const example = EXAMPLES.find(([, , re, im]) => re === c.re && im === c.im);
       select.value = example ? example[0] : 'custom';
-      drawMarker();
+      const {left, top, width, height} = state.map;
+      const inside = c.re >= left && c.re <= left + width && c.im <= top && c.im >= top - height;
+      if (inside || state.map === MAP_VIEW) drawMarker();
+      else showMap(MAP_VIEW);
       renderJulia();
       recompute();
     }
@@ -293,7 +353,8 @@
     });
     kit.makeDraggable(map.overlay, map.overlay, (x, y) => {
       const c = mapPlane.fromScreen(x, y);
-      setC({re: round(c.re), im: round(c.im)});
+      const digits = decimalsFor(state.map.width);
+      setC({re: round(c.re, digits), im: round(c.im, digits)});
     });
     kit.makeDraggable(dynamics.overlay, dynamics.overlay, (x, y) => {
       const z = orbitPlane.fromScreen(x, y);
@@ -302,7 +363,7 @@
 
     const caption = figure.querySelector('figcaption');
     for (const part of [controls, fieldRow, panels, stepLine, verdictLine]) figure.insertBefore(part, caption);
-    renderMap();
+    showMap(MAP_VIEW);
     setC(state.c);
     kit.whenResized(() => {
       if (!kit.fitsScreen(map.context.canvas, WIDTH, HEIGHT)) renderMap();

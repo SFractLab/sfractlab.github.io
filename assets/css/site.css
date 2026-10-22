@@ -857,6 +857,7 @@ figcaption var { font-size: 1.05em; }
 .zoom-view:active { cursor: grabbing; }
 .chapter .zoom-hint { margin: .4rem 0 0; }
 .orbit-marker { fill: none; stroke: #fff1c8; stroke-width: 2; }
+.orbit-zoom { margin-top: .6rem; }
 .orbit-path { fill: none; stroke: rgb(255 241 200 / .55); stroke-width: 1.5; stroke-linejoin: round; }
 .orbit-point { fill: #fff1c8; }
 .orbit-start { fill: var(--plate-accent); stroke: #062228; stroke-width: 1.5; }
