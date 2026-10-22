@@ -279,11 +279,13 @@
 <dt id="harmonic-measure">Harmonic measure</dt>
 <dd>The distribution in which a random particle coming in from far away hits a set; for a connected Julia set it is the measure that random inverse iteration samples, and it has dimension 1. <a href="numbers.html#julia-dimension">The dimension of a Julia set</a>.</dd>
 <dt id="escape-time-coloring">Escape-time coloring / orbit trap</dt>
-<dd><strong>Escape-time coloring:</strong> Assigning colors from escape behavior. <strong>Orbit trap:</strong> Measuring proximity of an orbit to a chosen shape. These change the visualization, not the set’s definition. <a href="computing.html#escape-time">Escape time</a>.</dd>
+<dd><strong>Escape-time coloring:</strong> Assigning colors from escape behavior. <strong>Orbit trap:</strong> Coloring by how close an orbit comes to a chosen shape, such as Pickover’s cross of the two axes. These change the visualization, not the set’s definition. <a href="computing.html#escape-time">Escape time</a>, <a href="computing.html#orbit-coloring">orbit traps</a>.</dd>
 <dt id="distance-estimate">Distance estimate</dt>
 <dd><var>b</var> = 2|<var>z</var><sub>n</sub>| log|<var>z</var><sub>n</sub>| / |<var>z</var>′<sub>n</sub>|, computed with the derivative of the orbit; near the set the true distance lies between about <var>b</var>/4 and <var>b</var> (Koebe). It reveals filaments thinner than a pixel. <a href="computing.html#distance">Distance estimates</a>.</dd>
 <dt id="binary-decomposition">Binary decomposition</dt>
 <dd>Coloring escaping points by the sign of Im <var>z</var><sub>n</sub> at the escape step <var>n</var>; with a large escape radius this is the <var>n</var>-th binary digit of the external angle. <a href="computing.html#binary-decomposition">Reading angles</a>.</dd>
+<dt id="stripe-average">Stripe average</dt>
+<dd>Coloring by the mean of ½ sin(<var>s</var> · arg <var>z</var><sub>k</sub>) + ½ over the orbit, blended between the last two means according to the position within the escape band, so that the band edges vanish (Härkönen, 2007); its stripes follow external rays. <a href="computing.html#orbit-coloring">Coloring with the whole orbit</a>.</dd>
 <dt id="inverse-iteration">Inverse iteration</dt>
 <dd>Drawing a Julia set by following backward orbits, choosing one of the two preimages ±√(<var>z</var> − <var>c</var>) at each step; its points follow harmonic measure and neglect deep fjords, which the modified method, following all preimages with pruning, fills. <a href="computing.html#inverse-iteration">Julia sets backwards</a>.</dd>
 <dt id="ball-arithmetic">Ball arithmetic / certified picture</dt>

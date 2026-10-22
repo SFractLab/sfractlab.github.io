@@ -1,15 +1,21 @@
-/* Interactive figure: one computation of the Mandelbrot set, colored five ways.
+/* Interactive figure: one computation of the Mandelbrot set, colored seven ways.
 
    Every pixel's critical orbit is followed once, with the derivative with
    respect to c, until |z| exceeds the chosen escape radius R or the
    iteration budget is used up. The pass keeps, per pixel, the escape step n,
-   log|z_n|, the sign of Im z_n, |z'_n| and the number of steps spent. The
-   modes only color these numbers differently:
+   log|z_n|, the sign of Im z_n, |z'_n|, the stripe average, the orbit's
+   closest approach to the axes and the number of steps spent. The modes
+   only color these numbers differently:
      escape    bands by the escape step n
      smooth    the smooth count ν = n + 1 − log₂ log|z_n|
      binary    the sign of Im z_n: the n-th binary digit of the external angle
      distance  the distance estimate b = 2|z_n| log|z_n| / |z'_n|, with
                pixels where b is below the pixel size drawn as the set
+     stripe    Härkönen's stripe average: the mean of ½ sin(s·arg z_k) + ½
+               over z_1 … z_n, interpolated between the means up to z_(n−1)
+               and z_n by the fractional part of the smooth count
+     trap      an orbit trap: the orbit's closest approach to the real and
+               imaginary axes, Pickover's cross, on a logarithmic scale
      work      the steps each pixel cost, with the cardioid and period-two
                tests and exact periodicity checking
    Clicking a pixel inspects its orbit. Built by AtlasKit.setUp for every
@@ -30,8 +36,12 @@
     ['smooth', 'Smooth count'],
     ['binary', 'Binary decomposition'],
     ['distance', 'Distance estimate'],
+    ['stripe', 'Stripe average'],
+    ['trap', 'Orbit trap'],
     ['work', 'Work per pixel'],
   ];
+  const STRIPE_DENSITY = 5;  // s, an integer: other values make the stripes jump where arg z does
+  const TRAP_RANGE = 4;      // the trap's color runs over distances 1 to 10⁻⁴
   const RADII = [2, 16, 1000];
   const WINDOWS = [
     ['whole', 'The whole set', -0.7, 0, 3.2],
@@ -69,6 +79,29 @@
     if (Math.abs(x) >= 1e-3 && Math.abs(x) < 1e5) return formatNumber(x, digits);
     const exponent = Math.floor(Math.log10(Math.abs(x)));
     return `${formatNumber(x / 10 ** exponent, 2)} × 10<sup>${exponent < 0 ? '−' : ''}${Math.abs(exponent)}</sup>`;
+  }
+
+  // The stripe addend ½ sin(s·arg z) + ½ of one orbit point, as ½ Im((z/|z|)^s) + ½: s
+  // multiplications cost less than atan2 and sin at every step of every pixel.
+  function stripeAddend(x, y) {
+    const r = Math.sqrt(x * x + y * y);
+    const ux = x / r, uy = y / r;
+    let px = ux, py = uy;
+    for (let k = 1; k < STRIPE_DENSITY; k++) {
+      const next = px * ux - py * uy;
+      py = px * uy + py * ux;
+      px = next;
+    }
+    return .5 * py + .5;
+  }
+
+  // Härkönen's interpolation between the stripe means S_(n−1) and S_n, from the sum of the
+  // addends of z_1 … z_n, the last of them, and the fractional part d of the smooth count.
+  function stripeAverage(sum, last, n, radius, logSize) {
+    const full = sum / n;
+    const before = n > 1 ? (sum - last) / (n - 1) : full;
+    const d = Math.min(1, Math.max(0, 1 + Math.log2(Math.log(radius) / logSize)));
+    return d * full + (1 - d) * before;
   }
 
   // Whether c lies in the main cardioid or the period-two disk (exact tests).
@@ -161,6 +194,8 @@
         logSize: new Float64Array(size),  // log|z_n| at escape
         upper: new Uint8Array(size),      // 1 if Im z_n > 0 at escape
         derivative: new Float64Array(size),
+        stripe: new Float32Array(size),   // the stripe average, from 0 to 1
+        trap: new Float32Array(size),     // the orbit's closest approach to the axes
         spent: new Int32Array(size),      // steps computed, with the shortcuts
         shortcut: new Uint8Array(size),   // 1 if a shortcut decided the pixel
       };
@@ -181,6 +216,7 @@
           let keptX = 0, keptY = 0, keepAt = 8;
           let n = 0;
           let escaped = false;
+          let stripeSum = 0, addend = 0, nearest = Infinity;
           while (n < budget) {
             const ndx = 2 * (zx * dx - zy * dy) + 1;
             dy = 2 * (zx * dy + zy * dx);
@@ -189,6 +225,9 @@
             zy = 2 * zx * zy + cy;
             zx = nx;
             n++;
+            addend = stripeAddend(zx, zy);
+            stripeSum += addend;
+            nearest = Math.min(nearest, Math.abs(zx), Math.abs(zy));
             if (zx * zx + zy * zy > limit) {
               escaped = true;
               break;
@@ -209,6 +248,8 @@
             data.logSize[index] = .5 * Math.log(zx * zx + zy * zy);
             data.upper[index] = zy > 0 ? 1 : 0;
             data.derivative[index] = Math.sqrt(dx * dx + dy * dy);
+            data.stripe[index] = stripeAverage(stripeSum, addend, n, state.radius, data.logSize[index]);
+            data.trap[index] = nearest;
           } else {
             data.steps[index] = -1;
           }
@@ -243,6 +284,15 @@
         }
         case 'binary':
           return data.upper[index] ? CREAM : NIGHT;
+        case 'stripe': {
+          // Stretched over the values in the picture: deep in, the stripes span a narrow range.
+          const [low, high] = data.stripeRange;
+          return cyclic(.62 * Math.min(1, Math.max(0, (data.stripe[index] - low) / (high - low))));
+        }
+        case 'trap': {
+          const t = Math.min(1, Math.max(0, -Math.log10(data.trap[index]) / TRAP_RANGE));
+          return cyclic(.62 * t);
+        }
         default: {  // distance
           const b = 2 * Math.exp(data.logSize[index]) * data.logSize[index] / data.derivative[index];
           const pixel = data.view.width / WIDTH;
@@ -253,9 +303,22 @@
       }
     }
 
+    // The 1st and 99th percentiles of the stripe averages computed so far, from every 7th pixel.
+    function stripeRange(data) {
+      const values = [];
+      for (let index = 0; index < data.rows * WIDTH; index += 7) {
+        if (data.steps[index] >= 0) values.push(data.stripe[index]);
+      }
+      if (values.length < 2) return [0, 1];
+      values.sort((a, b) => a - b);
+      const low = values[Math.floor(.01 * (values.length - 1))], high = values[Math.ceil(.99 * (values.length - 1))];
+      return high > low ? [low, high] : [0, 1];
+    }
+
     function paint() {
       const data = state.data;
       if (!data) return;
+      if (state.mode === 'stripe') data.stripeRange = stripeRange(data);
       const image = context.createImageData(WIDTH, HEIGHT);
       for (let index = 0; index < data.rows * WIDTH; index++) {
         const [r, g, b] = color(data, index);
@@ -271,7 +334,10 @@
     function describe() {
       const data = state.data;
       const [, name] = state.window;
-      let text = `${name} · ${data.budget.toLocaleString('en')} iterations per pixel at most · R = ${data.radius}.`;
+      let text = `${name} · ${data.budget.toLocaleString('en')} iterations per pixel at most · R = ${data.radius}`;
+      if (state.mode === 'stripe') text += ` · stripe density <var>s</var> = ${STRIPE_DENSITY}`;
+      if (state.mode === 'trap') text += ' · trap: the real and imaginary axes';
+      text += '.';
       if (data.rows < HEIGHT) {
         status.textContent = `${text} Computing…`;
         return;
@@ -308,6 +374,7 @@
       const limit = state.radius * state.radius;
       let escapedAt = 0, logSize = 0;
       let farAt = 0, farLog = 0, farDerivative = 0;  // at R = 1000, for the potential and distance
+      let stripeSum = 0, addend = 0, nearest = Infinity, nearestAt = 0;
       while (n < budget + 100) {
         const ndx = 2 * (zx * dx - zy * dy) + 1;
         dy = 2 * (zx * dy + zy * dx);
@@ -316,6 +383,14 @@
         zy = 2 * zx * zy + c.im;
         zx = nx;
         n++;
+        if (!escapedAt) {
+          addend = stripeAddend(zx, zy);
+          stripeSum += addend;
+          if (Math.min(Math.abs(zx), Math.abs(zy)) < nearest) {
+            nearest = Math.min(Math.abs(zx), Math.abs(zy));
+            nearestAt = n;
+          }
+        }
         if (!escapedAt && zx * zx + zy * zy > limit) {
           escapedAt = n;
           logSize = .5 * Math.log(zx * zx + zy * zy);
@@ -351,7 +426,9 @@
         + `<var>G</var><sub>M</sub>(<var>c</var>) ≈ 2<sup>2 − ν</sup> = ${number(2 ** (2 - farSmooth))}, and the distance `
         + `estimate <var>b</var> = ${number(b)} puts the distance to the set between about ${number(b / 4)} and `
         + `${number(b)}. `
-        + `Binary digits ${first} to ${first + digits.length - 1} of the external angle: ${digits.join('')}.`;
+        + `Binary digits ${first} to ${first + digits.length - 1} of the external angle: ${digits.join('')}. `
+        + `Stripe average (<var>s</var> = ${STRIPE_DENSITY}): ${formatNumber(stripeAverage(stripeSum, addend, escapedAt,
+          state.radius, logSize), 3)}; closest approach to the axes: ${number(nearest)}, at step ${nearestAt}.`;
     }
 
     view.addEventListener('click', event => {
