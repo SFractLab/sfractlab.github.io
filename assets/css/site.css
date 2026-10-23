@@ -946,6 +946,17 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .rays-end { fill: #fff1c8; stroke: #2b1904; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .rays-label { font-family: var(--font-ui); font-weight: 650; fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
 .chapter .rays-readout p { max-width: none; margin: 0 0 .35rem; overflow-wrap: anywhere; }
+/* Centers of Julia sets (julia-centers.js): rings at 0, ±α and ±β over the picture. */
+.centers-overlay { cursor: default; }
+.centers-halo { fill: none; stroke: #091320; stroke-width: 7.5; vector-effect: non-scaling-stroke; }
+.centers-ring { fill: none; stroke-width: 3.3; vector-effect: non-scaling-stroke; }
+.centers-label { font-family: var(--font-ui); font-weight: 650; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
+.centers-critical .centers-ring { stroke: #ffffff; }
+.centers-critical .centers-label { fill: #ffffff; }
+.centers-alpha .centers-ring { stroke: #f2b35e; }
+.centers-alpha .centers-label { fill: #f2b35e; }
+.centers-beta .centers-ring { stroke: #7cc7f0; }
+.centers-beta .centers-label { fill: #7cc7f0; }
 
 /* ---- Pagination and footer ---------------------------------------------- */
 

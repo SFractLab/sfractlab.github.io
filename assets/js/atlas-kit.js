@@ -571,6 +571,7 @@
   //   binary    the sign of Im z_n: the n-th binary digit of the external angle
   //   distance  the distance estimate b = 2|z_n| log|z_n| / |z'_n|, with
   //             pixels where b is below the pixel size drawn as the set
+  //             (below data.thickness times the pixel size, if it is set)
   //   stripe    Härkönen's stripe average: the mean of ½ sin(s·arg z_k) + ½
   //             over z_1 … z_n, interpolated between the means up to z_(n−1)
   //             and z_n by the fractional part of the smooth count
@@ -793,8 +794,8 @@
       default: {  // distance
         const b = 2 * Math.exp(data.logSize[index]) * data.logSize[index] / data.derivative[index];
         const pixel = data.view.width / data.width;
-        if (b < pixel) return CREAM;
-        const t = Math.min(1, Math.log(b / pixel) / Math.log(400));
+        if (b < pixel * (data.thickness || 1)) return CREAM;
+        const t = Math.max(0, Math.min(1, Math.log(b / pixel) / Math.log(400)));
         return [13 + 40 * t, 26 + 90 * t, 45 + 110 * t];
       }
     }
