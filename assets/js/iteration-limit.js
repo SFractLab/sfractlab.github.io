@@ -16,7 +16,7 @@
   const WIDTH = 640;
   const HEIGHT = 480;
   const RADIUS = 2;
-  const LIMITS = [20, 100, 500, 1000];
+  const LIMITS = [20, 100, 300, 1000];
   const MAX_LIMIT = 10000;  // typed limits stop here, so that a picture takes at most a second or two
   const WINDOWS = [
     ['whole', 'The whole set', -0.7, 0, 3.2],
