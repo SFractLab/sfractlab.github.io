@@ -39,21 +39,22 @@
 <li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
 <li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
 <li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
-<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
-<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+<li><a href="embedded-julia.html"><span class="nav-number">11</span> Embedded Julia sets</a></li>
+<li><a href="neutral.html"><span class="nav-number">12</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">13</span> A guided tour</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
-<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
-<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
-<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
-<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+<li><a href="numbers.html"><span class="nav-number">14</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">15</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">16</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">17</span> Open questions</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
-<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
-<li><a href="deep-zoom.html" aria-current="page"><span class="nav-number">18</span> Deep zoom</a></li>
-<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
-<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
-<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+<li><a href="computing.html"><span class="nav-number">18</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html" aria-current="page"><span class="nav-number">19</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">20</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">21</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">22</span> Sources</a></li>
 </ol></div>
 </nav>
 <div class="sidebar-foot">
@@ -63,7 +64,7 @@
 </header>
 <main class="site-main" id="main-content">
 <div class="page-bar">
-<p class="kicker"><span class="kicker-number">Chapter 18</span> · Compute, explore &amp; look up</p>
+<p class="kicker"><span class="kicker-number">Chapter 19</span> · Compute, explore &amp; look up</p>
 <div class="site-search" id="site-search" role="search" hidden>
 <label class="visually-hidden" for="site-query">Search the atlas</label>
 <input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
@@ -184,7 +185,7 @@
 <p>K. I. Martin published this method in 2013 with his program SuperFractalThing, in a two-page note that starts the reference at <var>c</var> rather than at 0, which shifts the same recurrence by one step (<a href="https://web.archive.org/web/20130701075021/http://www.superfractalthing.co.nf/sft_maths.pdf">Martin, 2013</a>). The effect was dramatic. A year later the user Pauldelbrot described rendering a picture at a magnification of about 10<sup>157</sup> with “just three dozen points iterated at 163 decimals of precision, instead of the one-and-one-quarter-million at that precision to render this same image in conventional software” (<a href="https://www.fractalforums.com/announcements-and-news/pertubation-theory-glitches-improvement/">fractalforums.com, April 2014</a>). Why three dozen points and not one is the subject of the next section.</p>
 <h2 id="glitches">Glitches</h2>
 <p>Perturbation has one weak spot. Suppose a pixel’s orbit passes close to 0 while the reference does not. Then δ<sub>n</sub> ≈ −<var>Z</var><sub>n</sub>, and the pixel’s value <var>z</var><sub>n</sub> = <var>Z</var><sub>n</sub> + δ<sub>n</sub> is the small difference of two nearly equal numbers. δ<sub>n</sub> carries 53 bits relative to its own size, which is about |<var>Z</var><sub>n</sub>|, so <var>z</var><sub>n</sub> is known only to about 2<sup>−53</sup>|<var>Z</var><sub>n</sub>|: at |<var>z</var><sub>n</sub>| = 10<sup>−3</sup>|<var>Z</var><sub>n</sub>| ten bits are lost, at 10<sup>−16</sup>|<var>Z</var><sub>n</sub>| all of them. Pauldelbrot analyzed this in April 2014: the difference between two neighboring pixels is multiplied at each step by about twice the pixel’s own value, so when that value is small, the differences between neighbors fall below the resolution of δ. Neighboring pixels then round to the same δ and follow the same orbit from then on.</p>
-<p>These failures are called <strong>glitches</strong>. Where neighbors snap together completely, a whole region gets the same count: a flat blob of one color where there should be structure. Where they lose only part of their difference, the counts are scrambled into noise or wrong but plausible-looking patterns. Glitches appear near minibrots and embedded Julia sets other than the one the reference belongs to, because pixels there return close to 0 at multiples of a different period. A second failure is simpler: the reference may escape before the pixels do, and then pixels that need more iterations have nothing left to follow.</p>
+<p>These failures are called <strong>glitches</strong>. Where neighbors snap together completely, a whole region gets the same count: a flat blob of one color where there should be structure. Where they lose only part of their difference, the counts are scrambled into noise or wrong but plausible-looking patterns. Glitches appear near minibrots and <a href="embedded-julia.html">embedded Julia sets</a> other than the one the reference belongs to, because pixels there return close to 0 at multiples of a different period. A second failure is simpler: the reference may escape before the pixels do, and then pixels that need more iterations have nothing left to follow.</p>
 <p>Pauldelbrot’s test flags a pixel when |<var>z</var><sub>n</sub>| &lt; 10<sup>−3</sup>|<var>Z</var><sub>n</sub>|; Kalles Fraktaler uses the squared form |<var>z</var><sub>n</sub>|<sup>2</sup> &lt; 10<sup>−7</sup>|<var>Z</var><sub>n</sub>|<sup>2</sup>. Flagged pixels were then computed again with a second reference placed in the middle of the glitched region, and so on until no glitches were left: Kalles Fraktaler rendered a test picture at 1280 × 720 pixels with seven extra references in under 1.5 minutes in 2014, and dozens of references were common for difficult pictures. No threshold was ever shown to catch all glitches without false alarms. In a test window at width 3.6·10<sup>−31</sup>, about 1% of the pixels were glitched; the test flagged 2.4% of all pixels, more than half of them correctly computed ones, and missed some of the wrong ones.</p>
 <h2 id="reference">Where the reference comes from</h2>
 <p>Before 2021 the choice of reference mattered for correctness: it had to stay bounded at least as long as every pixel, and the nucleus of a minibrot in view was the natural choice. Today all four programs whose source code was read for this atlas, Kalles Fraktaler, Fraktaler 3, Imagina and FractalShark, simply use the image center: rebasing, in the next section, made any reference work. Finding the nucleus of a minibrot is still important, for navigation (“zoom to the next minibrot”) and for speed, and it is a nice piece of mathematics.</p>

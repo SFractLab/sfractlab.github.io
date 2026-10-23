@@ -21,6 +21,8 @@
                   drawn beside the Mandelbrot set, on the window of the
                   gallery's Julia pictures, and each picture is titled with
                   its plane
+     data-julia-window optional "re,im,width": another window for the Julia
+                  picture
 
    A figure can instead offer several windows. Each is an element inside it,
    usually a part of the caption, with data-choice (a key), data-name (its
@@ -40,6 +42,7 @@
   const BADGE_RADIUS = 10;
   const RING_RADIUS = 28;
   const JULIA_WINDOW = [0, 0, 4.2];  // 4.2 × 3.15, as the Julia gallery
+  const SUPERSCRIPTS = {'−': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'};
 
   function element(name, className, text) {
     const node = document.createElement(name);
@@ -51,6 +54,14 @@
   function parseNumbers(text, count) {
     const numbers = (text || '').split(',').map(Number);
     return numbers.length === count && numbers.every(Number.isFinite) ? numbers : null;
+  }
+
+  // A width with two significant digits: "0.00024", or "2.8 × 10⁻⁹" below a ten-thousandth.
+  function formatWidth(width, decimals) {
+    if (width >= 1e-4) return formatNumber(width, decimals);
+    const [mantissa, exponent] = width.toExponential(1).split('e');
+    const power = String(Number(exponent)).replace('-', '−').replace(/./g, digit => SUPERSCRIPTS[digit]);
+    return `${formatNumber(Number(mantissa), 1)} × 10${power}`;
   }
 
   function parseMarks(text) {
@@ -70,7 +81,7 @@
     const budget = kit.iterationBudget(width);
     const decimals = Math.max(4, Math.ceil(-Math.log10(width)) + 2);  // two significant digits of the width at least
     const centre = format({re, im}, decimals);
-    const shownWidth = formatNumber(width, decimals);
+    const shownWidth = formatWidth(width, decimals);
 
     const canvas = element('canvas');
     canvas.width = WIDTH;
@@ -212,6 +223,7 @@
     if (!area || area[2] <= 0) return;
     const marks = parseMarks(figure.dataset.marks);
     const julia = parseNumbers(figure.dataset.julia, 2);
+    const juliaWindow = parseNumbers(figure.dataset.juliaWindow, 3);
 
     const pictures = [];
     if (julia) {
@@ -219,7 +231,7 @@
       const panels = element('div', 'plate-grid');
       for (const [title, shown] of [
         ['Parameter plane · vary <var>c</var>', picture(area, null, marks, linked)],
-        [`Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`, picture(JULIA_WINDOW, c, [], false)],
+        [`Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`, picture(juliaWindow && juliaWindow[2] > 0 ? juliaWindow : JULIA_WINDOW, c, [], false)],
       ]) {
         if (!shown) return;
         const box = element('div', 'plate-panel');

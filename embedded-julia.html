@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Deep in the filaments of the Mandelbrot set, zooms meet small islands that look like Julia sets. Zoom toward the middle of one and its two-fold pattern turns four-fold, then eight-fold, then sixteen-fold, until a minibrot appears at the center. This chapter follows one such zoom with exact numbers and explains it: around a minibrot, the Mandelbrot set copies the Julia set of the minibrot’s center, and every pass of the orbit near the critical point doubles the copies.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Embedded Julia sets — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/place.js" defer></script>
+</head>
+<body data-page="embedded-julia">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="embedded-julia.html" aria-current="page"><span class="nav-number">11</span> Embedded Julia sets</a></li>
+<li><a href="neutral.html"><span class="nav-number">12</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">13</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">14</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">15</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">16</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">17</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">18</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">19</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">20</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">21</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">22</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 11</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#island">An island in the filaments</a></li><li><a href="#julia-copy">A Julia set around the critical point</a></li><li><a href="#doubling">Why the copies double</a></li><li><a href="#halfway">Halfway to the minibrot</a></li><li><a href="#theorems">What is proved</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<header>
+<p class="eyebrow">Julia sets inside the Mandelbrot set</p>
+<h1>Embedded Julia sets</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="minibrots.html">Minibrots &amp; self-similarity</a></span></p>
+<p class="lead">Deep in the filaments of the Mandelbrot set, zooms meet small islands that look like Julia sets. Zoom toward the middle of one and its two-fold pattern turns four-fold, then eight-fold, then sixteen-fold, until a minibrot appears at the center. This chapter follows one such zoom with exact numbers and explains it: around a minibrot, the Mandelbrot set copies the Julia set of the minibrot’s center, and every pass of the orbit near the critical point doubles the copies.</p>
+</header>
+<h2 id="island">An island in the filaments</h2>
+<p>People exploring the set with computers found these islands long before they were explained: according to Wolf Jung, as <a href="https://arxiv.org/abs/1804.00176">Kawahira and Kisaka</a> report, Robert Munafo and Jonathan Leavitt observed them in computer experiments decades ago. Munafo’s encyclopedia of the Mandelbrot set calls them <strong>embedded Julia sets</strong>: structures of filaments that look like a Julia set and lie close to a larger <a href="glossary.html#minibrot">minibrot</a>, compared with that minibrot’s size (<a href="https://mrob.com/pub/muency/embeddedjuliaset.html">Mu-Ency, “Embedded Julia Set”</a>). Other names in use are Julia islands and medallions.</p>
+<p>The example in the figure lies next to the real minibrot of period 3, whose center is at −1.7548776662 (the <a href="minibrots.html#a-period-three-example">minibrots chapter</a> takes it apart). Like the whole set, this copy has a seahorse valley where its cardioid meets its largest bulb, which has period 6 and touches the cardioid at −1.7685292. Hanging into that valley, 0.0016 above the point of contact, is an island about 4·10<sup>−6</sup> long. At its center lies a minibrot of period 101 whose <a href="glossary.html#center">center</a> is at</p>
+<div class="equation"><var>c</var><sub>0</sub> ≈ −1.7686678630 + 0.0016455803<var>i</var>,</div>
+<p>only 2.5·10<sup>−9</sup> long from its cusp to the tip of its antenna. The figure zooms from the valley to this minibrot, two million times in all.</p>
+<figure class="widget" data-widget="place" data-no-link data-menu="Zoom" hidden>
+<figcaption>
+<p data-choice="valley" data-name="The seahorse valley of the period-3 minibrot" data-window="-1.7665,0.0035,0.008" data-marks="-1.7686678629887,0.0016455802751,,ring"><strong>The seahorse valley of the period-3 minibrot,</strong> between its cardioid on the right and its period-6 bulb on the left. The ring marks the island, far too small to see at this width.</p>
+<p data-choice="filaments" data-name="An island in the filaments" data-window="-1.7686678629887,0.0016455802751,0.000035"><strong>An island in the filaments,</strong> about 230 times closer. The thin filaments of the valley run through a compact, dense patch: the embedded Julia set.</p>
+<p data-choice="two" data-name="The island: two nodes" data-window="-1.7686678629887,0.0016455802751,0.000007" data-marks="-1.7686673243752,0.0016467091321,,ring;-1.7686684563601,0.0016443740667,,ring"><strong>The island,</strong> symmetric under a half turn about its center. The rings mark its two <em>nodes</em> of period 104 = 101 + 3, small minibrots at 1.25·10<sup>−6</sup> and 1.34·10<sup>−6</sup> from the center, on opposite sides. Everything else in the island also comes in pairs.</p>
+<p data-choice="four" data-name="Four nodes" data-window="-1.7686678629887,0.0016455802751,0.00000022" data-marks="-1.7686678460768,0.0016456130514,,ring;-1.7686678804925,0.0016455464575,,ring;-1.7686678287733,0.001645561573,,ring;-1.7686678977128,0.001645598058,,ring"><strong>Four nodes</strong> of period 205 = 104 + 101, 3.7–3.9·10<sup>−8</sup> from the center, a quarter turn apart: in the middle of the island, its pattern repeats four times around the center.</p>
+<p data-choice="eight" data-name="Eight nodes" data-window="-1.7686678629887,0.0016455802751,0.000000024" data-marks="-1.7686678601743,0.0016455855148,,ring;-1.7686678663655,0.001645574037,,ring;-1.7686678575576,0.0016455767159,,ring;-1.7686678689623,0.0016455828683,,ring;-1.7686678569044,0.0016455816769,,ring;-1.7686678696133,0.0016455778839,,ring;-1.7686678651131,0.0016455861544,,ring;-1.7686678614291,0.0016455734207,,ring"><strong>Eight nodes</strong> of period 306 = 205 + 101, 6.0–7.1·10<sup>−9</sup> from the center. The minibrot shows in the middle.</p>
+<p data-choice="sixteen" data-name="Sixteen nodes" data-window="-1.7686678629887,0.0016455802751,0.000000011" data-marks="-1.7686678619509,0.0016455821698,,ring;-1.768667864629,0.0016455773129,,ring;-1.7686678609118,0.001645578545,,ring;-1.768667865568,0.0016455811083,,ring;-1.7686678606474,0.0016455805676,,ring;-1.7686678657991,0.0016455789515,,ring;-1.7686678639996,0.0016455824152,,ring;-1.7686678626136,0.0016455772016,,ring;-1.7686678611117,0.0016455815056,,ring;-1.7686678653933,0.0016455779698,,ring;-1.76866786493,0.0016455819557,,ring;-1.7686678616248,0.0016455777047,,ring;-1.7686678629467,0.0016455825221,,ring;-1.7686678636759,0.0016455770215,,ring;-1.76866786054,0.0016455795229,,ring;-1.7686678658973,0.0016455800694,,ring"><strong>Sixteen nodes</strong> of period 407 = 306 + 101, 2.2–3.4·10<sup>−9</sup> from the center. The ring has taken on the outline of the minibrot inside it.</p>
+<p data-choice="minibrot" data-name="The minibrot of period 101" data-window="-1.7686678629887,0.0016455802751,0.000000004"><strong>The minibrot of period 101,</strong> a copy of the whole set, 2.5·10<sup>−9</sup> long. Rings of 32, 64, … nodes continue around it, ever closer to its outline.</p>
+<p>Try it: choose a step of the zoom. The rings mark the nodes found for this chapter with Newton’s method, as in the <a href="deep-zoom.html#reference">deep-zoom chapter</a>; each has exactly the period stated. Computed in your browser in double precision, which still suffices at the smallest width, 4·10<sup>−9</sup>. <a href="gallery.html#zoom=-1.7686678629887,0.0016455802751,0.000035">Explore the island in the zoom viewer</a>.</p>
+</figcaption>
+</figure>
+<p>Two things stand out. The island is a copy of a Julia set, with the minibrot where that Julia set has its critical point 0; the next section shows which Julia set and why. And inside the island, the pattern repeats around the center 2, 4, 8, 16, … times, closer and closer to the minibrot. Munafo calls this doubling of the symmetry <em>bifurcation</em> (<a href="https://mrob.com/pub/muency/bifurcation.html">Mu-Ency, “Bifurcation”</a>); <a href="#doubling">a later section</a> explains it. It is not period doubling: every ring surrounds the same minibrot of period 101, and the periods of the nodes grow by 101 from ring to ring, 104, 205, 306, 407. Period doubling, in the <a href="minibrots.html#self-similarity-and-universality">minibrots chapter</a>, attaches components of periods <var>p</var>, 2<var>p</var>, 4<var>p</var>, ….</p>
+<h2 id="julia-copy">A Julia set around the critical point</h2>
+<p>Take a parameter <var>c</var> near the center <var>c</var><sub>0</sub>. The orbit of 0 under <var>z</var><sup>2</sup> + <var>c</var><sub>0</sub> returns exactly to 0 after 101 steps, so the orbit under <var>z</var><sup>2</sup> + <var>c</var> returns close to it:</p>
+<div class="equation"><var>z</var><sub>101</sub>(<var>c</var>) ≈ <var>b</var>′ · (<var>c</var> − <var>c</var><sub>0</sub>),   <var>b</var>′ = d<var>z</var><sub>101</sub>/d<var>c</var> at <var>c</var><sub>0</sub> ≈ −27,078 + 65,614<var>i</var>.</div>
+<p>From step 101 on, the orbit simply continues from the point <var>z</var><sub>101</sub>(<var>c</var>), so <var>c</var> belongs to <var>M</var> exactly when that point has a bounded orbit under <var>z</var><sup>2</sup> + <var>c</var>: when it lies in the filled Julia set of <var>c</var>. Close to <var>c</var><sub>0</sub>, that filled Julia set differs little from the one of <var>c</var><sub>0</sub>. Near <var>c</var><sub>0</sub>, therefore, the Mandelbrot set looks like the filled Julia set of <var>c</var><sub>0</sub> around 0, shrunk by |<var>b</var>′| ≈ 70,982 and turned by the argument of <var>b</var>′, 112.4°. The figure compares the two, with the Julia picture 70,982 times as wide as the island’s.</p>
+<figure class="widget" data-widget="place" data-window="-1.7686678629887,0.0016455802751,0.000007" data-julia="-1.7686678629887,0.0016455802751" data-julia-window="0,0,0.4969" data-no-link hidden>
+<figcaption>The island in the parameter plane, 7·10<sup>−6</sup> wide, and the filled Julia set of its minibrot’s center around the critical point 0, 0.4969 wide. Turn the Julia picture by 112° clockwise, or by 68° counterclockwise, which gives the same picture because every filled Julia set is symmetric under a half turn, and the two match feature for feature. Only the colors of the outside differ, because the escape counts differ. <a href="gallery.html#explorer">Draw this Julia set in full in the explorer</a> with <var>c</var> = −1.7686678630 + 0.0016455803<var>i</var>: at the gallery’s width of 4.2 the island’s twin is the small blob at its center.</figcaption>
+</figure>
+<p>This explains the two-fold symmetry. The comparison is with the Julia set around its <a href="glossary.html#critical-point">critical point</a> 0, and around 0 every quadratic Julia set is symmetric under the half turn <var>z</var> ↦ −<var>z</var>, because both points have the same image (<a href="julia.html#symmetry">Julia sets</a>). At a <a href="glossary.html#misiurewicz-parameter">Misiurewicz point</a> the Mandelbrot set looks instead like the Julia set around the critical <em>value</em> <var>c</var> (<a href="special-points.html#similarity-and-cautions">Tan Lei’s theorem</a>), where nothing forces such a symmetry.</p>
+<p>Why does the Julia set of <var>c</var><sub>0</sub> look like a whole Julia set around 0? Because <var>c</var><sub>0</sub> lies near the period-3 minibrot. For the first 90 steps, the orbit of 0 comes back to within 0.11 of 0 every third step, as the orbit of the period-3 center does. Near 0, three steps of <var>z</var><sup>2</sup> + <var>c</var> then act like one step of another quadratic map <var>z</var><sup>2</sup> + <var>c</var>*, the <a href="minibrots.html#why-the-quadratic-shape-returns">renormalization</a> that makes the period-3 minibrot a copy of <var>M</var>, and the points whose orbits keep returning close to 0 every three steps form a small copy of a quadratic Julia set. The parameter <var>c</var>* is the point of the whole set that corresponds to the island’s place beside the period-3 minibrot. Read through the minibrot’s size and orientation, the island’s place corresponds to about −0.72 + 0.09<var>i</var>, at the mouth of the whole set’s <a href="tour.html#seahorse-valley">seahorse valley</a>, which is where the island is in the period-3 copy. Munafo describes it the same way: an embedded Julia set is shaped like the Julia set whose parameter lies, relative to the whole set, where the island lies relative to its nearby minibrot, very close to that Julia set but never exactly equal.</p>
+<h3>Islands that blend in</h3>
+<p>Without a larger minibrot nearby, the copy is of a Julia set of the location itself. The three-way branch point of the 1/3 limb, <var>c</var> ≈ −0.1010963638 + 0.9562865108<var>i</var> (<a href="special-points.html#misiurewicz">Special points</a>), has a minibrot of period 31 at <var>c</var><sub>0</sub> ≈ −0.1006662519 + 0.9563357169<var>i</var>, 4.33·10<sup>−4</sup> away and 6.7·10<sup>−10</sup> long. Its embedded Julia set copies a Julia set close to that of the branch point, a <a href="glossary.html#dendrite">dendrite</a>, and so it blends into the filaments around it. The match is just as exact: here <var>b</var>′ ≈ −48,008 − 20,058<var>i</var>, and the filled Julia set of <var>c</var><sub>0</sub> 0.0624 wide around 0 matches the Mandelbrot set 1.2·10<sup>−6</sup> wide around <var>c</var><sub>0</sub>, turned by about 23°. <a href="gallery.html#zoom=-0.1006662519,0.9563357169,0.0000012">Open this window in the zoom viewer</a>.</p>
+<h2 id="doubling">Why the copies double</h2>
+<p>The <a href="minibrots.html#why-the-quadratic-shape-returns">minibrots chapter</a> derives the return map near 0. For <var>c</var> near the center <var>c</var><sub>0</sub> of a minibrot of period <var>p</var>, here 101, the <var>p</var>-th iterate near 0 is, to good accuracy,</p>
+<div class="equation"><var>g</var>(<var>z</var>) = <var>b</var>(<var>c</var>) + <var>A</var><var>z</var><sup>2</sup>,   <var>b</var>(<var>c</var>) = <var>z</var><sub><var>p</var></sub>(<var>c</var>),   <var>A</var> = 2<var>z</var><sub>1</sub> · 2<var>z</var><sub>2</sub> ⋯ 2<var>z</var><sub><var>p</var>−1</sub>,</div>
+<p>with the <var>z</var><sub><var>k</var></sub> taken on the orbit of <var>c</var><sub>0</sub>. In the coordinate <var>w</var> = <var>A</var><var>z</var> it becomes <var>w</var> ↦ <var>w</var><sup>2</sup> + <var>C</var>, with <var>C</var> = <var>A</var><var>b</var>(<var>c</var>) ≈ (<var>c</var> − <var>c</var><sub>0</sub>)/<var>s</var> and <var>s</var> = 1/(<var>A</var><var>b</var>′). For the island, <var>A</var> ≈ −12,409 − 1,508<var>i</var> and <var>s</var> ≈ (5.53 + 9.82<var>i</var>)·10<sup>−10</sup>. The minibrot is roughly <var>c</var><sub>0</sub> + <var>s</var>·<var>M</var>: 2.25 |<var>s</var>| ≈ 2.5·10<sup>−9</sup> long, as <var>M</var> is 2.25 long from −2 to 1/4, and tilted by the argument of <var>s</var>. Deep-zoom programs use this <a href="https://mathr.co.uk/blog/2016-12-24_deriving_the_size_estimate.html">size estimate</a> to frame a minibrot before they draw it.</p>
+<p>A parameter outside the minibrot has a large <var>C</var>. Its orbit comes back near 0 every <var>p</var> steps, at <var>w</var> = <var>C</var>, then <var>C</var><sup>2</sup> + <var>C</var>, then (<var>C</var><sup>2</sup> + <var>C</var>)<sup>2</sup> + <var>C</var>, …: each pass squares, and the values grow like <var>C</var>, <var>C</var><sup>2</sup>, <var>C</var><sup>4</sup>, … until the orbit leaves the neighborhood of 0; where it lands then decides whether it escapes. A number has two square roots, so whatever the orbit does after a pass happens at twice as many parameters as the same behavior one pass earlier. The first pass already squares, which is why the island is two-fold. One more pass gives four copies of each of its features, then eight, sixteen, ….</p>
+<p>The nodes show it exactly. The island’s two nodes have period 104: their orbits follow the orbit of <var>c</var><sub>0</sub> for 101 steps, back to within 0.092 of 0, and then reach 0 in three more steps, in the rhythm of the period-3 minibrot. A node that makes one more pass is 0.0026 from 0 after 101 steps and 0.092 after 202, and reaches 0 three steps later: it has period 205. Newton’s method, started at the square roots, finds four such nodes; then 8 of period 306 and 16 of period 407, each period checked to be exact. The same count holds near the branch point: its copies are Misiurewicz points whose orbits land on its fixed point α after 35 = 31 + 4 steps (two copies), 66 = 2·31 + 4 (four), 97 = 3·31 + 4 (eight) and 128 = 4·31 + 4 (sixteen), where the branch point itself lands after 4. Each doubling costs one more pass round the minibrot’s cycle.</p>
+<h2 id="halfway">Halfway to the minibrot</h2>
+<p>After <var>k</var> passes the orbit has reached about <var>C</var> raised to the power 2<sup><var>k</var>−1</sup>. To leave at the same size after one more pass, |<var>C</var>| must be about the square root of what it was, so its logarithm halves. In plain terms: measured in powers of ten above the minibrot’s size, each ring is halfway between the previous ring and the minibrot. For the island, the nodes lie 10<sup>3.06</sup>, 10<sup>1.53</sup>, 10<sup>0.77</sup> and 10<sup>0.39</sup> times |<var>s</var>| from the center, each exponent about half the one before. Equivalently, each ring is at the geometric mean of the previous ring’s distance and the minibrot’s size: √(1.3·10<sup>−6</sup> × 1.13·10<sup>−9</sup>) ≈ 3.8·10<sup>−8</sup>, the distance of the four nodes.</p>
+<p>So the doublings come faster and faster: halfway to the minibrot, then a quarter of the way, an eighth, …, infinitely many before the minibrot is reached. Their symmetry fades as they crowd against the minibrot, whose outline the last rings take on, but the doubling of their number goes on forever. Deep zoomers use the rule to judge depths. Measured from the size of the period-3 minibrot, 0.019, the island is about 10<sup>3.4</sup> to 10<sup>3.7</sup> times smaller and its central minibrot 10<sup>7.2</sup> times: the minibrot lies at about twice the depth of its embedded Julia set. Claude Heiland-Allen put it this way: “what you have passed before appears again, only this time doubled up and twice the speed” (<a href="https://mathr.co.uk/blog/2015-05-18_two_spirals_out.html">Two spirals out, 2015</a>).</p>
+<p>Artists exploit this. Zoom toward a shape, then turn off toward a minibrot nearby: the shape reappears doubled around the minibrot. Repeat, and the doublings stack into trees, lattices and other designs that no single location would show. Munafo calls this art <em>Julia morphing</em>, Heiland-Allen “building a tree”, and each new level lies about one and a half times as deep as the one before: the levels of Heiland-Allen’s 2015 zoom are about 10<sup>−128</sup>, 10<sup>−192</sup> and 10<sup>−288</sup> wide. <a href="https://mathr.co.uk/blog/2017-11-06_patterns_in_embedded_julia_sets.html">His notes on patterns in embedded Julia sets</a> also follow the nodes inside one island.</p>
+<h2 id="theorems">What is proved</h2>
+<p>The argument above approximates twice: the return map by a quadratic and one filled Julia set by another. Theorems make it exact up to a controlled distortion. Adrien Douady, Xavier Buff, Robert Devaney and Pierre Sentenac proved the first case in 2000: near the cusp of a primitive minibrot, small copies of <var>M</var> appear, each surrounded by nested copies of a slightly perturbed cauliflower Julia set and of its preimages under <var>z</var> ↦ <var>z</var><sup>2<sup><var>m</var></sup></sup> (<a href="https://doi.org/10.1017/CBO9780511569159.004">Baby Mandelbrot sets are born in cauliflowers</a>).</p>
+<p>Tomoki Kawahira and Masashi Kisaka proved the general case (<a href="https://arxiv.org/abs/1804.00176">Julia sets appear quasiconformally in the Mandelbrot set</a>, arXiv 2018, revised 2024). Take any minibrot and any Misiurewicz or parabolic parameter <var>c</var>*. Arbitrarily close to the point of the minibrot that corresponds to <var>c</var>*, the Mandelbrot set contains a <a href="glossary.html#quasiconformal">quasiconformal</a> copy of the Julia set of a parameter <var>c</var>* + η just outside <var>M</var>, a <a href="glossary.html#cantor-set">Cantor set</a>; inside it the nested square-root copies, which they call its decoration; and at the center a smaller minibrot. Since such parameters are dense in the boundary, the same holds for every boundary point. Their Theorem B is the comparison of the figure above: for every parameter of the central minibrot, its filled Julia set around 0 contains the same nested structure. They also show that some copies are almost conformal: every disk that meets the boundary of <var>M</var> contains nearly undistorted copies of Cantor Julia sets. A sequel gives a second proof following Douady’s ideas (<a href="https://arxiv.org/abs/2510.01013">arXiv 2025</a>), and Wolf Jung’s unfinished draft describes the levels and nodes in detail (<a href="https://www.mndynamics.com/papers/embed.pdf">Renormalization and embedded Julia sets, 2020</a>). As of October 2026, the main paper is available as an arXiv preprint.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>An embedded Julia set is an island of filaments that looks like a Julia set, with a minibrot at its center.</li>
+<li>Near the center <var>c</var><sub>0</sub> of a minibrot of period <var>p</var>, the orbit of 0 returns close to 0 after <var>p</var> steps, <var>z</var><sub><var>p</var></sub>(<var>c</var>) ≈ <var>b</var>′(<var>c</var> − <var>c</var><sub>0</sub>), so the Mandelbrot set there is a shrunk and turned copy of the filled Julia set of <var>c</var><sub>0</sub> around the critical point 0.</li>
+<li>Around 0, every quadratic Julia set is symmetric under a half turn; this is the island’s two-fold symmetry.</li>
+<li>Each further pass of the orbit near 0 squares, and a square has two roots, so features repeat 2, 4, 8, 16, … times around the minibrot; the periods of the nodes grow by <var>p</var> from ring to ring.</li>
+<li>In powers of ten, each ring lies halfway between the previous one and the minibrot, and the minibrot lies at about twice the depth of the island.</li>
+<li>Kawahira and Kisaka proved that quasiconformal copies of Cantor Julia sets, with their nested square roots and a minibrot at the center, occur near every boundary point of every minibrot.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>The eight nodes of the third ring have period 306 and lie about 10<sup>0.77</sup> |<var>s</var>| from the center, with |<var>s</var>| ≈ 1.13·10<sup>−9</sup>. What period do the nodes of the next ring have, how many are there, and how far from the center do you expect them?</summary><div class="answer"><p>One more pass adds 101 steps: period 407, and twice as many nodes, 16. The exponent halves: 10<sup>0.385</sup> |<var>s</var>| ≈ 2.7·10<sup>−9</sup>. The figure’s sixteen nodes lie 2.2–3.4·10<sup>−9</sup> from the center; the spread comes from the minibrot’s outline, which the ring follows.</p></div></details></li>
+<li><details><summary>A minibrot of size 10<sup>−12</sup> lies 10<sup>−4</sup> from a spiral. At what distances do the rings of two and of four spirals appear?</summary><div class="answer"><p>At the geometric means: √(10<sup>−4</sup> × 10<sup>−12</sup>) = 10<sup>−8</sup> for two, then √(10<sup>−8</sup> × 10<sup>−12</sup>) = 10<sup>−10</sup> for four, and 10<sup>−11</sup> for eight. The exponent is halfway to −12 each time.</p></div></details></li>
+<li><details><summary>Why is the pattern around a minibrot symmetric under a half turn, while the pattern around a Misiurewicz point usually is not?</summary><div class="answer"><p>Around a minibrot, the Mandelbrot set copies the filled Julia set of its center around the critical point 0, where <var>z</var> and −<var>z</var> have the same image. Around a Misiurewicz point it copies the Julia set around the critical value <var>c</var>, which has no such symmetry.</p></div></details></li>
+<li><details><summary>In the comparison figure, why is the Julia picture 0.4969 wide, and why is it turned?</summary><div class="answer"><p>The map <var>c</var> ↦ <var>z</var><sub>101</sub>(<var>c</var>) ≈ <var>b</var>′(<var>c</var> − <var>c</var><sub>0</sub>) carries the parameter plane near <var>c</var><sub>0</sub> to the dynamical plane near 0. It multiplies distances by |<var>b</var>′| ≈ 70,982, and 70,982 × 7·10<sup>−6</sup> ≈ 0.4969, and it turns by the argument of <var>b</var>′, 112.4°.</p></div></details></li>
+<li><details><summary>Is the doubling of the arms a period-doubling cascade?</summary><div class="answer"><p>No. All the rings surround one minibrot of period 101, and the nodes’ periods grow by 101 per ring: 104, 205, 306, 407. A period-doubling cascade is a chain of components of periods <var>p</var>, 2<var>p</var>, 4<var>p</var>, …, each attached to the one before.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://mrob.com/pub/muency/embeddedjuliaset.html">Robert Munafo — Embedded Julia Set</a>, Mu-Ency — the name, the types and many locations; see also the entries <a href="https://mrob.com/pub/muency/bifurcation.html">Bifurcation</a> and <a href="https://mrob.com/pub/muency/juliamorphing.html">Julia Morphing</a>.</li>
+<li><a href="https://arxiv.org/abs/1804.00176">Tomoki Kawahira and Masashi Kisaka — Julia sets appear quasiconformally in the Mandelbrot set</a> (arXiv, 2018, revised 2024) — the theorems; <a href="https://arxiv.org/abs/2510.01013">part II</a> (2025) gives a parabolic proof.</li>
+<li><a href="https://doi.org/10.1017/CBO9780511569159.004">Adrien Douady, Xavier Buff, Robert Devaney and Pierre Sentenac — Baby Mandelbrot sets are born in cauliflowers</a> (2000) — the first proof, near the cusp of a minibrot.</li>
+<li><a href="https://www.mndynamics.com/papers/embed.pdf">Wolf Jung — Renormalization and embedded Julia sets in the Mandelbrot set</a> (draft, 2020) — levels, nodes and their scaling.</li>
+<li><a href="https://mathr.co.uk/blog/2015-05-18_two_spirals_out.html">Claude Heiland-Allen — Two spirals out</a> (2015) and <a href="https://mathr.co.uk/blog/2017-11-06_patterns_in_embedded_julia_sets.html">Patterns in embedded Julia sets</a> (2017) — Julia morphing and the depths of its levels.</li>
+<li><a href="https://math.univ-angers.fr/~tanlei/papers/similarityMJ.pdf">Tan Lei — Similarity Between the Mandelbrot Set and Julia Sets</a> (1990) — the resemblance at Misiurewicz points.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 23 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="minibrots.html" rel="prev"><small>Previous</small> Minibrots &amp; self-similarity</a><a class="pagination-next" href="neutral.html" rel="next"><small>Next</small> Neutral cycles</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>

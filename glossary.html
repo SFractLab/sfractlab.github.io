@@ -37,21 +37,22 @@
 <li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
 <li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
 <li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
-<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
-<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+<li><a href="embedded-julia.html"><span class="nav-number">11</span> Embedded Julia sets</a></li>
+<li><a href="neutral.html"><span class="nav-number">12</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">13</span> A guided tour</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
-<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
-<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
-<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
-<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+<li><a href="numbers.html"><span class="nav-number">14</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">15</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">16</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">17</span> Open questions</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
-<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
-<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
-<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
-<li><a href="glossary.html" aria-current="page"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
-<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+<li><a href="computing.html"><span class="nav-number">18</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">19</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">20</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html" aria-current="page"><span class="nav-number">21</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">22</span> Sources</a></li>
 </ol></div>
 </nav>
 <div class="sidebar-foot">
@@ -61,7 +62,7 @@
 </header>
 <main class="site-main" id="main-content">
 <div class="page-bar">
-<p class="kicker"><span class="kicker-number">Chapter 20</span> · Compute, explore &amp; look up</p>
+<p class="kicker"><span class="kicker-number">Chapter 21</span> · Compute, explore &amp; look up</p>
 <div class="site-search" id="site-search" role="search" hidden>
 <label class="visually-hidden" for="site-query">Search the atlas</label>
 <input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
@@ -140,7 +141,7 @@
 <dt id="iteration">Iteration</dt>
 <dd>Repeatedly applying the same map, each time using the previous result as the next input.</dd>
 <dt id="orbit">Orbit</dt>
-<dd>The ordered sequence of iterates of a starting point. An orbit is a sequence of points, not the drawn line segments sometimes used to connect them.</dd>
+<dd>The sequence <var>z</var><sub>0</sub>, <var>z</var><sub>1</sub>, <var>z</var><sub>2</sub>, … that a starting point <var>z</var><sub>0</sub> visits when a map <var>f</var> is applied again and again: <var>z</var><sub>1</sub> = <var>f</var>(<var>z</var><sub>0</sub>), <var>z</var><sub>2</sub> = <var>f</var>(<var>z</var><sub>1</sub>), and so on. An orbit is a sequence of points, not the drawn line segments sometimes used to connect them.</dd>
 <dt id="backward-orbit">Backward orbit</dt>
 <dd>All preimages of a point, their preimages, and so on. Each point has two preimages under <var>z</var><sup>2</sup> + <var>c</var>, except the critical value <var>c</var>, which has one. Backward orbits of points of the Julia set come close to every point of it, which is how inverse iteration draws Julia sets. <a href="julia.html#boundary-dynamics">Structure of the Julia set</a>.</dd>
 <dt id="critical-point">Critical point / critical value</dt>
@@ -227,6 +228,8 @@
 <dd>A small topological copy of <var>M</var> arising from renormalization. Its geometry is generally distorted rather than an exactly scaled replica.</dd>
 <dt id="decoration">Decoration / antenna</dt>
 <dd><strong>Decoration:</strong> The connected pieces left when a small copy is removed from <var>M</var>. <strong>Antenna:</strong> An informal name for thin, filament-like decorations. <a href="minibrots.html#decorations">Decorations and antennas</a>.</dd>
+<dt id="embedded-julia-set">Embedded Julia set / Julia island</dt>
+<dd>A structure of filaments close to a minibrot that looks like a Julia set, with the minibrot at its center. Near the center <var>c</var><sub>0</sub> of a minibrot, <var>M</var> is a shrunk and turned copy of the filled Julia set of <var>c</var><sub>0</sub> around 0; closer in, its pattern repeats 2, 4, 8, … times around the minibrot. <a href="embedded-julia.html">Embedded Julia sets</a>.</dd>
 <dt id="quadratic-like-map">Quadratic-like map / straightening</dt>
 <dd><strong>Quadratic-like map:</strong> A degree-two proper holomorphic map between nested topological disks with compact containment. <strong>Straightening:</strong> The Douady–Hubbard theorem that every quadratic-like map is equivalent, through a controlled (quasiconformal) change of coordinates, to some <var>z</var>² + <var>c</var>′, with <var>c</var>′ unique when the filled set is connected. <a href="minibrots.html">Minibrots</a>.</dd>
 <dt id="renormalization">Renormalization / tuning</dt>

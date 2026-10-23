@@ -15,6 +15,7 @@
 <script src="assets/js/search.js" defer></script>
 <script src="assets/js/atlas-kit.js" defer></script>
 <script src="assets/js/cobweb.js" defer></script>
+<script src="assets/js/angle-shadow.js" defer></script>
 </head>
 <body data-page="chaos">
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -39,21 +40,22 @@
 <li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
 <li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
 <li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
-<li><a href="neutral.html"><span class="nav-number">11</span> Neutral cycles</a></li>
-<li><a href="tour.html"><span class="nav-number">12</span> A guided tour</a></li>
+<li><a href="embedded-julia.html"><span class="nav-number">11</span> Embedded Julia sets</a></li>
+<li><a href="neutral.html"><span class="nav-number">12</span> Neutral cycles</a></li>
+<li><a href="tour.html"><span class="nav-number">13</span> A guided tour</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
-<li><a href="numbers.html"><span class="nav-number">13</span> Area, dimension &amp; numbers</a></li>
-<li><a href="beyond.html"><span class="nav-number">14</span> Beyond z² + c</a></li>
-<li><a href="combinatorics.html"><span class="nav-number">15</span> Angles, addresses &amp; trees</a></li>
-<li><a href="open-questions.html"><span class="nav-number">16</span> Open questions</a></li>
+<li><a href="numbers.html"><span class="nav-number">14</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">15</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">16</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">17</span> Open questions</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
-<li><a href="computing.html"><span class="nav-number">17</span> Computing the pictures</a></li>
-<li><a href="deep-zoom.html"><span class="nav-number">18</span> Deep zoom</a></li>
-<li><a href="gallery.html"><span class="nav-number">19</span> Gallery &amp; interactive lab</a></li>
-<li><a href="glossary.html"><span class="nav-number">20</span> Glossary &amp; notation</a></li>
-<li><a href="sources.html"><span class="nav-number">21</span> Sources</a></li>
+<li><a href="computing.html"><span class="nav-number">18</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">19</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">20</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">21</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">22</span> Sources</a></li>
 </ol></div>
 </nav>
 <div class="sidebar-foot">
@@ -84,9 +86,13 @@
 <p>Henri Poincaré met the difficulty in the motion of three bodies under gravity. His memoir on the problem won King Oscar II’s prize in January 1889. While it was being printed he found a serious error, had the printed copies destroyed at a cost greater than the prize money, and published a corrected memoir in 1890 (<a href="https://www.mittag-leffler.se/about-us/history/prize-competition/">the Institut Mittag-Leffler’s account of the prize</a>). The correction revealed orbits so tangled that, in 1899, he did not even attempt to draw them. In 1908 he summarized the lesson: “it may happen that small differences in the initial conditions produce very great ones in the final phenomena. A small error in the former will produce an enormous error in the latter. Prediction becomes impossible” (<a href="https://archive.org/details/sciencemethod00poinuoft">Poincaré, <cite>Science and Method</cite></a>, translated 1914).</p>
 <p>A system is <strong>deterministic</strong> when its present state and its rule fix the entire future; nothing is left to chance. It is <strong>chaotic</strong> when, in addition, tiny differences between starting states grow rapidly, typically exponentially, until they are as large as the states themselves. Chaos is therefore not the absence of a rule. It is a property of certain rules, and it makes long-range prediction impossible in practice even though the future is fixed in principle.</p>
 <h2 id="sensitive-dependence">Errors that double: an exact example</h2>
-<p>The clearest example comes from the family studied in this atlas. Take <var>c</var> = −2, the leftmost point of the Mandelbrot set, and follow real starting points <var>x</var> between −2 and 2 under <var>x</var> ↦ <var>x</var><sup>2</sup> − 2. Writing <var>x</var> as 2 cos 2π<var>θ</var>, where the angle <var>θ</var> is measured in full turns, turns the rule into something transparent:</p>
-<div class="equation">(2 cos 2π<var>θ</var>)<sup>2</sup> − 2 = 2 cos 2π(2<var>θ</var>).</div>
-<p>One step of the map doubles the angle. In binary, doubling moves every digit of <var>θ</var> one place to the left and drops the digit that passes the binary point. After <var>n</var> steps, the position depends on the digits of the starting angle from the <var>n</var>th onward. Knowing the start to ten decimal places, about 33 binary digits, therefore fixes the orbit for only about 33 steps. After that the orbit is governed by digits nobody measured.</p>
+<p>The clearest example comes from the family studied in this atlas. Take <var>c</var> = −2, the leftmost point of the Mandelbrot set. The rule is then <var>x</var> ↦ <var>x</var><sup>2</sup> − 2. In mathematics such a rule is called a <strong>map</strong>. Follow real starting points <var>x</var> between −2 and 2. Each of them can be written as <var>x</var> = 2 cos 2π<var>θ</var>, where the angle <var>θ</var> is measured in full turns, so that <var>θ</var> and <var>θ</var> + 1 give the same point. This way of writing <var>x</var> is chosen on purpose. Because of the double-angle formula cos 2<var>a</var> = 2 cos<sup>2</sup> <var>a</var> − 1, it turns the rule into something transparent:</p>
+<div class="equation">(2 cos 2π<var>θ</var>)<sup>2</sup> − 2 = 2 (2 cos<sup>2</sup> 2π<var>θ</var> − 1) = 2 cos 2π(2<var>θ</var>).</div>
+<p>So if <var>x</var> belongs to the angle <var>θ</var>, the next point belongs to the angle 2<var>θ</var>. One step of the map doubles the angle, and <var>n</var> steps multiply it by 2<sup><var>n</var></sup>.</p>
+<figure class="widget" data-widget="angle-shadow" data-x0="0.3" hidden>
+<figcaption>Try it: the point on the circle sits at the angle <var>θ</var>, and straight below it, on the line from −2 to 2, is its shadow <var>x</var> = 2 cos 2π<var>θ</var>. Press Play, or Step to go one step at a time: at each step the point jumps to the doubled angle and the shadow to the next point <var>x</var><sup>2</sup> − 2 of the orbit; earlier points stay as dots. From 0.3 the dots spread over the whole interval. The golden ratio, −1 and 0 end in cycles; the circle can show a longer cycle than the line, because the mirror-image angles <var>θ</var> and −<var>θ</var> cast the same shadow. Type 1.618 instead of choosing the golden ratio, and the orbit leaves the cycle after about ten steps: these cycles repel. “Second start” adds, in gold, a start 10<sup>−10</sup> away; the two orbits agree for about 30 steps, then part. Every value is computed with 1,200 binary digits, so the dots are exact.</figcaption>
+</figure>
+<p>In binary, doubling moves every digit of <var>θ</var> one place to the left; the digit that passes the binary point counts a whole turn and is dropped. After <var>n</var> steps, the position depends on the digits of the starting angle from the <var>n</var>th onward. Knowing the start to ten decimal places, about 33 binary digits, therefore fixes the <a href="glossary.html#orbit">orbit</a> for only about 33 steps. After that the orbit is governed by digits nobody measured.</p>
 <figure>
 <svg aria-labelledby="sensitive-dependence-title sensitive-dependence-desc" role="img" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
 <title id="sensitive-dependence-title">Two orbits of x ↦ x² − 2 that start 10⁻¹⁰ apart</title>
@@ -401,7 +407,7 @@
 <figure class="widget" data-widget="cobweb" data-c="-1.6" hidden>
 <figcaption>Try it: the bifurcation diagram of <var>x</var> ↦ <var>x</var><sup>2</sup> + <var>c</var> for real <var>c</var> from −2 to 1/4, which is May’s diagram in the coordinates of this atlas. Choose “Period 2”, “Period 4” and “Period 8” to climb the cascade, then “Chaos” and “Period-3 window”. At the “Chaos” setting the orbit of 0 neither escapes nor settles into a cycle.</figcaption>
 </figure>
-<p>Order and chaos are interleaved on this line in a remarkable way. Michael Jakobson proved in 1981 that the parameters with chaotic behavior, in a precise statistical sense, form a set of positive length (<a href="https://doi.org/10.1007/BF01941800">Jakobson</a>). Yet Mikhail Lyubich and, independently, Jacek Graczyk and Grzegorz Świątek proved in 1997 that parameters with an attracting cycle are dense: every interval of <var>c</var>, however short, contains a periodic window (<a href="https://www.math.stonybrook.edu/~mlyubich/papers/acta.pdf">Lyubich’s density theorem</a>). Lyubich later showed that almost every real parameter is one of the two kinds, periodic or chaotic. No picture can display this: the windows are mostly far narrower than a pixel. The <a href="periodicity.html#doubling">periodicity chapter</a> follows the cascade in the complex plane.</p>
+<p>Along the horizontal axis of this diagram, the real parameters <var>c</var> from −2 to 1/4, order and chaos are interleaved in a remarkable way. Michael Jakobson proved in 1981 that the parameters with chaotic behavior, in a precise statistical sense, form a set of positive length (<a href="https://doi.org/10.1007/BF01941800">Jakobson</a>). In that sense, almost every orbit spreads over an interval with fixed long-run frequencies, described by a smooth density, and nearby orbits separate exponentially; positive length means that a parameter picked at random between −2 and 1/4 is chaotic with a probability greater than zero. Yet Mikhail Lyubich and, independently, Jacek Graczyk and Grzegorz Świątek proved in 1997 that parameters with an attracting cycle are dense: every interval of <var>c</var>, however short, contains a periodic window (<a href="https://www.math.stonybrook.edu/~mlyubich/papers/acta.pdf">Lyubich’s density theorem</a>). Lyubich later showed that almost every real parameter is one of the two kinds, periodic or chaotic. No picture can display this: the windows are mostly far narrower than a pixel. The <a href="periodicity.html#doubling">periodicity chapter</a> follows the cascade in the complex plane.</p>
 <h2 id="nature">Chaos in nature</h2>
 <p>A real system is never known exactly, and its equations are only approximations. Evidence for chaos in nature therefore comes in three strengths. The strongest is a well-tested set of equations, computed carefully, as for the planets. Next come laboratory experiments under controlled conditions that follow a predicted route, such as period doubling. The weakest is statistical analysis of measurements from the field.</p>
 <h3>Weather and climate</h3>
@@ -582,6 +588,7 @@
 <h2 id="check-yourself">Check yourself</h2>
 <ol class="exercises">
 <li><details><summary>For <var>x</var> ↦ <var>x</var><sup>2</sup> − 2, you measure the starting point a thousand times more precisely. How many more steps can you predict?</summary><div class="answer"><p>About ten. The error doubles at each step, and 2<sup>10</sup> = 1024 ≈ 1000, so a thousand times smaller error reaches the same size about ten steps later.</p></div></details></li>
+<li><details><summary>Start <var>x</var> ↦ <var>x</var><sup>2</sup> − 2 at the angle <var>θ</var> = 1/10 of a turn, that is <var>x</var> = 2 cos 36° ≈ 1.618. Use the doubling of the angle to find the next three points, and check them by squaring.</summary><div class="answer"><p>The angles are 1/5, 2/5 and 4/5 of a turn. So the points are 2 cos 72° ≈ 0.618, 2 cos 144° ≈ −1.618 and 2 cos 288° = 2 cos 72° ≈ 0.618. Squaring agrees: 1.618<sup>2</sup> − 2 ≈ 0.618 and 0.618<sup>2</sup> − 2 ≈ −1.618. From then on the orbit alternates between 0.618 and −1.618, a cycle of period 2. The number 1.618… is the golden ratio.</p></div></details></li>
 <li><details><summary>Compute the similarity dimensions of the Cantor set, the Koch curve and the Sierpiński triangle.</summary><div class="answer"><p>The Cantor set consists of 2 copies scaled by 1/3: log 2 / log 3 ≈ 0.631. The Koch curve consists of 4 copies scaled by 1/3: log 4 / log 3 ≈ 1.262. The Sierpiński triangle consists of 3 copies scaled by 1/2: log 3 / log 2 ≈ 1.585.</p></div></details></li>
 <li><details><summary>The logistic map first doubles its period at <var>r</var> = 3. Which parameter <var>c</var> of <var>z</var><sup>2</sup> + <var>c</var> does that correspond to, and where is it in the Mandelbrot set?</summary><div class="answer"><p><var>c</var> = <var>r</var>(2 − <var>r</var>)/4 = 3 · (−1)/4 = −3/4. It is the point where the period-two bulb is attached to the main cardioid.</p></div></details></li>
 <li><details><summary>In <var>z</var><sup>2</sup> + <var>c</var>, the period doubles at <var>c</var> = −3/4 and again at −5/4. If every later interval were shorter than the previous one by the factor δ ≈ 4.669, where would the cascade end? Compare with the true value.</summary><div class="answer"><p>The intervals would add up to 0.5 · (1 + 1/δ + 1/δ<sup>2</sup> + …) = 0.5 · δ/(δ − 1) ≈ 0.636, so the cascade would end near −0.75 − 0.636 ≈ −1.386. The true end is −1.4012: the early ratios are smaller than δ (the first is about 4.23), and only approach it in the limit.</p></div></details></li>
