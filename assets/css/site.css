@@ -930,6 +930,15 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .certified-outside { background: rgb(20 42 72); box-shadow: 0 0 0 1px var(--plate-line); }
 .certified-inside { background: rgb(227 232 196); }
 .certified-undecided { background: rgb(236 120 80); }
+/* Deep in seahorse valley (valley-passages.js): the legend of the passage coloring. */
+.passages-swatch { display: inline-block; width: .8em; height: .8em; margin: 0 .3em 0 .9em; border-radius: 2px; vertical-align: -.05em; }
+.passages-swatch:first-child { margin-left: 0; }
+.passages-0 { background: rgb(9 19 32); box-shadow: 0 0 0 1px var(--plate-line); }
+.passages-1 { background: rgb(227 232 196); }
+.passages-2 { background: rgb(236 166 100); }
+.passages-3 { background: rgb(30 135 151); }
+.passages-4 { background: rgb(27 75 119); box-shadow: 0 0 0 1px var(--plate-line); }
+.passages-5 { background: rgb(125 132 140); }
 /* Parameter rays (rays.js), drawn over the Mandelbrot set. */
 .rays-overlay { cursor: default; }
 .widget-plate .rays-angles { width: 15rem; }
@@ -1076,6 +1085,6 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) :is(button, select, input),
   .widget[data-empty], .widget[data-widget="place"]:not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
-  .certified-swatch { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
 }

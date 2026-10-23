@@ -41,20 +41,21 @@
 <li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
 <li><a href="embedded-julia.html"><span class="nav-number">11</span> Embedded Julia sets</a></li>
 <li><a href="neutral.html" aria-current="page"><span class="nav-number">12</span> Neutral cycles</a></li>
-<li><a href="tour.html"><span class="nav-number">13</span> A guided tour</a></li>
+<li><a href="ghost-bulbs.html"><span class="nav-number">13</span> Ghost bulbs</a></li>
+<li><a href="tour.html"><span class="nav-number">14</span> A guided tour</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
-<li><a href="numbers.html"><span class="nav-number">14</span> Area, dimension &amp; numbers</a></li>
-<li><a href="beyond.html"><span class="nav-number">15</span> Beyond z² + c</a></li>
-<li><a href="combinatorics.html"><span class="nav-number">16</span> Angles, addresses &amp; trees</a></li>
-<li><a href="open-questions.html"><span class="nav-number">17</span> Open questions</a></li>
+<li><a href="numbers.html"><span class="nav-number">15</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">16</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">17</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">18</span> Open questions</a></li>
 </ol></div>
 <div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
-<li><a href="computing.html"><span class="nav-number">18</span> Computing the pictures</a></li>
-<li><a href="deep-zoom.html"><span class="nav-number">19</span> Deep zoom</a></li>
-<li><a href="gallery.html"><span class="nav-number">20</span> Gallery &amp; interactive lab</a></li>
-<li><a href="glossary.html"><span class="nav-number">21</span> Glossary &amp; notation</a></li>
-<li><a href="sources.html"><span class="nav-number">22</span> Sources</a></li>
+<li><a href="computing.html"><span class="nav-number">19</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">20</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">21</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">22</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">23</span> Sources</a></li>
 </ol></div>
 </nav>
 <div class="sidebar-foot">
@@ -124,7 +125,7 @@
 <p>Push the parameter just beyond the cusp, to <var>c</var> = 1/4 + ε with a small ε &gt; 0. In the same coordinate the map is <var>u</var> ↦ <var>u</var> + <var>u</var><sup>2</sup> + ε. The two fixed points have moved off the real axis, to ±<var>i</var>√ε, and the orbit of 0 is no longer trapped: it creeps through the narrow gate between them, each step adding <var>u</var><sup>2</sup> + ε, and escapes on the other side. Treating the steps as a flow, d<var>u</var>/d<var>n</var> = <var>u</var><sup>2</sup> + ε, the passage from far left to far right takes</p>
 <div class="equation">∫<sub>−∞</sub><sup>∞</sup> d<var>u</var> / (<var>u</var><sup>2</sup> + ε) = π / √ε   steps.</div>
 <p>The escape counts agree: with ε = 10<sup>−2</sup>, 10<sup>−4</sup> and 10<sup>−6</sup> the orbit of 0 needs 30, 312 and 3140 steps to leave the disk of radius 2, so that <var>N</var>√ε approaches π. This is one of the places where π appears in the Mandelbrot set, as Dave Boll noticed in 1991 (<a href="numbers.html#pi">π in the Mandelbrot set</a>).</p>
-<p>The same gate changes the Julia sets abruptly. Orbits that converged to the parabolic point at <var>c</var> = 1/4 slip through the gate for <var>c</var> slightly larger, and the filled Julia set loses its interior: as ε decreases to 0, the Julia sets do not approach the Julia set at 1/4, but accumulate on sets strictly larger than it. This is <strong>parabolic implosion</strong>, studied by Douady and by Pierre Lavaurs in his 1989 Orsay thesis (<a href="https://doi.org/10.5802/xups.1994-03">Douady, 1994</a>; Buff and Raissy, §7). Douady showed that the filled Julia set depends continuously on <var>c</var> at every parameter without a parabolic cycle, so these are the places where the pictures jump. Implosion is also the engine of Mitsuhiro Shishikura’s theorem that the boundary of the Mandelbrot set has dimension 2 (<a href="https://annals.math.princeton.edu/articles/12909">Shishikura, 1998</a>).</p>
+<p>The same gate changes the Julia sets abruptly. Orbits that converged to the parabolic point at <var>c</var> = 1/4 slip through the gate for <var>c</var> slightly larger, and the filled Julia set loses its interior: as ε decreases to 0, the Julia sets do not approach the Julia set at 1/4, but accumulate on sets strictly larger than it. This is <strong>parabolic implosion</strong>, studied by Douady and by Pierre Lavaurs in his 1989 Orsay thesis (<a href="https://doi.org/10.5802/xups.1994-03">Douady, 1994</a>; Buff and Raissy, §7). Douady showed that the filled Julia set depends continuously on <var>c</var> at every parameter without a parabolic cycle, so these are the places where the pictures jump. Implosion is also the engine of Mitsuhiro Shishikura’s theorem that the boundary of the Mandelbrot set has dimension 2 (<a href="https://annals.math.princeton.edu/articles/12909">Shishikura, 1998</a>). In the parameter plane, an orbit may pass such a gate several times before it escapes, and deep in seahorse valley the regions of two passages look like bulbs (<a href="ghost-bulbs.html">ghost bulbs</a>).</p>
 <figure>
 <a href="assets/images/iteration-limits.png"><img alt="The same small cusp window rendered at 30, 100, and 1500 iterations; apparent dark non-escaping regions shrink as slow exterior points finally escape." class="fractal-image" loading="lazy" src="assets/images/iteration-limits.png" width="1944" height="586"></a>
 <figcaption>The gate in a picture: near the cusp, parameters outside the Mandelbrot set need many steps to escape, so a low iteration limit paints them dark. Dark means “not escaped within the budget”, not “inside”. <a href="gallery.html#zoom=0.265,0,0.04">Open this window in the zoom viewer</a>. <a href="gallery.html#image-method">Image method and coordinates</a>.</figcaption>
@@ -182,7 +183,7 @@
 <p class="chapter-checked">Sources checked on 20 October 2026.</p>
 </article>
 </div>
-<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="embedded-julia.html" rel="prev"><small>Previous</small> Embedded Julia sets</a><a class="pagination-next" href="tour.html" rel="next"><small>Next</small> A guided tour</a></nav>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="embedded-julia.html" rel="prev"><small>Previous</small> Embedded Julia sets</a><a class="pagination-next" href="ghost-bulbs.html" rel="next"><small>Next</small> Ghost bulbs</a></nav>
 <footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
 All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
 Sources and research status checked in October 2026.</footer>

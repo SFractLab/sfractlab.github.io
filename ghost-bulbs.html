@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Far down seahorse valley, the filaments on both sides enclose round shapes that look like the bulbs beside them, with smaller round lobes attached. Yet every point in them lies outside the Mandelbrot set. This chapter calls them ghost bulbs and explains them: just above −3/4 the orbit of 0 has to creep through a narrow gate, and a ghost bulb is a region of parameters whose orbit passes the gate twice before it escapes.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efede6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1824" media="(prefers-color-scheme: dark)">
+<title>Ghost bulbs — Mandelbrot &amp; Julia Atlas</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/search-index.js" defer></script>
+<script src="assets/js/search.js" defer></script>
+<script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/valley-passages.js" defer></script>
+</head>
+<body data-page="ghost-bulbs">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="layout">
+<header class="site-header">
+<div class="site-header-bar">
+<a class="brand" href="index.html"><img src="assets/favicon.svg" alt="" width="36" height="36"><span><span class="brand-name">Complex Atlas</span><span class="brand-tagline">Mandelbrot &amp; Julia sets</span></span></a>
+<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Chapters</button>
+</div>
+<nav class="site-nav" id="site-nav" aria-label="Chapters">
+<div class="nav-group"><p class="nav-group-title">Begin with the equation</p><ol>
+<li><a href="index.html"><span class="nav-number">00</span> Start here</a></li>
+<li><a href="chaos.html"><span class="nav-number">01</span> Chaos &amp; fractals</a></li>
+<li><a href="mathematics.html"><span class="nav-number">02</span> Mathematical foundations</a></li>
+<li><a href="orbits.html"><span class="nav-number">03</span> Orbits &amp; stability</a></li>
+<li><a href="julia.html"><span class="nav-number">04</span> Julia sets</a></li>
+<li><a href="mandelbrot.html"><span class="nav-number">05</span> The Mandelbrot set</a></li>
+<li><a href="history.html"><span class="nav-number">06</span> A short history</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Read the landscape</p><ol>
+<li><a href="periodicity.html"><span class="nav-number">07</span> Cardioids, bulbs &amp; periods</a></li>
+<li><a href="rays.html"><span class="nav-number">08</span> External rays &amp; angles</a></li>
+<li><a href="special-points.html"><span class="nav-number">09</span> Special points</a></li>
+<li><a href="minibrots.html"><span class="nav-number">10</span> Minibrots &amp; self-similarity</a></li>
+<li><a href="embedded-julia.html"><span class="nav-number">11</span> Embedded Julia sets</a></li>
+<li><a href="neutral.html"><span class="nav-number">12</span> Neutral cycles</a></li>
+<li><a href="ghost-bulbs.html" aria-current="page"><span class="nav-number">13</span> Ghost bulbs</a></li>
+<li><a href="tour.html"><span class="nav-number">14</span> A guided tour</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Go deeper</p><ol>
+<li><a href="numbers.html"><span class="nav-number">15</span> Area, dimension &amp; numbers</a></li>
+<li><a href="beyond.html"><span class="nav-number">16</span> Beyond z² + c</a></li>
+<li><a href="combinatorics.html"><span class="nav-number">17</span> Angles, addresses &amp; trees</a></li>
+<li><a href="open-questions.html"><span class="nav-number">18</span> Open questions</a></li>
+</ol></div>
+<div class="nav-group"><p class="nav-group-title">Compute, explore &amp; look up</p><ol>
+<li><a href="computing.html"><span class="nav-number">19</span> Computing the pictures</a></li>
+<li><a href="deep-zoom.html"><span class="nav-number">20</span> Deep zoom</a></li>
+<li><a href="gallery.html"><span class="nav-number">21</span> Gallery &amp; interactive lab</a></li>
+<li><a href="glossary.html"><span class="nav-number">22</span> Glossary &amp; notation</a></li>
+<li><a href="sources.html"><span class="nav-number">23</span> Sources</a></li>
+</ol></div>
+</nav>
+<div class="sidebar-foot">
+<p>An illustrated mathematical guide<br>Original computed images<br><a href="index.html#about">About the atlas</a></p>
+<button class="theme-button" type="button">Theme: <span class="theme-name">Auto</span></button>
+</div>
+</header>
+<main class="site-main" id="main-content">
+<div class="page-bar">
+<p class="kicker"><span class="kicker-number">Chapter 13</span> · Read the landscape</p>
+<div class="site-search" id="site-search" role="search" hidden>
+<label class="visually-hidden" for="site-query">Search the atlas</label>
+<input type="search" id="site-query" placeholder="Try cardioid, orbit, Misiurewicz or Siegel…" autocomplete="off" aria-controls="search-results">
+<div class="search-panel">
+<p class="search-status" id="search-status" role="status"></p>
+<div class="search-results" id="search-results"></div>
+</div>
+</div>
+</div>
+<div class="page">
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#valley">Round shapes outside the set</a></li><li><a href="#gate">A gate, passed again and again</a></li><li><a href="#landing">Where the orbit lands</a></li><li><a href="#theory">What is proved</a></li><li><a href="#key-ideas">Key ideas</a></li><li><a href="#check-yourself">Check yourself</a></li><li><a href="#sources">Sources and further reading</a></li></ol></nav></details>
+<article class="chapter">
+<header>
+<p class="eyebrow">Deep in seahorse valley</p>
+<h1>Ghost bulbs</h1>
+<p class="chapter-meta"><span class="level"><span class="level-dots" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></span><span class="visually-hidden">Level: </span>Intermediate</span><span class="requires">Builds on <a href="neutral.html">Neutral cycles</a></span></p>
+<p class="lead">Far down seahorse valley, the filaments on both sides enclose round shapes that look like the bulbs beside them, with smaller round lobes attached. Yet every point in them lies outside the Mandelbrot set. This chapter calls them ghost bulbs and explains them: just above −3/4 the orbit of 0 has to creep through a narrow gate, and a ghost bulb is a region of parameters whose orbit passes the gate twice before it escapes.</p>
+</header>
+<h2 id="valley">Round shapes outside the set</h2>
+<p><a href="tour.html#seahorse-valley">Seahorse valley</a> runs between the main cardioid and the period-two disk, above the point −3/4 where they touch. It narrows fast. At height <var>y</var> above −3/4 the edge of the disk lies at about −3/4 − 2<var>y</var><sup>2</sup> and the edge of the cardioid at about −3/4 + 0.75<var>y</var><sup>2</sup>, so the valley is only about 2.75<var>y</var><sup>2</sup> wide: at <var>y</var> = 0.0064, the height of the figure, 1.1·10<sup>−4</sup>. Both sides are lined with bulbs, those of the cardioid on the right and those of the period-two disk on the left. Seahorse tails hang from the bulbs on the right and double spirals from those on the left, and when the two sides are told apart, the left one is called double spiral valley (<a href="https://mrob.com/pub/muency/seahorsevalley.html">Mu-Ency, “Seahorse Valley”</a>).</p>
+<p>Between the bulbs, the filaments enclose round regions about as large as the bulbs, with smaller round lobes around them. They look like bulbs, but they belong to the outside: every point in them escapes, though only after about a thousand steps. No name for them seems to be established; this chapter calls them <strong>ghost bulbs</strong>.</p>
+<figure class="widget" data-widget="passages" hidden>
+<figcaption>Try it: seahorse valley 0.0064 above −3/4, with the period-two disk on the left and the main cardioid on the right, in three windows: both sides, and each side magnified 2.6 times. Dark pixels have not escaped within 3,000 steps; the dark disks along the edges are bulbs. <strong>Escape time</strong> colors the other pixels in bands by the step at which |<var>z</var>| first exceeds 2, as in the <a href="mathematics.html#escape-proof">iteration-limit figure</a>. <strong>Passages</strong> colors them by how often the orbit went through the gate near −1/2 before it escaped: the escape step divided by the passage time π/|<var>c</var> + 3/4|, rounded. The ghost bulbs are the regions of two passages. <a href="gallery.html#zoom=-0.7500234,0.00635796,0.000139">Open the first window in the zoom viewer</a>.</figcaption>
+</figure>
+<h2 id="gate">A gate, passed again and again</h2>
+<p>At <var>c</var> = −3/4 the fixed point −1/2 is <a href="neutral.html#flower">parabolic</a>: its multiplier is −1, and the orbit of 0 creeps toward it forever. Just above −3/4, a cycle of period two has split off from the fixed point, and between the fixed point and that cycle a narrow gate has opened, as at the cusp 1/4 in the <a href="neutral.html#implosion">chapter on neutral cycles</a>. The orbit creeps through the gate instead. One passage takes about π/|<var>c</var> + 3/4| steps (<a href="numbers.html#pi">π in the Mandelbrot set</a>): 494 at the center of the figure’s first window.</p>
+<p>Once through, the orbit moves away from −1/2. Either it escapes then, or it comes back and has to creep through the gate again, which takes another 494 steps or so. So the escape steps come in bands near whole multiples of the passage time. Computed at 960 × 720 pixels, the first window has about 517,000 pixels that escape within 50,000 steps; 99.7% of them escape within 0.3 passage times of a whole number of passages, and none much sooner than one passage. With the figure’s limit of 3,000 steps, about 47% of all pixels escape after one passage, 8% after two, 4% after three and 2.5% after four; 36% stay dark: the bulbs and their parents, together with the parameters that need about seven or more passages. In the passage coloring the ghost bulbs are the regions of two passages, and their smaller lobes are regions of three, four and more.</p>
+<p>The bulbs themselves fit the same count. The bulb of the cardioid with internal angle 246/493 (<a href="periodicity.html">periodicity</a>) touches it at −0.7499695 + 0.0063723<var>i</var>, where π/|<var>c</var> + 3/4| is 493.00 steps, and its period is 493: the attracting cycle of its center goes through the gate exactly once per cycle. The same holds for the eight bulbs that lie wholly or mostly in the window: the cardioid’s bulbs 245/491, 246/493, 247/495 and 248/497, and the disk’s bulbs 1/246, 1/247, 1/248 and 1/249, of periods 492, 494, 496 and 498. At the point where each touches its parent, the passage time equals its period to within 0.02 steps. So at any height <var>y</var>, the bulbs on both walls have periods of about π/<var>y</var>, odd on the right and even on the left.</p>
+<h2 id="landing">Where the orbit lands</h2>
+<p>Close to −3/4, the map <var>z</var><sup>2</sup> + <var>c</var> differs very little from <var>z</var><sup>2</sup> − 3/4, so between two passages the orbit moves almost as it would under <var>z</var><sup>2</sup> − 3/4. Under that map, every point inside its filled Julia set, the “San Marco shape” of the <a href="neutral.html#flower">chapter on neutral cycles</a>, creeps back to −1/2, and every point outside escapes. So a passage is followed by another one when the orbit, coming out of the gate, lands inside the filled Julia set of −3/4, and by escape when it lands outside. Adrien Douady described this mechanism for the cusp 1/4, where a landing inside gives the orbit another chance, as he put it (<a href="https://doi.org/10.5802/xups.1994-03">Douady, 1994</a>, §19). A test at height 2·10<sup>−4</sup> confirms it here. Of the sample parameters that escape after one passage, 97.5% have landed outside the filled Julia set after it; of those that pass two, three or four times, 93–95% have landed inside.</p>
+<p>Where the orbit lands depends smoothly on <var>c</var>. At the exit of the gate, the filled Julia set of −3/4 consists of its two largest pieces, the one around 0 and the one to its left, which meet at −1/2, and of small round pieces along their edges, much as bulbs line the cardioid. Between the two large pieces, a thin wedge of the outside reaches down to −1/2. Parameters whose orbit lands in that wedge escape after one passage: they fill the open middle of the valley. Parameters whose orbit lands in one of the two large pieces, close to its edge, come back for a second passage, and the ghost bulbs are where they escape after it. Parameters whose orbit lands in one of the small round pieces form a smaller round region beside each ghost bulb, beyond the dark bow-tie, a slightly distorted copy of that piece. Each of these regions is divided again by the next passage: where the orbit lands inside once more, it passes a third time, and those parameters form the smaller lobes, and so on.</p>
+<p>That the ghost bulbs come out round, and about as large as the bulbs beside them, is what the computations show; the sources found for this chapter do not explain their shape.</p>
+<p>The pattern repeats all the way down the valley. In the coordinate <var>w</var> = π<var>i</var>/(<var>c</var> + 3/4), the real part of <var>w</var> is about the passage time, the valley becomes a horizontal strip, and the picture in the strip repeats each time the real part grows by 2, once for every bulb on each side. Ten times deeper, at height 0.00064, a window a hundred times narrower shows the same picture, shifted, with passages ten times longer: with an iteration limit ten times higher, the shares are the same to within 0.1%. The ghost bulbs do not fade deeper down: they stay about as large as the bulbs beside them.</p>
+<p>The same happens near every parabolic parameter. In elephant valley, near the cusp 1/4, a passage takes about π/√(<var>c</var> − 1/4) steps, and regions of two, three and more passages line its walls too (<a href="gallery.html#zoom=0.2501,0,0.000005">open this window in the zoom viewer</a>).</p>
+<h2 id="theory">What is proved</h2>
+<p>The gate and what happens after it are the subject of parabolic implosion (<a href="neutral.html#implosion">neutral cycles</a>). Douady’s 1994 paper, with results from Pierre Lavaurs’ 1989 Orsay thesis, works it out for the cusp 1/4 (<a href="https://doi.org/10.5802/xups.1994-03">Douady, 1994</a>, §§17–19). In Fatou coordinates, which turn the slow creep into steps of exactly one, a passage becomes a shift by the <em>phase</em>, which changes by one for each additional step that the passage takes; together with the Fatou coordinates on the two sides of the gate, the shift makes up a map now called a <em>Lavaurs map</em>. As <var>c</var> approaches 1/4 through parameters with the same phase, high iterates of <var>z</var><sup>2</sup> + <var>c</var> converge to these maps, and the picture of <var>M</var> near 1/4, drawn in the phase, looks more and more like a fixed periodic picture, which Douady draws in §23. Lavaurs proved one half of this: far enough toward 1/4, <var>M</var> lies within any given distance of the limit picture, so the regions that escape in the limit picture escape for <var>M</var> as well. The other half, and with it the convergence, is Douady’s Conjecture 23.1; he wrote that it seemed out of reach for the moment. For a root like −3/4, where a bulb meets its parent, he writes that the Julia sets change in an analogous way for parameters in two sectors along the common tangent of the two components (§24); seahorse valley and its mirror image below the axis lie in these sectors.</p>
+<p>At such a root the multiplier of the fixed point depends smoothly and one-to-one on <var>c</var> (<a href="https://www.numdam.org/article/AST_2000__261__277_0.pdf">Milnor, 2000</a>, Lemma 4.5), so the phase is about a constant times 1/(<var>c</var> + 3/4), the coordinate <var>w</var> above, whereas at the cusp it involves √(<var>c</var> − 1/4). Arnaud Chéritat’s <a href="https://web.archive.org/web/2024/https://num.math.uni-goettingen.de/~summer/cheritat.pdf">mini-course on parabolic implosion</a> states Lavaurs’ theorem in this generality. Alex Kapiamba divides the phase plane at the cusp by the number of passages a parameter needs to escape, close to the count used here, draws it, and describes the shape of its regions (<a href="https://arxiv.org/abs/2103.03211">Kapiamba, 2021</a>, §3.4, Prop. 3.17 and Fig. 5). Claude Heiland-Allen straightened valleys with a coordinate like <var>w</var>, after a figure in Peitgen and Saupe’s <em>The Science of Fractal Images</em>, so that the bulbs along them all have about the same size (<a href="https://mathr.co.uk/blog/2013-12-16_stretching_cusps.html">Stretching cusps</a>). The account of the ghost bulbs in this chapter is our own reading of these results, checked by computation; no source we found describes them, at −3/4 or at any other root.</p>
+<aside class="key-ideas">
+<h2 id="key-ideas">Key ideas</h2>
+<ul>
+<li>Deep in seahorse valley, round regions of the outside, ghost bulbs, sit between the bulbs and look like them.</li>
+<li>Near −3/4 the orbit of 0 creeps through a gate near −1/2; one passage takes about π/|<var>c</var> + 3/4| steps, so escape steps come in bands near whole multiples of it.</li>
+<li>Each bulb on the valley walls has a period close to the passage time at its root: its cycle goes through the gate once.</li>
+<li>After a passage, the orbit passes again if it has landed inside the filled Julia set of −3/4, and escapes if it has landed outside.</li>
+<li>Ghost bulbs are regions of two passages: after the first, the orbit has landed in one of the two large pieces of that Julia set. Their lobes are regions of three passages and more.</li>
+<li>In the coordinate π<var>i</var>/(<var>c</var> + 3/4) the valley becomes a strip in which the picture repeats, so ghost bulbs appear at every depth.</li>
+</ul>
+</aside>
+<h2 id="check-yourself">Check yourself</h2>
+<ol class="exercises">
+<li><details><summary>A parameter in the valley at height 0.0064 escapes after 1,480 steps. How many passages did its orbit make, and what color does it get in the figure?</summary><div class="answer"><p>One passage takes about π/0.0064 ≈ 491 steps, and 1,480/491 ≈ 3.0: three passages, teal in the passage coloring. It lies in a lobe of a ghost bulb.</p></div></details></li>
+<li><details><summary>About what period do the bulbs on the valley walls have at height 10<sup>−4</sup>, and how far apart are they?</summary><div class="answer"><p>About π/10<sup>−4</sup> ≈ 31,416. On each side the periods grow by 2 from bulb to bulb, and the passage time π/<var>y</var> changes by 2 when <var>y</var> changes by about 2<var>y</var><sup>2</sup>/π ≈ 6.4·10<sup>−9</sup>: that is the spacing of the bulbs on each wall, and the ghost bulbs repeat with it.</p></div></details></li>
+<li><details><summary>Why can a ghost bulb not be a bulb of the set, however much it looks like one?</summary><div class="answer"><p>A bulb is a component of the interior of <var>M</var>: its parameters have an attracting cycle, and the orbit of 0 never escapes. Every parameter in a ghost bulb escapes, after two passages through the gate. It only shares the round shape of a bulb.</p></div></details></li>
+</ol>
+<h2 id="sources">Sources and further reading</h2>
+<ul class="sources">
+<li><a href="https://doi.org/10.5802/xups.1994-03">Adrien Douady — L’ensemble de Julia dépend-il continûment du polynôme ?</a> (Journées X-UPS, 1994) — the phase, Lavaurs maps, the “another chance” mechanism (§§17–19), the limit picture near 1/4 with Lavaurs’ theorem and Douady’s conjecture (§23), other parabolic points (§24). In English in <em>Complex Dynamical Systems</em>, Proc. Sympos. Appl. Math. 49 (AMS, 1994).</li>
+<li><a href="https://web.archive.org/web/2024/https://num.math.uni-goettingen.de/~summer/cheritat.pdf">Arnaud Chéritat — Parabolic implosion: a mini-course</a> (lecture notes, 2011) — Fatou coordinates, the phase and Lavaurs’ theorem for any parabolic point.</li>
+<li><a href="https://www.numdam.org/article/AST_2000__261__277_0.pdf">John Milnor — Periodic orbits, external rays and the Mandelbrot set: an expository account</a> (Astérisque 261, 2000) — Lemma 4.5: the multiplier as a coordinate at a root.</li>
+<li><a href="https://arxiv.org/abs/2103.03211">Alex Kapiamba — An optimal Yoccoz inequality for near-parabolic quadratic polynomials</a> (arXiv, 2021, revised 2025) — §3, escaping sets of Lavaurs maps, counted by passages, with a picture of the phase plane at the cusp.</li>
+<li><a href="https://mathr.co.uk/blog/2013-12-16_stretching_cusps.html">Claude Heiland-Allen — Stretching cusps</a> (2013) — valleys straightened so that their bulbs all have about the same size.</li>
+<li><a href="https://mrob.com/pub/muency/seahorsevalley.html">Robert Munafo — Seahorse Valley</a> and <a href="https://mrob.com/pub/muency/doublespiralvalley.html">Double Spiral Valley</a>, Mu-Ency — the names of the two sides.</li>
+</ul>
+<p class="chapter-checked">Sources checked on 23 October 2026.</p>
+</article>
+</div>
+<nav class="pagination" aria-label="Adjacent chapters"><a class="pagination-previous" href="neutral.html" rel="prev"><small>Previous</small> Neutral cycles</a><a class="pagination-next" href="tour.html" rel="next"><small>Next</small> A guided tour</a></nav>
+<footer class="site-footer">Mandelbrot &amp; Julia Atlas<br>
+All pages and illustrations work offline. External references require a connection. Print any chapter using your browser.<br>
+Sources and research status checked in October 2026.</footer>
+</main>
+</div>
+</body>
+</html>
