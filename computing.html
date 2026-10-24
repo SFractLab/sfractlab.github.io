@@ -90,6 +90,31 @@
 <li><strong>The budget.</strong> Near parabolic parameters, orbits escape only after very many steps, so a pixel that has not escaped yet may still be outside. Milnor gives an extreme example from a dynamical plane: for <var>z</var> ↦ <var>z</var> + <var>z</var><sup>4</sup>, a point 10<sup>−3</sup> from the parabolic fixed point 0 needs about 3·10<sup>8</sup> steps to move away from it (<a href="https://arxiv.org/abs/math/9201272">Milnor’s lectures</a>, Appendix G).</li>
 <li><strong>Rounding.</strong> A computer stores about 16 significant digits and rounds at every step; near repelling cycles errors grow geometrically, as the <a href="orbits.html#computer">orbits chapter</a> shows.</li>
 </ul>
+<aside class="callout" id="parabolic-budget">
+<p><strong>Why the budget runs out at parabolic points.</strong> The steps that pixels need are not spread evenly along the boundary. They pile up at the <a href="mandelbrot.html#parabolic">parabolic parameters</a>: the cusp 1/4, the cusps of the minibrots and the points where bulbs touch their parent. At such a parameter two cycles have merged into one. Move <var>c</var> a little outside the set and they separate again, but they stay close, and the orbit of 0 has to squeeze through a narrow gate between them (<a href="neutral.html#implosion">parabolic implosion</a>). Passing the gate takes very many steps. The table gives the escape time at distance <var>ε</var> from three points of the boundary:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Distance <var>ε</var></th>
+<th scope="col">Cusp, 1/4&nbsp;+&nbsp;<var>ε</var></th>
+<th scope="col">Root of the period-two disk, −3/4&nbsp;+&nbsp;<var>ε</var><var>i</var></th>
+<th scope="col">Misiurewicz point <var>i</var>, <var>i</var>&nbsp;+&nbsp;<var>ε</var><var>i</var></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0.01</td><td>30</td><td>315</td><td>8</td></tr>
+<tr><td>10<sup>−4</sup></td><td>312</td><td>31,417</td><td>15</td></tr>
+<tr><td>10<sup>−6</sup></td><td>3,140</td><td>3,141,593</td><td>18</td></tr>
+<tr><td>10<sup>−8</sup></td><td>31,414</td><td>314,159,266</td><td>24</td></tr>
+</tbody>
+</table>
+</div>
+<p>At the cusp the count is about π/√<var>ε</var>, so every 100-fold zoom multiplies the budget needed by 10. At −3/4 it is about π/<var>ε</var>, and every 100-fold zoom multiplies it by 100; this is the <a href="numbers.html#pi">π in the Mandelbrot set</a> that Dave Boll found in 1991. The last entry in that column was computed with 34 digits; in double precision, rounding turns it into about 7.85 billion. At <var>i</var>, a repelling <a href="special-points.html#misiurewicz">Misiurewicz point</a>, every 100-fold zoom adds only a few steps, because the repelling cycle pushes the orbit away quickly. So it is not the boundary as such that is expensive, but its parabolic points. The famous valleys lie at them: seahorse valley at −3/4 and elephant valley beside the cusp.</p>
+<p>Why is −3/4 worse than the cusp? The count is roughly inversely proportional to how far the multiplier <var>λ</var> of the parabolic cycle has moved from its parabolic value; in both examples it is about 2π/|<var>λ</var><sup><var>q</var></sup> − 1|. At the cusp the two fixed points separate quickly as <var>c</var> moves away, and <var>λ</var> moves by about 2√<var>ε</var>, so the gate opens quickly. At the root of a bulb <var>λ</var> moves only by about <var>ε</var>.</p>
+<p>Inside the set, near these points, orbits are slow in another way: they creep toward a cycle instead of escaping. At the parabolic parameters themselves the orbit of 0 is still about 1/<var>k</var> away after <var>k</var> steps at 1/4, and about 1/√<var>k</var> at −3/4. That matters for programs that try to recognize interior points early, such as periodicity checking below; points that never escape cost the whole budget anyway.</p>
+<p>Deep zooms add a second effect. Near a minibrot of period <var>p</var>, every pixel needs more than <var>p</var> steps, and periods grow quickly with depth (<a href="deep-zoom.html#limits">limits of deep zooms</a>). Every minibrot also has its own cusp and its own bulb roots, so the parabolic slowdown repeats there, and each of its steps costs about <var>p</var> steps of <var>z</var><sup>2</sup> + <var>c</var>. In deep zooms the two effects multiply.</p>
+</aside>
 <p>One verdict is solid: an orbit that leaves the disk of radius 2 escapes for certain, by the <a href="mathematics.html#escape-proof">escape proof</a>, so a colored pixel shows that its sample point is outside the set, up to rounding. A dark pixel only says that the orbit had not escaped yet. The rest of this chapter is about getting more out of the same computation, and about the few methods that turn pictures into proofs.</p>
 <h2 id="escape-time">Escape time, done carefully</h2>
 <p>The <strong>escape time</strong> of a pixel is the first step <var>n</var> at which |<var>z</var><sub>n</sub>| exceeds the escape radius <var>R</var>; any <var>R</var> ≥ 2 proves escape for the Mandelbrot set, and <var>R</var> ≥ max(2, |<var>c</var>|) for a Julia set. Coloring by <var>n</var> gives the bands of the classic pictures. Most of the work goes into the pixels that never escape, since each of them uses up the whole budget. Two tricks save almost all of it.</p>
