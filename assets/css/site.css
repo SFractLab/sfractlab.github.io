@@ -957,6 +957,23 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .centers-alpha .centers-label { fill: #f2b35e; }
 .centers-beta .centers-ring { stroke: #7cc7f0; }
 .centers-beta .centers-label { fill: #7cc7f0; }
+/* Attracting and repelling fixed points (attract-repel.js): α, β and three orbits over the dimmed picture. */
+.stability-view canvas { filter: brightness(.55) saturate(.8); }
+.stability-overlay { cursor: default; }
+.stability-path { fill: none; stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.stability-attracted .stability-path { stroke: rgb(242 179 94 / .7); }
+.stability-attracted .stability-point { fill: #f2b35e; }
+.stability-repelled .stability-path { stroke: rgb(124 199 240 / .7); }
+.stability-repelled .stability-point { fill: #7cc7f0; }
+.stability-z { font-family: var(--font-text); font-style: italic; fill: #fff1c8; }
+.stability-start { fill: #ffffff; stroke: #091320; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.stability-halo { fill: none; stroke: #091320; stroke-width: 7.5; vector-effect: non-scaling-stroke; }
+.stability-ring { fill: none; stroke-width: 3.3; vector-effect: non-scaling-stroke; }
+.stability-label { font-family: var(--font-ui); font-weight: 650; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
+.stability-alpha .stability-ring { stroke: #f2b35e; }
+.stability-alpha .stability-label { fill: #f2b35e; }
+.stability-beta .stability-ring { stroke: #7cc7f0; }
+.stability-beta .stability-label { fill: #7cc7f0; }
 
 /* ---- Pagination and footer ---------------------------------------------- */
 
