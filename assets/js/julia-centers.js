@@ -127,18 +127,24 @@
       ];
     }
 
-    // Rings with their labels, in the overlay's own units; labels keep their size on screen.
+    // Rings with their labels, in the overlay's own units; labels keep their size on screen. A label
+    // goes to the right of its ring, or to the left where it would reach past the picture, as β of
+    // the basilica does on a phone. Its width is estimated generously, at 0.8 of the font size per
+    // character (0.75 for "−β" in Firefox).
     function mark() {
       overlay.replaceChildren();
       const plane = new kit.Plane(VIEW, WIDTH, HEIGHT);
       const unit = Math.max(1, WIDTH / (overlay.getBoundingClientRect().width || WIDTH));
+      const size = 18.75 * unit;
       for (const point of points()) {
         const {x, y} = plane.toScreen(point.z);
+        const right = x + 14 * unit + .8 * size * point.name.length + 2.5 * unit <= WIDTH;
         const group = kit.svg('g', {class: `centers-point centers-${point.kind}`, 'data-name': point.name}, overlay);
         kit.svg('circle', {class: 'centers-halo', cx: x, cy: y, r: 10.5 * unit}, group);
         kit.svg('circle', {class: 'centers-ring', cx: x, cy: y, r: 10.5 * unit}, group);
-        kit.svg('text', {class: 'centers-label', x: x + 14 * unit, y: y - 12 * unit, 'font-size': 18.75 * unit,
-          'stroke-width': 5 * unit}, group).textContent = point.name;
+        kit.svg('text', {class: 'centers-label', x: right ? x + 14 * unit : x - 14 * unit, y: y - 12 * unit,
+          'text-anchor': right ? 'start' : 'end', 'font-size': size, 'stroke-width': 5 * unit}, group)
+          .textContent = point.name;
       }
       overlay.setAttribute('aria-label', `The Julia set for ${state.example[1]}, with the critical point 0, the fixed `
         + 'points α and β and their mirror points −α and −β marked; the text below gives their values.');
