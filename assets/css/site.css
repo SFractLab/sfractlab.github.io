@@ -674,9 +674,9 @@ figcaption var { font-size: 1.05em; }
   background: var(--surface);
   font-family: var(--font-ui);
 }
-/* Every figure the reader can change, on either panel, is outlined in coral;
-   the pictures of the set (place.js) are not, unless they offer a menu of windows. */
-:is(.widget:not([data-widget="place"]), .place-choices, .explorer) { border: 1.5px solid var(--interactive); }
+/* Every figure the reader can change, on either panel, is outlined in coral; the pictures of the
+   set (place.js) are not, unless they offer a menu of windows, and nor are the shapes of Julia sets. */
+:is(.widget:not([data-widget="place"], [data-widget="julia-shapes"]), .place-choices, .explorer) { border: 1.5px solid var(--interactive); }
 .widget-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; margin-bottom: .9rem; font-size: .85rem; }
 .widget-modes { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
 .widget-modes label { position: relative; cursor: pointer; }
@@ -948,6 +948,8 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .rays-end { fill: #fff1c8; stroke: #2b1904; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .rays-label { font-family: var(--font-ui); font-weight: 650; fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
 .chapter .rays-readout p { max-width: none; margin: 0 0 .35rem; overflow-wrap: anywhere; }
+/* Shapes of Julia sets (julia-shapes.js): rows of two pictures, each row titled. */
+.shapes-row + .shapes-row { margin-top: 1.5rem; }
 /* Centers of Julia sets (julia-centers.js): rings at 0, ±α and ±β over the picture. */
 .centers-overlay { cursor: default; }
 .centers-halo { fill: none; stroke: #091320; stroke-width: 7.5; vector-effect: non-scaling-stroke; }
@@ -1113,7 +1115,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget[data-widget="place"]:not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }

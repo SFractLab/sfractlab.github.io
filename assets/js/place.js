@@ -146,21 +146,6 @@
     return {parts: [holder, status], draw, fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
   }
 
-  // Calls `then` once, when the figure first comes within 300 pixels of the screen, or at once
-  // without an IntersectionObserver.
-  function whenNear(figure, then) {
-    if (!('IntersectionObserver' in window)) {
-      then();
-      return;
-    }
-    const observer = new IntersectionObserver(entries => {
-      if (!entries.some(entry => entry.isIntersecting)) return;
-      observer.disconnect();
-      then();
-    }, {rootMargin: '300px'});
-    observer.observe(figure);
-  }
-
   // A figure with several windows: the menu, and the chosen window's picture and caption part.
   function offerChoices(figure, choices, linked, caption) {
     figure.classList.add('place-choices');
@@ -201,7 +186,7 @@
     }
     select.addEventListener('change', choose);
     choose();
-    whenNear(figure, () => {
+    kit.whenNear(figure, () => {
       near = true;
       draw();
     });
@@ -256,7 +241,7 @@
       const images = await Promise.all(pictures.map(shown => shown.draw()));
       if (images.every(Boolean)) figure.dataset.drawn = '';
     }
-    whenNear(figure, () => {
+    kit.whenNear(figure, () => {
       near = true;
       draw();
     });

@@ -320,6 +320,21 @@
     resizeCallbacks.push(callback);
   }
 
+  // Calls `then` once, when `element` first comes within 300 pixels of the screen, or at once
+  // without an IntersectionObserver, so that pictures far down a page are computed only if read.
+  function whenNear(element, then) {
+    if (!('IntersectionObserver' in window)) {
+      then();
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      observer.disconnect();
+      then();
+    }, {rootMargin: '300px'});
+    observer.observe(element);
+  }
+
   // Parameters inside the main cardioid or the period-two disk belong to the
   // Mandelbrot set; testing this exactly saves iterating them to the budget.
   function inCardioidOrPeriodTwoDisk(x, y) {
@@ -904,7 +919,8 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, paint, workerPool,
+    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, paint,
+    workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,
     coloringDetail, workSummary,
