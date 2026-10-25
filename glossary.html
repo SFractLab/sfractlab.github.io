@@ -105,7 +105,7 @@
 <td>The <var>n</var>-fold composition of <var>f</var>, not the <var>n</var>th power of its output.</td>
 </tr>
 <tr>
-<td>|<var>z</var>|, arg(<var>z</var>)</td>
+<td>|⁠<var>z</var>|, arg(<var>z</var>)</td>
 <td>Modulus (distance from zero) and argument (angle).</td>
 </tr>
 <tr>
@@ -179,11 +179,11 @@
 <dt id="multiplier">Multiplier</dt>
 <dd>The derivative of the least-period return map at a cycle point: λ = ∏2<var>z</var><sub>k</sub>. Its modulus measures first-order attraction or repulsion per complete cycle.</dd>
 <dt id="attracting">Attracting / superattracting</dt>
-<dd><strong>Attracting:</strong> A cycle with |λ| &lt; 1. <strong>Superattracting:</strong> A cycle with λ = 0. Nearby starting points approach it; they need not land on it in finitely many steps.</dd>
+<dd><strong>Attracting:</strong> A cycle with |⁠λ| &lt; 1. <strong>Superattracting:</strong> A cycle with λ = 0. Nearby starting points approach it; they need not land on it in finitely many steps.</dd>
 <dt id="repelling">Repelling</dt>
-<dd>A cycle with |λ| &gt; 1. Small displacements expand under the return map. The exactly periodic orbit itself still repeats.</dd>
+<dd>A cycle with |⁠λ| &gt; 1. Small displacements expand under the return map. The exactly periodic orbit itself still repeats.</dd>
 <dt id="neutral">Neutral / indifferent</dt>
-<dd>A cycle with |λ| = 1. Higher-order terms and the rotation angle decide the local behavior.</dd>
+<dd>A cycle with |⁠λ| = 1. Higher-order terms and the rotation angle decide the local behavior.</dd>
 <dt id="parabolic">Parabolic</dt>
 <dd>A cycle is parabolic when its multiplier λ is a root of unity: λ<sup><var>q</var></sup> = 1 for some whole number <var>q</var>. After <var>q</var> returns the first-order term then leaves nearby points where they are, and higher-order terms decide: nearby points are drawn in slowly along some directions (the attracting petals) and pushed away along others. A parameter <var>c</var> is parabolic when its map has a parabolic cycle; these are the cusp 1/4, the cusps of the minibrots and the points where bulbs are attached, and at each of them two cycles merge into one. The name comes from Möbius maps, where a map with a single fixed point, such as <var>z</var> ↦ <var>z</var> + 1, is called parabolic. <a href="neutral.html#flower">The Leau–Fatou flower</a>.</dd>
 <dt id="petal">Petal / Leau–Fatou flower</dt>
@@ -253,7 +253,7 @@
 <dt id="wandering-domain">Wandering domain</dt>
 <dd>A Fatou component whose images under the map are all different. Sullivan proved that rational maps, and so quadratic polynomials, have none; some entire functions do. <a href="julia.html#fatou">The Fatou set</a>; <a href="beyond.html#entire">entire functions</a>.</dd>
 <dt id="riemann-sphere">Riemann sphere</dt>
-<dd>The complex plane with one more point, ∞, pictured as a sphere. Set a sphere of diameter 1 on the plane so that it touches it at 0, and draw the straight line from a number to the top of the sphere: the line meets the sphere in one more point, where the number is placed. Numbers near 0 land near the bottom, the unit circle on the equator, and large numbers, in every direction, near the top, which stands for ∞. Measured on the sphere, in a straight line, the distance between <var>z</var> and <var>w</var> is |<var>z</var> − <var>w</var>| / (√(1 + |<var>z</var>|²) · √(1 + |<var>w</var>|²)), and from <var>z</var> to ∞ it is 1 / √(1 + |<var>z</var>|²). Near 0 this is about the distance in the plane, but any two large numbers are close. So two escaping orbits come close together, as the definition of the Fatou set requires: for <var>c</var> = 0 the orbits of 2 and 2.001 reach 256 and 257.03 after three steps, 1.03 apart in the plane but only 0.000016 on the sphere. A quotient of two polynomials sends the zeros of its denominator to ∞, so rational maps are naturally maps of the sphere. <a href="julia.html#fatou">The Fatou set</a>.</dd>
+<dd>The complex plane with one more point, ∞, pictured as a sphere. Set a sphere of diameter 1 on the plane so that it touches it at 0, and draw the straight line from a number to the top of the sphere: the line meets the sphere in one more point, where the number is placed. Numbers near 0 land near the bottom, the unit circle on the equator, and large numbers, in every direction, near the top, which stands for ∞. Measured on the sphere, in a straight line, the distance between <var>z</var> and <var>w</var> is |⁠<var>z</var> − <var>w</var>| / (√(1 + |⁠<var>z</var>|⁠²) · √(1 + |⁠<var>w</var>|⁠²)), and from <var>z</var> to ∞ it is 1 / √(1 + |⁠<var>z</var>|⁠²). Near 0 this is about the distance in the plane, but any two large numbers are close. So two escaping orbits come close together, as the definition of the Fatou set requires: for <var>c</var> = 0 the orbits of 2 and 2.001 reach 256 and 257.03 after three steps, 1.03 apart in the plane but only 0.000016 on the sphere. A quotient of two polynomials sends the zeros of its denominator to ∞, so rational maps are naturally maps of the sphere. <a href="julia.html#fatou">The Fatou set</a>.</dd>
 <dt id="normal-family">Normal family</dt>
 <dd>A family of functions from which every sequence has a subsequence converging nicely, uniformly on compact sets, possibly to infinity, with distances measured on the Riemann sphere. The iterates of <var>f</var><sub>c</sub> form a normal family near the points of the Fatou set and fail to do so near every point of the Julia set. Montel’s theorem, that functions omitting the same two values form a normal family, is the main tool for proving the basic properties of the Julia set, such as that backward orbits come close to every point of it. <a href="julia.html#fatou">The Fatou set</a>; <a href="julia.html#boundary-dynamics">the structure of the Julia set</a>.</dd>
 <dt id="connected">Connected / locally connected</dt>
@@ -269,7 +269,7 @@
 <dt id="dendrite">Dendrite</dt>
 <dd>A locally connected continuum without simple closed curves. It is tree-like, potentially with infinitely complicated branching.</dd>
 <dt id="escape-potential">Escape potential / equipotential</dt>
-<dd><strong>Escape potential:</strong> Also called the Green’s function of the filled Julia set, <var>G</var><sub>c</sub>(<var>z</var>) = lim 2<sup>−n</sup> log⁺|<var>f</var><sub>c</sub><sup>n</sup>(<var>z</var>)|, which measures how fast <var>z</var> escapes and is zero exactly on the filled Julia set. <strong>Equipotential:</strong> One of its level curves. In Böttcher’s coordinate the potential is the logarithm of the radius. <a href="rays.html#potential">The escape potential</a>.</dd>
+<dd><strong>Escape potential:</strong> Also called the Green’s function of the filled Julia set, <var>G</var><sub>c</sub>(<var>z</var>) = lim 2<sup>−n</sup> log⁺|⁠<var>f</var><sub>c</sub><sup>n</sup>(<var>z</var>)|, which measures how fast <var>z</var> escapes and is zero exactly on the filled Julia set. <strong>Equipotential:</strong> One of its level curves. In Böttcher’s coordinate the potential is the logarithm of the radius. <a href="rays.html#potential">The escape potential</a>.</dd>
 <dt id="bottcher-coordinate">Böttcher coordinate</dt>
 <dd>A holomorphic coordinate near infinity that converts quadratic polynomial iteration into squaring. For connected filled Julia sets it extends through the exterior. <a href="rays.html#bottcher">Böttcher’s coordinate</a>.</dd>
 <dt id="external-ray">External ray / landing</dt>
@@ -289,7 +289,7 @@
 <dt id="escape-time-coloring">Escape-time coloring / orbit trap</dt>
 <dd><strong>Escape-time coloring:</strong> Assigning colors from escape behavior. <strong>Orbit trap:</strong> Coloring by how close an orbit comes to a chosen shape, such as Pickover’s cross of the two axes. These change the visualization, not the set’s definition. <a href="computing.html#escape-time">Escape time</a>, <a href="computing.html#orbit-coloring">orbit traps</a>.</dd>
 <dt id="distance-estimate">Distance estimate</dt>
-<dd><var>b</var> = 2|<var>z</var><sub>n</sub>| log|<var>z</var><sub>n</sub>| / |<var>z</var>′<sub>n</sub>|, computed with the derivative of the orbit; near the set the true distance lies between about <var>b</var>/4 and <var>b</var> (Koebe). It reveals filaments thinner than a pixel. <a href="computing.html#distance">Distance estimates</a>.</dd>
+<dd><var>b</var> = 2|⁠<var>z</var><sub>n</sub>| log|⁠<var>z</var><sub>n</sub>| / |⁠<var>z</var>′<sub>n</sub>|, computed with the derivative of the orbit; near the set the true distance lies between about <var>b</var>/4 and <var>b</var> (Koebe). It reveals filaments thinner than a pixel. <a href="computing.html#distance">Distance estimates</a>.</dd>
 <dt id="binary-decomposition">Binary decomposition</dt>
 <dd>Coloring escaping points by the sign of Im <var>z</var><sub>n</sub> at the escape step <var>n</var>; with a large escape radius this is the <var>n</var>-th binary digit of the external angle. <a href="computing.html#binary-decomposition">Reading angles</a>.</dd>
 <dt id="stripe-average">Stripe average</dt>
@@ -305,11 +305,11 @@
 <dt id="perturbation">Perturbation / reference orbit</dt>
 <dd><strong>Reference orbit:</strong> One orbit <var>Z</var><sub>n</sub> computed with as many digits as a deep zoom needs. <strong>Perturbation:</strong> Computing each pixel’s orbit as an exact small difference δ<sub>n</sub> from it, δ<sub>n+1</sub> = 2<var>Z</var><sub>n</sub>δ<sub>n</sub> + δ<sub>n</sub><sup>2</sup> + Δ<var>c</var>, in ordinary numbers. <a href="deep-zoom.html#perturbation">Perturbation</a>.</dd>
 <dt id="rebasing">Rebasing / glitch</dt>
-<dd><strong>Glitch:</strong> A region of a perturbation picture with wrong counts, flat or noisy, caused by lost precision when a pixel’s orbit passes much closer to 0 than the reference. <strong>Rebasing:</strong> Restarting the reference from its beginning, with δ set to the pixel’s value, when |<var>Z</var><sub>m</sub> + δ| &lt; |δ|; exact because the reference starts at 0, it avoids glitches with a single reference. <a href="deep-zoom.html#rebasing">Rebasing</a>.</dd>
+<dd><strong>Glitch:</strong> A region of a perturbation picture with wrong counts, flat or noisy, caused by lost precision when a pixel’s orbit passes much closer to 0 than the reference. <strong>Rebasing:</strong> Restarting the reference from its beginning, with δ set to the pixel’s value, when |⁠<var>Z</var><sub>m</sub> + δ| &lt; |⁠δ|; exact because the reference starts at 0, it avoids glitches with a single reference. <a href="deep-zoom.html#rebasing">Rebasing</a>.</dd>
 <dt id="bilinear-approximation">Bilinear approximation / linear approximation (BLA / LA)</dt>
 <dd>Skipping many iterations of a perturbation computation at once with precomputed linear maps δ ↦ <var>A</var>δ + <var>B</var>Δ<var>c</var>, valid while δ is small compared with the reference. <strong>BLA</strong> merges steps in blocks of 2<sup><var>k</var></sup>; <strong>LA</strong>, in the program Imagina, keeps the first square and cuts the reference where it returns near 0. <a href="deep-zoom.html#skipping">Skipping iterations</a>.</dd>
 <dt id="atom-domain">Atom domain</dt>
-<dd>The parameters <var>c</var> for which |<var>z</var><sub>p</sub>| is smaller than every earlier |<var>z</var><sub>k</sub>|, 1 ≤ <var>k</var> &lt; <var>p</var>; it contains every nucleus of period <var>p</var>. The steps at which an orbit comes closer to 0 than ever before are the periods of the atom domains that contain its parameter. <a href="deep-zoom.html#reference">Where the reference comes from</a>.</dd>
+<dd>The parameters <var>c</var> for which |⁠<var>z</var><sub>p</sub>| is smaller than every earlier |⁠<var>z</var><sub>k</sub>|, 1 ≤ <var>k</var> &lt; <var>p</var>; it contains every nucleus of period <var>p</var>. The steps at which an orbit comes closer to 0 than ever before are the periods of the atom domains that contain its parameter. <a href="deep-zoom.html#reference">Where the reference comes from</a>.</dd>
 <dt id="finite-iteration-artifact">Finite iteration artifact / aliasing</dt>
 <dd><strong>Finite iteration artifact:</strong> Misleading appearance caused by a cutoff before eventual escape. <strong>Aliasing:</strong> Loss or distortion caused by sampling a continuous plane on a finite pixel grid. <a href="computing.html#computation">A picture is a computation</a>.</dd>
 <dt id="mlc">MLC</dt>
