@@ -17,12 +17,17 @@
   const BUDGET = 1000;
   const RADIUS = 1000;  // escape radius for the distance estimate
 
+  // Near a circle the distance estimate is about twice the distance, so a line drawn below one pixel
+  // breaks where the curve passes between pixel centres; the circles are drawn below two.
+  const CIRCLE_THICKNESS = 2;
+
   // Each row: its title, then for each picture its caption (fixed markup), its name for screen
-  // readers, and c.
+  // readers, c, and the thickness of the line in pixels as AtlasKit's distance coloring takes it.
   const ROWS = [
     ['Deformed circles', [
-      ['<var>c</var> = 0: the round circle', 'the round circle of c = 0', 0, 0],
-      ['<var>c</var> = −0.5 + 0.3<var>i</var>: a crinkled circle', 'the crinkled circle of c = −0.5 + 0.3i', -.5, .3],
+      ['<var>c</var> = 0: the round circle', 'the round circle of c = 0', 0, 0, CIRCLE_THICKNESS],
+      ['<var>c</var> = −0.5 + 0.3<var>i</var>: a crinkled circle', 'the crinkled circle of c = −0.5 + 0.3i', -.5, .3,
+        CIRCLE_THICKNESS],
     ]],
     ['Pinched sets', [
       ['The basilica, <var>c</var> = −1', 'the basilica, c = −1', -1, 0],
@@ -44,7 +49,7 @@
 
   // One picture: its panel, and draw(), which computes it at the size the screen calls for and
   // resolves to true once it is complete.
-  function picture([caption, name, re, im]) {
+  function picture([caption, name, re, im, thickness = 1]) {
     const panel = element('div', 'plate-panel');
     const view = element('div', 'plate-view');
     const canvas = element('canvas');
@@ -67,6 +72,7 @@
         buffer.width = data.width;
         buffer.height = data.height;
       }
+      data.thickness = thickness;
       kit.paintOrbits(bufferContext, data, 'distance');
       if (data.rows) context.drawImage(buffer, 0, 0, data.width, data.rows, 0, 0, data.width, data.rows);
     }
