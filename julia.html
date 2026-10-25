@@ -84,7 +84,7 @@
 <p class="lead">Fix a complex number <var>c</var>, then ask what happens to every possible starting point under <var>z</var> ↦ <var>z</var><sup>2</sup> + <var>c</var>. The Julia set is the boundary of the points whose orbits remain bounded.</p>
 <h2 id="filled-versus-boundary">The Julia set and the filled Julia set</h2>
 <p>In the <strong>dynamical plane</strong>, the parameter <var>c</var> stays fixed while the initial point <var>z</var> varies. The <strong>filled Julia set</strong> <var>K</var><sub><var>c</var></sub> is the set of all initial points with bounded forward orbits. The <strong>Julia set</strong> <var>J</var><sub><var>c</var></sub> is its boundary:</p>
-<div class="equation"><var>K</var><sub><var>c</var></sub> = {<var>z</var> ∈ ℂ : (<var>f</var><sub><var>c</var></sub><sup>n</sup>(<var>z</var>))<sub>n≥0</sub> is bounded},   <var>J</var><sub><var>c</var></sub> = ∂<var>K</var><sub><var>c</var></sub>.</div>
+<div class="equation"><var>K</var><sub><var>c</var></sub> = {<var>z</var> ∈ ℂ : (<var>f</var><sub><var>c</var></sub><sup>n</sup>(<var>z</var>))<sub>n≥0</sub> is&nbsp;bounded},<br><var>J</var><sub><var>c</var></sub> = ∂<var>K</var><sub><var>c</var></sub>.</div>
 <p>These are not generally the same object. A filled Julia set can contain open regions of starting points attracted to the same cycle. Those regions are inside <var>K</var><sub><var>c</var></sub> but outside <var>J</var><sub><var>c</var></sub>. In other cases the filled set has no interior and coincides with its boundary. The distinction is explicit in Mikhail Lyubich’s book <a href="https://www.math.stonybrook.edu/~mlyubich/book.pdf"><cite>Conformal Geometry and Dynamics of Quadratic Polynomials</cite></a>, §20.</p>
 <p>The most useful elementary example is <var>c</var> = 0, which the <a href="orbits.html#basins">orbits chapter</a> followed point by point. Here <var>f</var><sup>n</sup>(<var>z</var>) = <var>z</var><sup>2ⁿ</sup>. Points with |<var>z</var>| &lt; 1 tend to zero, points with |<var>z</var>| &gt; 1 escape, and points with |<var>z</var>| = 1 remain on the unit circle. Thus the filled Julia set is the closed unit disk, while the Julia set is only its circumference.</p>
 <figure>
@@ -138,14 +138,14 @@
 <td>The basilica: two prominent lobes and infinitely many smaller attachments.</td>
 </tr>
 <tr>
-<td><var>c</var> ≈ −0.1225611669 + 0.7448617666<var>i</var></td>
-<td>0 is a superattracting point of period three.</td>
-<td>Douady’s rabbit, with a threefold cycle of major lobes.</td>
-</tr>
-<tr>
 <td><var>c</var> = −2</td>
 <td>0 → −2 → 2 → 2.</td>
 <td>The interval [−2, 2]; here <var>J</var> = <var>K</var>.</td>
+</tr>
+<tr>
+<td><var>c</var> ≈ −0.1225611669 + 0.7448617666<var>i</var></td>
+<td>0 is a superattracting point of period three.</td>
+<td>Douady’s rabbit, with a threefold cycle of major lobes.</td>
 </tr>
 <tr>
 <td><var>c</var> = 1/4</td>

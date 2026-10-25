@@ -840,7 +840,9 @@ figcaption var { font-size: 1.05em; }
   color: var(--plate-muted);
 }
 :is(.explorer-controls, .plate-controls) { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem 1rem; margin-bottom: 1.4rem; }
-:is(.explorer-controls, .plate-controls) label { display: flex; flex-direction: column; gap: .3rem; font-size: .75rem; color: var(--plate-muted); }
+:is(.explorer-controls, .plate-controls) label { display: flex; flex-direction: column; gap: .3rem; max-width: 100%; font-size: .75rem; color: var(--plate-muted); }
+/* A menu is as wide as its longest entry; on a narrow phone it shrinks to the figure instead. */
+:is(.explorer, .widget-plate) select { max-width: 100%; }
 :is(.explorer, .widget-plate) :is(select, input) {
   min-height: 2.4rem;
   padding: .35rem .6rem;
