@@ -15,7 +15,10 @@
                   for a dot with the label beside it, "in" for a round
                   badge centred on the point, to label a component from
                   inside, or "ring" for an unfilled circle centred on the
-                  point, which leaves it visible (its label may be empty)
+                  point, which leaves it visible (its label may be empty),
+                  or "small-ring" for one of half the size
+     data-frame   optional "re,im,width": another window, outlined in the
+                  picture as a rectangle, such as the next one of a zoom
      data-no-link optional: the picture does not open the zoom viewer
      data-julia   optional "re,im": a parameter c. Its filled Julia set is then
                   drawn beside the Mandelbrot set, on the window of the
@@ -26,7 +29,7 @@
 
    A figure can instead offer several windows. Each is an element inside it,
    usually a part of the caption, with data-choice (a key), data-name (its
-   entry in the menu), data-window and data-marks. A menu, labelled by the
+   entry in the menu), data-window, data-marks and data-frame. A menu, labelled by the
    figure's data-menu (default "Window"), chooses one: it is drawn, its
    element is shown and the others are hidden. */
 (() => {
@@ -67,15 +70,16 @@
   function parseMarks(text) {
     return (text || '').split(';').map(part => part.split(',').map(item => item.trim()))
       .filter(([re, im, label, side]) => Number.isFinite(Number(re)) && Number.isFinite(Number(im))
-        && (label || side === 'ring'))
+        && (label || side === 'ring' || side === 'small-ring'))
       .map(([re, im, label, side]) => ({c: {re: Number(re), im: Number(im)}, label,
-        side: side === 'in' || side === 'ring' || LABEL_OFFSET[side] ? side : 'e'}));
+        side: side === 'in' || side === 'ring' || side === 'small-ring' || LABEL_OFFSET[side] ? side : 'e'}));
   }
 
-  // One picture of the parameter plane, or of the dynamical plane of `julia`:
+  // One picture of the parameter plane, or of the dynamical plane of `julia`, with `frame`, another
+  // window as re, im and width, outlined if given:
   // the canvas (inside a link to the zoom viewer if `linked`), its marks, its
   // status line, and draw(), which computes it.
-  function picture([re, im, width], julia, marks, linked) {
+  function picture([re, im, width], julia, marks, linked, frame = null) {
     const height = width * HEIGHT / WIDTH;
     const view = {left: re - width / 2, top: im + height / 2, width, height};
     const budget = kit.iterationBudget(width);
@@ -102,14 +106,23 @@
     }
     holder.append(canvas);
 
-    if (marks.length) {
+    if (marks.length || frame) {
       const overlay = kit.svg('svg', {viewBox: `0 0 ${WIDTH} ${HEIGHT}`, class: 'plate-overlay place-marks', 'aria-hidden': 'true'});
       const plane = new kit.Plane(view, WIDTH, HEIGHT);
+      if (frame) {
+        const [frameRe, frameIm, frameWidth] = frame;
+        const frameHeight = frameWidth * HEIGHT / WIDTH;
+        const corner = plane.toScreen({re: frameRe - frameWidth / 2, im: frameIm + frameHeight / 2});
+        const box = {x: corner.x, y: corner.y, width: frameWidth / width * WIDTH, height: frameHeight / height * HEIGHT};
+        kit.svg('rect', {...box, class: 'place-frame-halo'}, overlay);
+        kit.svg('rect', {...box, class: 'place-frame'}, overlay);
+      }
       for (const {c, label, side} of marks) {
         const {x, y} = plane.toScreen(c);
-        if (side === 'ring') {
-          kit.svg('circle', {cx: x, cy: y, r: RING_RADIUS, class: 'place-ring-halo'}, overlay);
-          kit.svg('circle', {cx: x, cy: y, r: RING_RADIUS, class: 'place-ring'}, overlay);
+        if (side === 'ring' || side === 'small-ring') {
+          const r = side === 'ring' ? RING_RADIUS : RING_RADIUS / 2;
+          kit.svg('circle', {cx: x, cy: y, r, class: 'place-ring-halo'}, overlay);
+          kit.svg('circle', {cx: x, cy: y, r, class: 'place-ring'}, overlay);
           continue;
         }
         if (side === 'in') {
@@ -176,7 +189,9 @@
       const choice = choices.find(item => item.dataset.choice === select.value);
       for (const item of choices) item.hidden = item !== choice;
       const area = parseNumbers(choice.dataset.window, 3);
-      const next = area && area[2] > 0 ? picture(area, null, parseMarks(choice.dataset.marks), linked) : null;
+      const frame = parseNumbers(choice.dataset.frame, 3);
+      const next = area && area[2] > 0
+        ? picture(area, null, parseMarks(choice.dataset.marks), linked, frame && frame[2] > 0 ? frame : null) : null;
       for (const part of shown ? shown.parts : []) part.remove();
       shown = next;
       for (const part of shown ? shown.parts : []) figure.insertBefore(part, caption);
@@ -207,6 +222,7 @@
     const area = parseNumbers(figure.dataset.window, 3);
     if (!area || area[2] <= 0) return;
     const marks = parseMarks(figure.dataset.marks);
+    const frame = parseNumbers(figure.dataset.frame, 3);
     const julia = parseNumbers(figure.dataset.julia, 2);
     const juliaWindow = parseNumbers(figure.dataset.juliaWindow, 3);
 
@@ -215,7 +231,7 @@
       const c = {re: julia[0], im: julia[1]};
       const panels = element('div', 'plate-grid');
       for (const [title, shown] of [
-        ['Parameter plane · vary <var>c</var>', picture(area, null, marks, linked)],
+        ['Parameter plane · vary <var>c</var>', picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
         [`Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`, picture(juliaWindow && juliaWindow[2] > 0 ? juliaWindow : JULIA_WINDOW, c, [], false)],
       ]) {
         if (!shown) return;
@@ -228,7 +244,7 @@
       }
       figure.insertBefore(panels, caption);
     } else {
-      const shown = picture(area, null, marks, linked);
+      const shown = picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null);
       if (!shown) return;
       for (const part of shown.parts) figure.insertBefore(part, caption);
       pictures.push(shown);
