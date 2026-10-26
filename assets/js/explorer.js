@@ -7,7 +7,8 @@
    yet. The Julia view is drawn again whenever c or the budget changes: at once
    for an example, a click on the map or Enter, and a moment after the typing
    stops in a number field. A newer request stops an older Julia render. The escape-time drawing itself is shared with
-   the orbit figures in atlas-kit.js, listed before this script in site.toml. */
+   the orbit figures in atlas-kit.js, listed before this script in site.toml, and so is the Enlarge button
+   (AtlasKit.enlargeable), which lays the lab over the whole browser window. */
 (() => {
   'use strict';
 
@@ -178,8 +179,11 @@
 
   renderMap();
   render();
-  kit.whenResized(() => {
+  // After a change of size, or of the lab's place: the pictures that no longer fit.
+  function refit() {
     if (!kit.fitsScreen(mapCanvas, WIDTH, HEIGHT)) renderMap();
     if (!kit.fitsScreen(juliaCanvas, WIDTH, HEIGHT)) render();
-  });
+  }
+  kit.whenResized(refit);
+  kit.enlargeable(lab, lab.querySelector('.explorer-controls'), refit);
 })();

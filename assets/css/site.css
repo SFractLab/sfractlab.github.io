@@ -873,8 +873,8 @@ figcaption var { font-size: 1.05em; }
 :is(.explorer, .widget-plate) button:hover { background: #8adfe5; }
 .widget-plate button { min-height: 2.2rem; padding: .3rem 1rem; font-size: .85rem; }
 .widget-plate button:disabled { opacity: .45; cursor: default; }
-.widget-plate .plate-button-quiet { border: 1px solid var(--plate-line); background: none; color: var(--plate-ink); }
-.widget-plate .plate-button-quiet:hover { background: var(--plate-raised); }
+:is(.explorer, .widget-plate) .plate-button-quiet { border: 1px solid var(--plate-line); background: none; color: var(--plate-ink); }
+:is(.explorer, .widget-plate) .plate-button-quiet:hover { background: var(--plate-raised); }
 .plate-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
 :is(.explorer-grid, .plate-grid) { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; }
 :is(.explorer, .widget-plate) canvas { display: block; width: 100%; height: auto; border-radius: 8px; background: #091320; }
@@ -914,9 +914,11 @@ html.plate-dialog-open { overflow: hidden; }
   border: 0; overflow: auto; background: var(--plate); color: var(--plate-ink); color-scheme: dark;
 }
 .plate-dialog::backdrop { background: var(--plate); }
-.plate-dialog .plate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.plate-dialog :is(.plate-grid, .explorer-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.explorer .plate-dialog { --plate-chrome: 14rem; }
 .plate-dialog .plate-controls:first-child { margin-top: 0; }
 .plate-enlarge { margin-left: auto; align-self: end; }
+.chapter .plate-enlarge { min-height: 2.2rem; padding: .3rem 1rem; font-size: .85rem; }
 @media (max-width: 56rem) { .plate-enlarge { display: none; } }
 /* The tour's pictures (place.js): a window of the Mandelbrot set that opens the zoom viewer. */
 .place-view { display: block; border-radius: 8px; cursor: zoom-in; }

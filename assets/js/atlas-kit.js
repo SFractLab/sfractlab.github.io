@@ -340,10 +340,15 @@
   // figure's parts into a modal <dialog> inside it and back; Esc closes the dialog too. Meanwhile
   // the figure keeps its height on the page, so nothing behind it moves, and the page does not
   // scroll. `onChange` is called once the parts are laid out anew, to fit the pictures to their size.
+  // The orbit figures and the gallery's explorer use it.
   function enlargeable(figure, bar, onChange) {
     if (typeof HTMLDialogElement !== 'function') return null;
     const dialog = document.createElement('dialog');
     dialog.className = 'plate-dialog';
+    // The dialog is named after the section the figure stands in.
+    let heading = figure.previousElementSibling;
+    while (heading && !/^H[12]$/.test(heading.tagName)) heading = heading.previousElementSibling;
+    dialog.setAttribute('aria-label', `${heading ? heading.textContent : 'Figure'}, enlarged`);
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'plate-button-quiet plate-enlarge';
@@ -356,7 +361,6 @@
         return;
       }
       figure.style.minHeight = `${figure.offsetHeight}px`;
-      dialog.setAttribute('aria-label', `${figure.querySelector('figcaption')?.textContent.split('.')[0] || 'Figure'}, enlarged`);
       dialog.append(...[...figure.children].filter(child => child !== dialog));
       figure.append(dialog);
       document.documentElement.classList.add('plate-dialog-open');
