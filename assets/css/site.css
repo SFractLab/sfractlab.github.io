@@ -966,6 +966,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 
 /* The wheel at α (julia-wheel.js): arrows along the cycle of 0, a ring at α and numbered badges. */
 .wheel-overlay { cursor: default; }
+.wheel-divider { stroke: #091320; }
 .wheel-halo { fill: #091320; stroke: #091320; stroke-linecap: round; stroke-linejoin: round; }
 .wheel-line { stroke: #ffffff; stroke-linecap: round; }
 .wheel-head { fill: #ffffff; }
