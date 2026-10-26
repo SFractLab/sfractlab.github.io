@@ -162,6 +162,28 @@
 <div class="equation">|⁠<var>c</var> + 1| &lt; 1/4.</div>
 <p>The period-two component is exactly the open disk of radius 1/4 centered at −1. Outside the disk the two-cycle still exists, but it repels. At its center, the critical point belongs to the cycle 0 ↔ −1. At its rightmost point −3/4, the cycle merges with a fixed point whose multiplier is −1. At its leftmost point −5/4, the two-cycle has multiplier −1 and the period-four satellite attaches.</p>
 <p>Higher-period bulbs may look round at a distance, but their boundaries are not in general circles.</p>
+<aside class="callout" id="doubling-mechanism">
+<p><strong>How the period doubles.</strong> At −3/4 the fixed point −1/2 has multiplier −1. Near it, each step moves a small error to the other side of the fixed point and keeps its size, as a <a href="orbits.html#multipliers">negative real multiplier</a> does. After two steps the error is back where it started. So the fixed point is almost a two-cycle, and this is where a real two-cycle splits off from it. The numbers on either side of −3/4 show the job of attracting passing from the fixed point to the two-cycle:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col"><var>c</var></th>
+<th scope="col">Fixed point near −1/2</th>
+<th scope="col">Two-cycle</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>−0.7, in the main cardioid</td><td>−0.475, multiplier −0.95: attracts</td><td>−0.5&nbsp;±&nbsp;0.224<var>i</var>, multiplier 1.2: repels</td></tr>
+<tr><td>−0.75, where the disk is attached</td><td>−0.5, multiplier −1</td><td>−0.5 twice: merged</td></tr>
+<tr><td>−0.8, in the period-two disk</td><td>−0.525, multiplier −1.05: repels</td><td>−0.276 and −0.724, multiplier 0.8: attracts</td></tr>
+</tbody>
+</table>
+</div>
+<p>The two cycle points come toward −1/2 from above and below the real axis, meet there, and then move apart along it.</p>
+<p>Why exactly at −1? The points that return after two steps are the roots of <var>f</var><sub>c</sub><sup>2</sup>(<var>z</var>)&nbsp;−&nbsp;<var>z</var>. Where several of them meet, the root is a multiple root, so the derivative of <var>f</var><sub>c</sub><sup>2</sup>(<var>z</var>)&nbsp;−&nbsp;<var>z</var> vanishes there too, and (<var>f</var><sub>c</sub><sup>2</sup>)′&nbsp;=&nbsp;1. At a fixed point with multiplier λ, the chain rule gives (<var>f</var><sub>c</sub><sup>2</sup>)′&nbsp;=&nbsp;λ · λ&nbsp;=&nbsp;λ<sup>2</sup>. So λ&nbsp;=&nbsp;1 or λ&nbsp;=&nbsp;−1. At λ&nbsp;=&nbsp;1 the two fixed points meet each other, at the cusp 1/4. At λ&nbsp;=&nbsp;−1 the two-cycle meets a fixed point.</p>
+<p>The same happens one level up. At −5/4 the two-cycle has multiplier −1. Each return flips a small error, and after two returns, four steps, it is back. A four-cycle splits off and takes over: at <var>c</var>&nbsp;=&nbsp;−1.3 the two-cycle repels, with multiplier −1.2, and the four-cycle attracts. At about −1.3681 the four-cycle reaches multiplier −1 in turn, and an eight-cycle splits off, and so on: this is the <a href="#doubling">period-doubling cascade</a>. It is the case <var>q</var>&nbsp;=&nbsp;2 of the <a href="#rotation-numbers">satellite rule</a>: a multiplier of −1 is half a turn, and after two returns the two halves add up to a whole turn.</p>
+</aside>
 <h2 id="centers">Centers and multiplier coordinates</h2>
 <p>Every hyperbolic component in the quadratic Mandelbrot set has one <strong>center</strong>: the parameter where its attracting cycle is superattracting. Since the multiplier is a product of factors 2<var>a</var><sub>j</sub>, it vanishes exactly when one cycle point is zero. Thus a period-<var>n</var> center satisfies <var>f</var><sub>c</sub><sup>n</sup>(0) = 0, with no earlier return.</p>
 <p>For example, the period-three equation factors as</p>
@@ -253,7 +275,7 @@
 <p>A <strong>primitive component</strong> does not meet a lower-period parent at its root. Its root has a parabolic orbit of the same exact period as the component. Primitive components supply the heart-shaped cores of primitive <a href="minibrots.html">miniature Mandelbrot copies</a>. “Primitive component” and “primitive period” are separate uses of the word: primitive period simply means least period for any cycle.</p>
 <p>Roots other than the main cardioid cusp are landing points of two periodic external parameter rays. The cusp at <var>c</var> = 1/4 has the single angle-zero ray. The pair of rays describes a <strong>wake</strong>, a region on the far side of the root that contains the corresponding limb. This is a precise combinatorial replacement for judging attachments by eye. See <a href="https://arxiv.org/abs/math/9905169">Milnor’s account of periodic orbits, external rays, and the Mandelbrot set</a>.</p>
 <h2 id="doubling">Period doubling and its limit</h2>
-<p>The real-axis chain starts with a stable fixed point, loses stability at <var>c</var> = −3/4, and continues with a stable two-cycle. At −5/4 a four-cycle appears. Further bifurcations produce periods 8, 16, 32, … . The parameter intervals become smaller and accumulate at the real <strong>Feigenbaum parameter</strong>, approximately −1.401155189.</p>
+<p>The real-axis chain starts with a stable fixed point, loses stability at <var>c</var> = −3/4, and continues with a stable two-cycle. At −5/4 a four-cycle appears; the box <a href="#doubling-mechanism">How the period doubles</a> explains both steps. Further bifurcations produce periods 8, 16, 32, … . The parameter intervals become smaller and accumulate at the real <strong>Feigenbaum parameter</strong>, approximately −1.401155189.</p>
 <figure class="widget" data-widget="cobweb" data-c="-1.1" data-mandelbrot hidden>
 <figcaption>Try it: drag across the drawing, type <var>c</var> or choose a preset. Above each real <var>c</var> the bifurcation diagram plots the values the orbit of 0 keeps visiting, so the branches split at each period doubling. Below it, on the same scale, the Mandelbrot set shows where this happens: the dashed lines at −3/4 and −5/4 pass through the roots of the period-2 and period-4 disks, and the chain of ever smaller disks ends at the Feigenbaum point. The period-3 window near −1.75 lies in a small copy of the set on the real axis.</figcaption>
 </figure>
