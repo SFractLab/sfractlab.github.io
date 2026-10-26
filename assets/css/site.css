@@ -893,14 +893,31 @@ figcaption var { font-size: 1.05em; }
 .zoom-view { cursor: grab; touch-action: none; border-radius: 8px; }
 .zoom-view:active { cursor: grabbing; }
 .chapter .zoom-hint { margin: .4rem 0 0; }
-.orbit-marker { fill: none; stroke: #fff1c8; stroke-width: 2; }
+/* --mark (orbits.js) keeps the marks of an enlarged picture at their design size on screen. */
+.orbit-marker { fill: none; stroke: #fff1c8; stroke-width: calc(2px * var(--mark, 1)); }
 .orbit-zoom { margin-top: .6rem; }
-.orbit-path { fill: none; stroke: rgb(255 241 200 / .55); stroke-width: 1.5; stroke-linejoin: round; }
+.orbit-path { fill: none; stroke: rgb(255 241 200 / .55); stroke-width: calc(1.5px * var(--mark, 1)); stroke-linejoin: round; }
 .orbit-point { fill: #fff1c8; }
-.orbit-start { fill: var(--plate-accent); stroke: #062228; stroke-width: 1.5; }
-.orbit-current { fill: #f2b35e; stroke: #2b1904; stroke-width: 1.5; }
-.orbit-label { font: italic 16px var(--font-text); fill: #fff1c8; }
+.orbit-start { fill: var(--plate-accent); stroke: #062228; stroke-width: calc(1.5px * var(--mark, 1)); }
+.orbit-current { fill: #f2b35e; stroke: #2b1904; stroke-width: calc(1.5px * var(--mark, 1)); }
+.orbit-label { font: italic calc(16px * var(--mark, 1)) var(--font-text); fill: #fff1c8; }
 .orbit-label-current { fill: #f2b35e; }
+/* An enlarged plate (AtlasKit.enlargeable): a modal dialog over the whole browser window. Its side
+   padding narrows the content until both pictures, side by side, fit the window's height together with
+   the controls and the lines below them (about --plate-chrome); the caption may need scrolling. The
+   button is offered where the pictures sit side by side and the window can give them more room. */
+html.plate-dialog-open { overflow: hidden; }
+.plate-dialog {
+  --plate-chrome: 23rem;
+  box-sizing: border-box; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0;
+  padding: 1rem max(1.5rem, calc((100vw - (100vh - var(--plate-chrome)) * 8 / 3 - 1.25rem) / 2));
+  border: 0; overflow: auto; background: var(--plate); color: var(--plate-ink); color-scheme: dark;
+}
+.plate-dialog::backdrop { background: var(--plate); }
+.plate-dialog .plate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.plate-dialog .plate-controls:first-child { margin-top: 0; }
+.plate-enlarge { margin-left: auto; align-self: end; }
+@media (max-width: 56rem) { .plate-enlarge { display: none; } }
 /* The tour's pictures (place.js): a window of the Mandelbrot set that opens the zoom viewer. */
 .place-view { display: block; border-radius: 8px; cursor: zoom-in; }
 .place-marks { cursor: inherit; pointer-events: none; }

@@ -169,8 +169,10 @@
     // numbered badges, in the overlay's own units; all keep their size on screen. The label of the
     // center goes above or below the ring, to its right or left, wherever it keeps furthest from the
     // arrows and badges without leaving the picture. On the period-two disk there are no arrows; the
-    // badges shrink, down to 0.6 of their size, until the closest two keep 2 pixels apart, and the
-    // rings until they clear the badges, though not below 4 pixels.
+    // badges shrink, down to 0.45 of their size, until the closest two are 1.25 badge widths and 2
+    // pixels apart, and the rings until they clear the badges, though not below 4 pixels. A ring that
+    // still lies under badges, as b's does on a phone, has its label beside the nearest badge instead,
+    // to its right, over the background.
     function mark() {
       overlay.replaceChildren();
       const [, name, , q] = state.example;
@@ -180,7 +182,7 @@
       let scale = 1;
       if (onDisk()) {
         const closest = Math.min(...all.flatMap((a, j) => all.slice(j + 1).map(b => Math.hypot(a.x - b.x, a.y - b.y))));
-        scale = Math.max(.6, Math.min(1, (closest - 2 * unit) / (22 * unit)));
+        scale = Math.max(.45, Math.min(1, .8 * (closest - 2 * unit) / (22 * unit)));
       }
       const badge = 11 * unit * scale;
       const size = 18.75 * unit * Math.max(scale, .75);
@@ -226,16 +228,23 @@
           return {sx, sy, room: fits ? room : -Infinity};
         });
         const spot = spots.reduce((best, next) => next.room > best.room + .5 ? next : best);
-        kit.svg('text', {class: 'wheel-label', x: center.x + spot.sx * (r + 3.5 * unit),
-          y: center.y + (spot.sy < 0 ? -r - 1.5 * unit : r + 1.5 * unit + .7 * size),
-          'text-anchor': spot.sx < 0 ? 'end' : 'start', 'font-size': size, 'stroke-width': 5 * unit}, ring)
+        const label = {x: center.x + spot.sx * (r + 3.5 * unit),
+          y: center.y + (spot.sy < 0 ? -r - 1.5 * unit : r + 1.5 * unit + .7 * size), 'text-anchor': spot.sx < 0 ? 'end' : 'start'};
+        if (onDisk() && clear < 4 * unit) {
+          const nearest = points.reduce((best, point) => Math.hypot(point.x - center.x, point.y - center.y)
+            < Math.hypot(best.x - center.x, best.y - center.y) ? point : best);
+          const right = nearest.x + badge + 3 * unit + .8 * size <= WIDTH;
+          Object.assign(label, {x: nearest.x + (right ? 1 : -1) * (badge + 3 * unit), y: nearest.y + .35 * size,
+            'text-anchor': right ? 'start' : 'end'});
+        }
+        kit.svg('text', {class: 'wheel-label', ...label, 'font-size': size, 'stroke-width': 5 * unit}, ring)
           .textContent = wheel.name;
       }
       all.forEach((point, k) => {
         const group = kit.svg('g', {class: 'wheel-point', 'data-step': k}, overlay);
         kit.svg('circle', {class: 'wheel-badge', cx: point.x, cy: point.y, r: badge, 'stroke-width': 1.5 * unit}, group);
         kit.svg('text', {class: 'wheel-number', x: point.x, y: point.y, 'text-anchor': 'middle',
-          'dominant-baseline': 'central', 'font-size': 14 * unit * (1 + scale) / 2}, group).textContent = String(k);
+          'dominant-baseline': 'central', 'font-size': 14 * unit * (1 + 2 * scale) / 3}, group).textContent = String(k);
       });
       overlay.setAttribute('aria-label', onDisk()
         ? `The Julia set of the center of the ${name}, around the points a and b of its old two-cycle, with the `

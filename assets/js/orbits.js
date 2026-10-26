@@ -197,7 +197,14 @@
     // --- drawing -----------------------------------------------------------
 
     // Both pictures at the size the screen calls for (AtlasKit.fitCanvas); the overlays keep the
-    // units of 480 × 360.
+    // units of 480 × 360. Their marks grow with a picture up to its design size, and stay at that
+    // size on screen beyond it, as in the enlarged figure: `mark` is the factor, set on each overlay
+    // as --mark for the widths in site.css.
+    const mark = overlay => {
+      const factor = Math.min(1, WIDTH / (overlay.getBoundingClientRect().width || WIDTH));
+      overlay.style.setProperty('--mark', factor);
+      return factor;
+    };
     let generation = 0;
     let mapGeneration = 0;
     function renderJulia() {
@@ -242,19 +249,21 @@
     function drawMarker() {
       map.overlay.replaceChildren();
       const {x, y} = mapPlane.toScreen(state.c);
-      kit.svg('circle', {cx: x, cy: y, r: 6, class: 'orbit-marker'}, map.overlay);
+      kit.svg('circle', {cx: x, cy: y, r: 6 * mark(map.overlay), class: 'orbit-marker'}, map.overlay);
     }
 
     function drawOrbit() {
       const layer = dynamics.overlay;
       layer.replaceChildren();
+      const unit = mark(layer);
       const points = state.result.points.slice(0, state.shown + 1).map(point => orbitPlane.toScreen(point));
       if (points.length > 1) {
         kit.svg('polyline', {points: points.map(({x, y}) => `${x},${y}`).join(' '), class: 'orbit-path'}, layer);
       }
       points.forEach(({x, y}, index) => {
         const role = index === 0 ? 'orbit-start' : index === points.length - 1 ? 'orbit-current' : 'orbit-point';
-        kit.svg('circle', {cx: x, cy: y, r: index === points.length - 1 || index === 0 ? 5 : 3, class: role}, layer);
+        kit.svg('circle', {cx: x, cy: y, r: (index === points.length - 1 || index === 0 ? 5 : 3) * unit, class: role},
+          layer);
       });
       // The current point and z₀ … z₃ get labels. A label whose point is close
       // to, but not on, an already labelled point is skipped; labels of the
@@ -265,11 +274,11 @@
         if (index === current) return;
         const crowded = labels.some(other => {
           const gap = Math.hypot(other.x - point.x, other.y - point.y);
-          return gap >= 3 && gap < 18;
+          return gap >= 3 * unit && gap < 18 * unit;
         });
         if (!crowded) labels.push({...point, text: `z${subscript(index)}`, className: 'orbit-label'});
       });
-      kit.placeLabels(layer, labels, orbitPlane.toScreen({re: 0, im: 0}), 16);
+      kit.placeLabels(layer, labels, orbitPlane.toScreen({re: 0, im: 0}), 16 * unit, 6 * unit);
     }
 
     function describe() {
@@ -365,9 +374,14 @@
     for (const part of [controls, fieldRow, panels, stepLine, verdictLine]) figure.insertBefore(part, caption);
     showMap(MAP_VIEW);
     setC(state.c);
-    kit.whenResized(() => {
+    // After a change of size, or of the figure's place: the pictures, if they no longer fit, and the marks.
+    function refit() {
       if (!kit.fitsScreen(map.context.canvas, WIDTH, HEIGHT)) renderMap();
       if (!kit.fitsScreen(dynamics.context.canvas, WIDTH, HEIGHT)) renderJulia();
-    });
+      drawMarker();
+      drawOrbit();
+    }
+    kit.whenResized(refit);
+    kit.enlargeable(figure, controls, refit);
   });
 })();

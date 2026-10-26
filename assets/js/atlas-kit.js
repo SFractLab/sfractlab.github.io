@@ -105,8 +105,9 @@
   // point are joined ("z² + c = z₂") in the first one's class; each sits a
   // little beyond its point, away from `center`. A label that would stick out
   // of the drawing goes to the other side of its point, and is moved inside if
-  // it still does not fit.
-  function placeLabels(layer, items, center, distance = 20) {
+  // it still does not fit. `lift` lowers each label by part of its height,
+  // for a font of 16 units.
+  function placeLabels(layer, items, center, distance = 20, lift = 6) {
     const groups = [];
     for (const item of items) {
       const group = groups.find(other => Math.hypot(other.x - item.x, other.y - item.y) < 3);
@@ -121,7 +122,7 @@
       label.textContent = texts.join(' = ');
       const put = (sx, sy) => {
         label.setAttribute('x', x + sx * dx * distance);
-        label.setAttribute('y', y + sy * dy * distance + 6);
+        label.setAttribute('y', y + sy * dy * distance + lift);
         label.setAttribute('text-anchor', sx * dx < -.3 ? 'end' : sx * dx > .3 ? 'start' : 'middle');
       };
       put(1, 1);
@@ -333,6 +334,47 @@
       then();
     }, {rootMargin: '300px'});
     observer.observe(element);
+  }
+
+  // Lets the reader enlarge a figure to fill the browser window. A button, added to `bar`, moves the
+  // figure's parts into a modal <dialog> inside it and back; Esc closes the dialog too. Meanwhile
+  // the figure keeps its height on the page, so nothing behind it moves, and the page does not
+  // scroll. `onChange` is called once the parts are laid out anew, to fit the pictures to their size.
+  function enlargeable(figure, bar, onChange) {
+    if (typeof HTMLDialogElement !== 'function') return null;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'plate-dialog';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'plate-button-quiet plate-enlarge';
+    button.textContent = 'Enlarge';
+    bar.append(button);
+    const settle = () => requestAnimationFrame(() => onChange());
+    button.addEventListener('click', () => {
+      if (dialog.open) {
+        dialog.close();
+        return;
+      }
+      figure.style.minHeight = `${figure.offsetHeight}px`;
+      dialog.setAttribute('aria-label', `${figure.querySelector('figcaption')?.textContent.split('.')[0] || 'Figure'}, enlarged`);
+      dialog.append(...[...figure.children].filter(child => child !== dialog));
+      figure.append(dialog);
+      document.documentElement.classList.add('plate-dialog-open');
+      dialog.showModal();
+      button.textContent = 'Close';
+      button.focus({preventScroll: true});
+      settle();
+    });
+    dialog.addEventListener('close', () => {
+      figure.append(...dialog.children);
+      dialog.remove();
+      figure.style.minHeight = '';
+      document.documentElement.classList.remove('plate-dialog-open');
+      button.textContent = 'Enlarge';
+      button.focus({preventScroll: true});
+      settle();
+    });
+    return button;
   }
 
   // Parameters inside the main cardioid or the period-two disk belong to the
@@ -919,7 +961,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, paint,
+    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,
