@@ -13,9 +13,10 @@
    One bulb sits on the period-two disk instead, and its cycle has period 2q. There
    the old two-cycle a, b, the roots of z² + z + c + 1, repels, and q lobes meet at
    each of its points: two wheels. The map carries the cycle from one to the other,
-   the even points around a and the odd ones around b. Each wheel gets one half of
-   the picture, on a window around it and its points, and its arrows join each
-   point to the one two steps on: every two steps the wheel turns by p of q places.
+   the even points around a and the odd ones around b, and every two steps each
+   wheel turns by p of q places. The window shows both wheels at once. The wheel at
+   b is small, so it has no arrows, and on a narrow screen its badges shrink until
+   they keep apart.
 
    Built by AtlasKit.setUp for every <figure data-widget="julia-wheel">;
    data-example chooses the first bulb (a key of EXAMPLES). */
@@ -30,9 +31,9 @@
   // Width of the window. With a margin of 0.15 around α and the cycle, the 1/4 bulb needs 1.506
   // (its height, 0.829 + 0.3, over 3/4), the others less.
   const SPAN = 1.52;
-  // On the period-two disk, the width of each half's window, in multiples of the distance from the
-  // center of its wheel to the furthest of its points.
-  const PANEL = 2.2;
+  // On the period-two disk, the width of the window around both wheels: the two-cycle and the cycle
+  // span 1.546, which leaves a margin of about 0.1.
+  const DISK_SPAN = 1.75;
   const BUDGET = 1000;
   const RADIUS = 1000;  // escape radius for the distance estimate
 
@@ -150,54 +151,44 @@
 
     const parameter = () => ({re: state.example[4], im: state.example[5]});
     const onDisk = () => state.example[6] === 2;
+    const cycle = () => cycleOf(parameter(), onDisk() ? 2 * state.example[3] : state.example[3]);
 
-    // The wheels: the name and point of each center, the steps k of the cycle around it, the part of
-    // the picture it is drawn in (from x, `pixels` wide, in the overlay's units) and its window.
+    // The wheels: the name and point of each center, and the steps k of the cycle around it.
     function wheels() {
-      const c = parameter();
-      if (!onDisk()) {
-        const cycle = cycleOf(c, state.example[3]);
-        const alpha = alphaOf(c);
-        return [{name: 'α', center: alpha, steps: cycle.map((z, k) => k), x: 0, pixels: WIDTH,
-          window: windowAround([alpha, ...cycle], SPAN, WIDTH)}];
-      }
-      const cycle = cycleOf(c, 2 * state.example[3]);
-      return twoCycleOf(c).map((center, side) => {
-        const steps = cycle.map((z, k) => k).filter(k => k % 2 === side);
-        const reach = Math.max(...steps.map(k => Math.hypot(cycle[k].re - center.re, cycle[k].im - center.im)));
-        return {name: 'ab'[side], center, steps, x: side * WIDTH / 2, pixels: WIDTH / 2,
-          window: windowAround([center, ...steps.map(k => cycle[k])], PANEL * reach, WIDTH / 2)};
-      });
+      const steps = cycle().map((z, k) => k);
+      if (!onDisk()) return [{name: 'α', center: alphaOf(parameter()), steps}];
+      return twoCycleOf(parameter()).map((center, side) => ({name: 'ab'[side], center,
+        steps: steps.filter(k => k % 2 === side)}));
+    }
+
+    function frame() {
+      return windowAround([...wheels().map(wheel => wheel.center), ...cycle()], onDisk() ? DISK_SPAN : SPAN, WIDTH);
     }
 
     // Arrows from each point of a wheel to the next one on it, then the ring at its center, then the
     // numbered badges, in the overlay's own units; all keep their size on screen. The label of the
     // center goes above or below the ring, to its right or left, wherever it keeps furthest from the
-    // arrows and badges without leaving its part of the picture.
+    // arrows and badges without leaving the picture. On the period-two disk there are no arrows; the
+    // badges shrink, down to 0.6 of their size, until the closest two keep 2 pixels apart, and the
+    // rings until they clear the badges, though not below 4 pixels.
     function mark() {
       overlay.replaceChildren();
       const [, name, , q] = state.example;
-      const c = parameter();
+      const plane = new kit.Plane(frame(), WIDTH, HEIGHT);
       const unit = Math.max(1, WIDTH / (overlay.getBoundingClientRect().width || WIDTH));
-      const badge = 11 * unit;
-      const size = 18.75 * unit;
-      const cycle = cycleOf(c, onDisk() ? 2 * q : q);
-      const all = wheels();
-      if (all.length > 1) {
-        kit.svg('line', {class: 'wheel-divider', x1: WIDTH / 2, y1: 0, x2: WIDTH / 2, y2: HEIGHT, 'stroke-width': 3 * unit},
-          overlay);
+      const all = cycle().map(z => plane.toScreen(z));
+      let scale = 1;
+      if (onDisk()) {
+        const closest = Math.min(...all.flatMap((a, j) => all.slice(j + 1).map(b => Math.hypot(a.x - b.x, a.y - b.y))));
+        scale = Math.max(.6, Math.min(1, (closest - 2 * unit) / (22 * unit)));
       }
+      const badge = 11 * unit * scale;
+      const size = 18.75 * unit * Math.max(scale, .75);
       const arrows = kit.svg('g', {class: 'wheel-arrows'}, overlay);
-      const badges = [];
-      for (const wheel of all) {
-        const plane = new kit.Plane(wheel.window, wheel.pixels, HEIGHT);
-        const screen = z => {
-          const point = plane.toScreen(z);
-          return {x: point.x + wheel.x, y: point.y};
-        };
-        const points = wheel.steps.map(k => screen(cycle[k]));
+      for (const wheel of wheels()) {
+        const points = wheel.steps.map(k => all[k]);
         const segments = [];
-        points.forEach((from, i) => {
+        if (!onDisk()) points.forEach((from, i) => {
           const to = points[(i + 1) % points.length];
           const length = Math.hypot(to.x - from.x, to.y - from.y);
           const ux = (to.x - from.x) / length;
@@ -218,37 +209,38 @@
           kit.svg('line', {...line, class: 'wheel-line', 'stroke-width': 2 * unit}, group);
           kit.svg('path', {d: headPath, class: 'wheel-head'}, group);
         });
-        const center = screen(wheel.center);
+        const center = plane.toScreen(wheel.center);
+        const clear = Math.min(...points.map(point => Math.hypot(point.x - center.x, point.y - center.y))) - badge
+          - 1.5 * unit;
+        const r = onDisk() ? Math.max(4 * unit, Math.min(10.5 * unit * scale, clear)) : 10.5 * unit;
         const ring = kit.svg('g', {class: 'wheel-alpha', 'data-name': wheel.name}, overlay);
-        kit.svg('circle', {class: 'wheel-ring-halo', cx: center.x, cy: center.y, r: 10.5 * unit,
-          'stroke-width': 7.5 * unit}, ring);
-        kit.svg('circle', {class: 'wheel-ring', cx: center.x, cy: center.y, r: 10.5 * unit,
-          'stroke-width': 3.3 * unit}, ring);
+        kit.svg('circle', {class: 'wheel-ring-halo', cx: center.x, cy: center.y, r, 'stroke-width': .72 * r}, ring);
+        kit.svg('circle', {class: 'wheel-ring', cx: center.x, cy: center.y, r, 'stroke-width': .31 * r}, ring);
         const spots = [[1, -1], [-1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => {
           // The label's middle, about half a character beside and half its height above the baseline.
-          const x = center.x + sx * (14 * unit + .3 * size);
-          const y = center.y + (sy < 0 ? -12 * unit : 12 * unit + .7 * size) - .35 * size;
-          const fits = x - .5 * size >= wheel.x && x + .5 * size <= wheel.x + wheel.pixels;
+          const x = center.x + sx * (r + 3.5 * unit + .3 * size);
+          const y = center.y + (sy < 0 ? -r - 1.5 * unit : r + 1.5 * unit + .7 * size) - .35 * size;
+          const fits = x - .5 * size >= 0 && x + .5 * size <= WIDTH;
           const room = Math.min(...segments.map(([a, b]) => distance({x, y}, a, b)),
-            ...points.map(point => Math.hypot(x - point.x, y - point.y) - badge));
+            ...all.map(point => Math.hypot(x - point.x, y - point.y) - badge));
           return {sx, sy, room: fits ? room : -Infinity};
         });
         const spot = spots.reduce((best, next) => next.room > best.room + .5 ? next : best);
-        kit.svg('text', {class: 'wheel-label', x: center.x + spot.sx * 14 * unit,
-          y: center.y + (spot.sy < 0 ? -12 * unit : 12 * unit + .7 * size), 'text-anchor': spot.sx < 0 ? 'end' : 'start',
-          'font-size': size, 'stroke-width': 5 * unit}, ring).textContent = wheel.name;
-        wheel.steps.forEach((k, i) => badges.push([k, points[i]]));
+        kit.svg('text', {class: 'wheel-label', x: center.x + spot.sx * (r + 3.5 * unit),
+          y: center.y + (spot.sy < 0 ? -r - 1.5 * unit : r + 1.5 * unit + .7 * size),
+          'text-anchor': spot.sx < 0 ? 'end' : 'start', 'font-size': size, 'stroke-width': 5 * unit}, ring)
+          .textContent = wheel.name;
       }
-      for (const [k, point] of badges.sort(([j], [k]) => j - k)) {
+      all.forEach((point, k) => {
         const group = kit.svg('g', {class: 'wheel-point', 'data-step': k}, overlay);
         kit.svg('circle', {class: 'wheel-badge', cx: point.x, cy: point.y, r: badge, 'stroke-width': 1.5 * unit}, group);
         kit.svg('text', {class: 'wheel-number', x: point.x, y: point.y, 'text-anchor': 'middle',
-          'dominant-baseline': 'central', 'font-size': 14 * unit}, group).textContent = String(k);
-      }
+          'dominant-baseline': 'central', 'font-size': 14 * unit * (1 + scale) / 2}, group).textContent = String(k);
+      });
       overlay.setAttribute('aria-label', onDisk()
-        ? `The Julia set of the center of the ${name}, in two halves: around the point a of its old two-cycle on `
-          + `the left, and around b, enlarged, on the right, with the ${2 * q} points of the orbit of 0 numbered in `
-          + 'the order the map visits them; the text below says how they turn around a and b.'
+        ? `The Julia set of the center of the ${name}, around the points a and b of its old two-cycle, with the `
+          + `${2 * q} points of the orbit of 0 numbered in the order the map visits them; the text below says how `
+          + 'they turn around a and b.'
         : `The Julia set of the center of the ${name}, around its fixed point α, with the ${q} points of the orbit `
           + 'of 0 numbered in the order the map visits them; the text below says how they turn around α.');
     }
@@ -257,14 +249,14 @@
       const [, , p, q] = state.example;
       const c = parameter();
       if (onDisk()) {
-        const [a, b] = wheels();
+        const [a, b] = wheels().map(wheel => wheel.center);
         status.textContent = `c ≈ ${format(c, 4)}, the center of the ${p}/${q} bulb on the period-two disk. The orbit `
-          + `of 0 is a cycle of period ${2 * q}. The old two-cycle, a ≈ ${format(a.center, 4)} and `
-          + `b ≈ ${format(b.center, 4)}, now repels, and ${COUNTS[q]} lobes meet at each of its points. Each step `
-          + 'carries the orbit from one wheel to the other, so the even points lie around a and the odd ones around '
-          + `b. Every two steps it moves ${PLACES[p]} further counterclockwise around its wheel, a turn of ${p}/${q}, `
-          + `so in ${COUNTS[2 * q]} steps it goes around each wheel ${TIMES[p]}. The wheel at b is smaller: the `
-          + `right half shows it ${formatNumber(a.window.width / b.window.width, 2)} times enlarged.`;
+          + `of 0 is a cycle of period ${2 * q}. The old two-cycle, a ≈ ${format(a, 4)} and b ≈ ${format(b, 4)}, `
+          + `now repels, and ${COUNTS[q]} lobes meet at each of its points. Each step carries the orbit from one `
+          + 'wheel to the other, so the even points lie around a and the odd ones around b. Every two steps it '
+          + `moves ${PLACES[p]} further counterclockwise around its wheel, a turn of ${p}/${q}, so in `
+          + `${COUNTS[2 * q]} steps it goes around each wheel ${TIMES[p]}. The wheel at b is smaller, because near a `
+          + `the map shrinks distances by the factor |2a| ≈ ${formatNumber(2 * Math.hypot(a.re, a.im), 2)}.`;
         return;
       }
       status.textContent = `c ≈ ${format(c, 4)}, the center of the ${p}/${q} bulb. The orbit of 0 is a cycle of `
@@ -283,42 +275,37 @@
       mark();
       status.textContent = `The ${state.example[2]}/${state.example[3]} bulb${onDisk() ? ' on the period-two disk' : ''}. `
         + 'Computing…';
-      // One pass for each wheel, painted into its part of the picture.
-      for (const wheel of wheels()) {
-        const x = Math.round(canvas.width * wheel.x / WIDTH);
-        const width = Math.round(canvas.width * (wheel.x + wheel.pixels) / WIDTH) - x;
-        const pass = await kit.orbitPass(wheel.window, parameter(), BUDGET, RADIUS, width, canvas.height,
-          () => request === generation, {coloring: 'distance', onStrip: partial => paintSoon(partial, x, request)});
-        if (!pass) return;
-        paint(pass, x);
-      }
+      const pass = await kit.orbitPass(frame(), parameter(), BUDGET, RADIUS, canvas.width, canvas.height,
+        () => request === generation, {coloring: 'distance', onStrip: partial => paintSoon(partial)});
+      if (!pass) return;
+      paint(pass);
       describe();
       figure.dataset.drawn = '';
     }
 
     // Paints at the next animation frame, once however many strips arrive before it.
     let pending = null;
-    function paintSoon(partial, x, request) {
+    function paintSoon(partial) {
       if (pending) {
-        pending = {partial, x, request};
+        pending = partial;
         return;
       }
-      pending = {partial, x, request};
+      pending = partial;
       requestAnimationFrame(() => {
         const latest = pending;
         pending = null;
-        if (latest.partial.rows < latest.partial.height && latest.request === generation) paint(latest.partial, latest.x);
+        if (latest.rows < latest.height && latest.width === canvas.width) paint(latest);
       });
     }
 
-    function paint(data, x) {
+    function paint(data) {
       if (buffer.width !== data.width || buffer.height !== data.height) {
         buffer.width = data.width;
         buffer.height = data.height;
       }
       data.thickness = 1;
       kit.paintOrbits(bufferContext, data, 'distance');
-      if (data.rows) context.drawImage(buffer, 0, 0, data.width, data.rows, x, 0, data.width, data.rows);
+      if (data.rows) context.drawImage(buffer, 0, 0, data.width, data.rows, 0, 0, data.width, data.rows);
     }
 
     const caption = figure.querySelector('figcaption');
