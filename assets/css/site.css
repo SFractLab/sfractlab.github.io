@@ -788,6 +788,13 @@ figcaption var { font-size: 1.05em; }
 }
 .cobweb-wide :is(line, circle) { vector-effect: non-scaling-stroke; }
 
+/* The orbit near a parabolic fixed point (parabolic.js): a square cobweb, magnified around the point. */
+.parabolic-plane { max-width: 28rem; margin: 0 auto; }
+.parabolic-fixed { fill: none; stroke: var(--ink); stroke-width: 2; }
+.parabolic-trail { fill: none; stroke: var(--gold); stroke-width: 1.2; stroke-linejoin: round; opacity: .45; }
+.parabolic-label { font: 600 15px var(--font-ui); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+.parabolic-now { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+
 /* The angle-doubling figure (angle-doubling.js): the cycle in teal, the
    angles leading into it in gold. */
 .doubling-plane { max-width: 26rem; margin-inline: auto; }
