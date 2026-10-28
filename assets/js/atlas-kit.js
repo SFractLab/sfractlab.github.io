@@ -196,6 +196,168 @@
     return `0.${digits.slice(0, preperiod).join('')}(${digits.slice(preperiod).join('')})₂`;
   }
 
+  // --- Parameter rays (the ray explorer, the menu of Misiurewicz points) -------
+
+  const RAY_START = 256;  // rays are followed inward from |Φ(c)| = RAY_START
+  const RAY_STEPS = 4;    // points per halving of the potential, unless asked for more
+
+  // Whether n steps of z ↦ z² + c from the critical value c stay below 10³⁰.
+  function settles(cr, ci, n) {
+    let zr = cr;
+    let zi = ci;
+    for (let k = 0; k < n; k++) {
+      const next = zr * zr - zi * zi + cr;
+      zi = 2 * zr * zi + ci;
+      zr = next;
+      if (!(zr * zr + zi * zi < 1e60)) return false;
+    }
+    return true;
+  }
+
+  // One Newton step towards f_c^n(c) = target, with the derivative of f_c^n(c)
+  // with respect to c; a step so long that the orbit runs away is halved.
+  function newtonStep(c, n, target) {
+    let zr = c.re;
+    let zi = c.im;
+    let dr = 1;
+    let di = 0;
+    for (let k = 0; k < n; k++) {
+      const ndr = 2 * (zr * dr - zi * di) + 1;
+      di = 2 * (zr * di + zi * dr);
+      dr = ndr;
+      const next = zr * zr - zi * zi + c.re;
+      zi = 2 * zr * zi + c.im;
+      zr = next;
+    }
+    const er = zr - target.re;
+    const ei = zi - target.im;
+    const size = dr * dr + di * di;
+    let sr = (er * dr + ei * di) / size;
+    let si = (ei * dr - er * di) / size;
+    for (let halvings = 0; halvings < 40; halvings++) {
+      if (Number.isFinite(sr) && Number.isFinite(si) && settles(c.re - sr, c.im - si, n)) {
+        return {re: c.re - sr, im: c.im - si};
+      }
+      sr /= 2;
+      si /= 2;
+    }
+    return c;
+  }
+
+  // The parameter ray at angle p/q (reduced) as a generator of its points, `steps` per halving
+  // of the potential, for `depth` halvings: the point of the ray at radius r satisfies
+  // f_c^n(c) ≈ (r e^(2πiθ))^(2^n) once that is large, so the radius is lowered a little at a
+  // time and c corrected by three Newton steps.
+  function* parameterRay({p, q}, depth, steps = RAY_STEPS) {
+    let c = {re: RAY_START * Math.cos(2 * Math.PI * p / q), im: RAY_START * Math.sin(2 * Math.PI * p / q)};
+    let n = 0;
+    let numerator = p;  // 2ⁿθ mod 1 = numerator / q, kept exact
+    for (let step = 1; step <= depth * steps; step++) {
+      while (n < Math.ceil(step / steps)) {
+        numerator = numerator * 2 % q;
+        n++;
+      }
+      const size = RAY_START ** (2 ** (n - step / steps));
+      const angle = 2 * Math.PI * numerator / q;
+      const target = {re: size * Math.cos(angle), im: size * Math.sin(angle)};
+      for (let k = 0; k < 3; k++) c = newtonStep(c, n, target);
+      yield c;
+    }
+  }
+
+  // Where the segment from `outside` to `inside` enters the drawing, width × height units.
+  function edgeCrossing(outside, inside, width, height) {
+    const entering = (from, to, low, high) => (from < low ? (low - from) / (to - from)
+      : from > high ? (high - from) / (to - from) : 0);
+    const t = Math.max(entering(outside.x, inside.x, 0, width), entering(outside.y, inside.y, 0, height));
+    return {x: outside.x + t * (inside.x - outside.x), y: outside.y + t * (inside.y - outside.y)};
+  }
+
+  // Draws rays, each {points, text, end} with its points in the plane, into `layer` of a drawing
+  // width × height units shown through `plane`: each as a path from where it enters the drawing
+  // (with a margin) to its last point, with a dot there if `end`, and its text where it enters.
+  // With `halo`, each path has a dark edge, which keeps it visible over light parts of the picture;
+  // with `shrink`, the labels are smaller in a picture shown less than 480 pixels wide, down to three
+  // quarters of their size.
+  function drawRays(layer, rays, plane, width, height, {halo = false, shrink = false} = {}) {
+    // Labels keep their size on screen however wide the picture is shown.
+    const drawing = layer.ownerSVGElement || layer;
+    const shownWidth = drawing.getBoundingClientRect().width || width;
+    const unit = Math.max(1, width / shownWidth) * (shrink ? Math.min(1, Math.max(.75, shownWidth / 480)) : 1);
+    const labels = [];
+    const inside = ({x, y}, margin) => x >= -margin && x <= width + margin && y >= -margin && y <= height + margin;
+    for (const ray of rays) {
+      const screen = ray.points.map(point => plane.toScreen(point));
+      const first = screen.findIndex(point => inside(point, 0));
+      if (first < 0) continue;
+      const shown = screen.slice(Math.max(0, first - 1)).filter(point => inside(point, width));
+      const d = `M ${shown.map(({x, y}) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L ')}`;
+      if (halo) svg('path', {class: 'rays-halo', d}, layer);
+      svg('path', {class: 'rays-path', d}, layer);
+      const end = shown[shown.length - 1];
+      if (ray.end) svg('circle', {class: 'rays-end', cx: end.x, cy: end.y, r: 4 * unit}, layer);
+      const entry = first > 0 ? edgeCrossing(screen[first - 1], screen[first], width, height) : screen[first];
+      labels.push({x: Math.min(width - 24 * unit, Math.max(24 * unit, entry.x)),
+        y: Math.min(height - 10 * unit, Math.max(22 * unit, entry.y)), text: ray.text, path: shown});
+    }
+    // A label that would overlap one placed before it moves inward, past that
+    // label, and so stays where its ray enters: down along the left and right
+    // edges and the top, up along the bottom. Two labels whose rays enter the
+    // top or the bottom close together go on either side of the two rays
+    // instead, moved inward until they fit.
+    const halfWidth = label => (4.5 * label.text.length + 4) * unit;
+    const placed = [];
+    const free = (label, x, y, others) => !others.some(other => Math.abs(other.y - y) < 18 * unit
+      && Math.abs(other.x - x) < halfWidth(other) + halfWidth(label));
+    // Where a ray's path first comes to the height y, or null.
+    const xAt = (path, y) => {
+      for (let i = 1; i < path.length; i++) {
+        const [a, b] = [path[i - 1], path[i]];
+        if (a.y !== b.y && (a.y - y) * (b.y - y) <= 0) return a.x + (y - a.y) / (b.y - a.y) * (b.x - a.x);
+      }
+      return null;
+    };
+    // Rows from the edge inward, the labels' middles 5 units above their baselines.
+    function besideEachOther(first, second, step) {
+      const others = placed.filter(other => other !== first);
+      for (let row = 0, y = first.y; row < 20; row++, y += step) {
+        const one = xAt(first.path, y - 5 * unit), two = xAt(second.path, y - 5 * unit);
+        if (one === null || two === null) return false;
+        const [left, right] = one < two ? [first, second] : [second, first];
+        const leftX = Math.min(one, two) - 2 * unit - halfWidth(left);
+        const rightX = Math.max(one, two) + 2 * unit + halfWidth(right);
+        if (leftX - halfWidth(left) >= 0 && rightX + halfWidth(right) <= width
+            && free(left, leftX, y, others) && free(right, rightX, y, others)) {
+          Object.assign(left, {x: leftX, y});
+          Object.assign(right, {x: rightX, y});
+          return true;
+        }
+      }
+      return false;
+    }
+    for (const label of labels) {
+      label.onSide = label.x <= 24 * unit || label.x >= width - 24 * unit;
+      if (label.onSide) label.x = label.x <= 24 * unit ? halfWidth(label) + 4 * unit : width - halfWidth(label) - 4 * unit;
+      const step = !label.onSide && label.y > height / 2 ? -18 * unit : 18 * unit;
+      const partner = placed.find(other => !free(label, label.x, label.y, [other]));
+      if (partner && !label.onSide && !partner.onSide && !partner.paired && partner.y === label.y
+          && besideEachOther(partner, label, step)) {
+        partner.paired = label.paired = true;
+      } else {
+        for (let tries = 0; tries < 20; tries++) {
+          const clash = placed.find(other => !free(label, label.x, label.y, [other]));
+          if (!clash) break;
+          label.y = clash.y + step;
+        }
+      }
+      placed.push(label);
+    }
+    for (const label of labels) {
+      svg('text', {class: 'rays-label', x: label.x, y: label.y, 'text-anchor': 'middle',
+        'font-size': 15 * unit, 'stroke-width': 4 * unit}, layer).textContent = label.text;
+    }
+  }
+
   // --- Escape-time pictures (the explorer and the orbit figures) -------------
 
   // The chapters' escape test: once |z| > max(2, |c|), the orbit of
@@ -965,7 +1127,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, parameterRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,

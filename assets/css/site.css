@@ -965,6 +965,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 /* Parameter rays (rays.js), drawn over the Mandelbrot set. */
 .rays-overlay { cursor: default; }
 .widget-plate .rays-angles { width: 15rem; }
+.rays-halo { fill: none; stroke: #091320; stroke-opacity: .65; stroke-width: 5.5; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .rays-path { fill: none; stroke: #f2b35e; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .rays-end { fill: #fff1c8; stroke: #2b1904; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .rays-label { font-family: var(--font-ui); font-weight: 650; fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }

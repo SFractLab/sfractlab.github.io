@@ -1,7 +1,7 @@
 /* Interactive figure: parameter rays of the Mandelbrot set.
 
    For each angle θ = p/q, in turns, the parameter ray is followed inward from
-   far out, as the rays chapter describes: the point of the ray at radius r
+   far out (AtlasKit.parameterRay), as the rays chapter describes: the point of the ray at radius r
    satisfies f_c^n(c) ≈ (r e^(2πiθ))^(2^n) once that is large, so the radius
    is lowered a little at a time and c corrected by Newton's method. Periodic
    angles land at roots of hyperbolic components, slowly, so their rays are
@@ -21,8 +21,6 @@
   const HEIGHT = 540;
   const WHOLE = {left: -2.25, top: 1.35, width: 3.6, height: 2.7};
   const CLOSE = .3;              // width of the window around a landing point
-  const START = 256;             // rays are followed inward from |Φ(c)| = START
-  const STEPS = 4;               // points per halving of the potential
   const DEPTH_PERIODIC = 300;    // halvings followed: periodic rays land slowly,
   const DEPTH_PREPERIODIC = 60;  // preperiodic ones quickly
   const HALVINGS_PER_FRAME = 15;
@@ -75,68 +73,6 @@
   }
 
   const name = ({p, q}) => (p === 0 ? '0' : `${p}/${q}`);
-
-  // Whether n steps of z ↦ z² + c from the critical value c stay below 10³⁰.
-  function settles(cr, ci, n) {
-    let zr = cr;
-    let zi = ci;
-    for (let k = 0; k < n; k++) {
-      const next = zr * zr - zi * zi + cr;
-      zi = 2 * zr * zi + ci;
-      zr = next;
-      if (!(zr * zr + zi * zi < 1e60)) return false;
-    }
-    return true;
-  }
-
-  // One Newton step towards f_c^n(c) = target, with the derivative of f_c^n(c)
-  // with respect to c; a step so long that the orbit runs away is halved.
-  function newtonStep(c, n, target) {
-    let zr = c.re;
-    let zi = c.im;
-    let dr = 1;
-    let di = 0;
-    for (let k = 0; k < n; k++) {
-      const ndr = 2 * (zr * dr - zi * di) + 1;
-      di = 2 * (zr * di + zi * dr);
-      dr = ndr;
-      const next = zr * zr - zi * zi + c.re;
-      zi = 2 * zr * zi + c.im;
-      zr = next;
-    }
-    const er = zr - target.re;
-    const ei = zi - target.im;
-    const size = dr * dr + di * di;
-    let sr = (er * dr + ei * di) / size;
-    let si = (ei * dr - er * di) / size;
-    for (let halvings = 0; halvings < 40; halvings++) {
-      if (Number.isFinite(sr) && Number.isFinite(si) && settles(c.re - sr, c.im - si, n)) {
-        return {re: c.re - sr, im: c.im - si};
-      }
-      sr /= 2;
-      si /= 2;
-    }
-    return c;
-  }
-
-  // The parameter ray at angle p/q as a generator of its points, STEPS per
-  // halving of the potential, for `depth` halvings.
-  function* rayPoints({p, q}, depth) {
-    let c = {re: START * Math.cos(2 * Math.PI * p / q), im: START * Math.sin(2 * Math.PI * p / q)};
-    let n = 0;
-    let numerator = p;  // 2ⁿθ mod 1 = numerator / q, kept exact
-    for (let step = 1; step <= depth * STEPS; step++) {
-      while (n < Math.ceil(step / STEPS)) {
-        numerator = numerator * 2 % q;
-        n++;
-      }
-      const size = START ** (2 ** (n - step / STEPS));
-      const angle = 2 * Math.PI * numerator / q;
-      const target = {re: size * Math.cos(angle), im: size * Math.sin(angle)};
-      for (let k = 0; k < 3; k++) c = newtonStep(c, n, target);
-      yield c;
-    }
-  }
 
   // What the doubling orbit of the angle says about where its ray lands.
   function landing(angle) {
@@ -213,92 +149,12 @@
       await kit.renderEscapeTime(context, state.view, null, budget, () => request === generation, {repeats: true});
     }
 
-    // Where the segment from `outside` to `inside` enters the window.
-    function edgeCrossing(outside, inside) {
-      const entering = (from, to, low, high) => (from < low ? (low - from) / (to - from)
-        : from > high ? (high - from) / (to - from) : 0);
-      const t = Math.max(entering(outside.x, inside.x, 0, WIDTH), entering(outside.y, inside.y, 0, HEIGHT));
-      return {x: outside.x + t * (inside.x - outside.x), y: outside.y + t * (inside.y - outside.y)};
-    }
-
     // Draws the rays traced so far: each as a path from where it enters the
     // window (with a margin) to its last point, with its angle where it enters.
     function drawRays() {
       overlay.replaceChildren();
-      const map = plane();
-      // Labels keep their size on screen however wide the picture is shown.
-      const unit = Math.max(1, WIDTH / (overlay.getBoundingClientRect().width || WIDTH));
-      const labels = [];
-      const inside = ({x, y}, margin) => x >= -margin && x <= WIDTH + margin && y >= -margin && y <= HEIGHT + margin;
-      for (const ray of state.rays) {
-        const screen = ray.points.map(point => map.toScreen(point));
-        const first = screen.findIndex(point => inside(point, 0));
-        if (first < 0) continue;
-        const shown = screen.slice(Math.max(0, first - 1)).filter(point => inside(point, WIDTH));
-        kit.svg('path', {class: 'rays-path', d: `M ${shown.map(({x, y}) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L ')}`},
-          overlay);
-        const end = shown[shown.length - 1];
-        if (ray.done) kit.svg('circle', {class: 'rays-end', cx: end.x, cy: end.y, r: 4 * unit}, overlay);
-        const entry = first > 0 ? edgeCrossing(screen[first - 1], screen[first]) : screen[first];
-        labels.push({x: Math.min(WIDTH - 24 * unit, Math.max(24 * unit, entry.x)),
-          y: Math.min(HEIGHT - 10 * unit, Math.max(22 * unit, entry.y)), text: name(ray.angle), path: shown});
-      }
-      // A label that would overlap one placed before it moves inward, past that
-      // label, and so stays where its ray enters: down along the left and right
-      // edges and the top, up along the bottom. Two labels whose rays enter the
-      // top or the bottom close together go on either side of the two rays
-      // instead, moved inward until they fit.
-      const halfWidth = label => (4.5 * label.text.length + 4) * unit;
-      const placed = [];
-      const free = (label, x, y, others) => !others.some(other => Math.abs(other.y - y) < 18 * unit
-        && Math.abs(other.x - x) < halfWidth(other) + halfWidth(label));
-      // Where a ray's path first comes to the height y, or null.
-      const xAt = (path, y) => {
-        for (let i = 1; i < path.length; i++) {
-          const [a, b] = [path[i - 1], path[i]];
-          if (a.y !== b.y && (a.y - y) * (b.y - y) <= 0) return a.x + (y - a.y) / (b.y - a.y) * (b.x - a.x);
-        }
-        return null;
-      };
-      // Rows from the edge inward, the labels' middles 5 units above their baselines.
-      function besideEachOther(first, second, step) {
-        const others = placed.filter(other => other !== first);
-        for (let row = 0, y = first.y; row < 20; row++, y += step) {
-          const one = xAt(first.path, y - 5 * unit), two = xAt(second.path, y - 5 * unit);
-          if (one === null || two === null) return false;
-          const [left, right] = one < two ? [first, second] : [second, first];
-          const leftX = Math.min(one, two) - 2 * unit - halfWidth(left);
-          const rightX = Math.max(one, two) + 2 * unit + halfWidth(right);
-          if (leftX - halfWidth(left) >= 0 && rightX + halfWidth(right) <= WIDTH
-              && free(left, leftX, y, others) && free(right, rightX, y, others)) {
-            Object.assign(left, {x: leftX, y});
-            Object.assign(right, {x: rightX, y});
-            return true;
-          }
-        }
-        return false;
-      }
-      for (const label of labels) {
-        label.onSide = label.x <= 24 * unit || label.x >= WIDTH - 24 * unit;
-        if (label.onSide) label.x = label.x <= 24 * unit ? halfWidth(label) + 4 * unit : WIDTH - halfWidth(label) - 4 * unit;
-        const step = !label.onSide && label.y > HEIGHT / 2 ? -18 * unit : 18 * unit;
-        const partner = placed.find(other => !free(label, label.x, label.y, [other]));
-        if (partner && !label.onSide && !partner.onSide && !partner.paired && partner.y === label.y
-            && besideEachOther(partner, label, step)) {
-          partner.paired = label.paired = true;
-        } else {
-          for (let tries = 0; tries < 20; tries++) {
-            const clash = placed.find(other => !free(label, label.x, label.y, [other]));
-            if (!clash) break;
-            label.y = clash.y + step;
-          }
-        }
-        placed.push(label);
-      }
-      for (const label of labels) {
-        kit.svg('text', {class: 'rays-label', x: label.x, y: label.y, 'text-anchor': 'middle',
-          'font-size': 15 * unit, 'stroke-width': 4 * unit}, overlay).textContent = label.text;
-      }
+      kit.drawRays(overlay, state.rays.map(ray => ({points: ray.points, text: name(ray.angle), end: ray.done})),
+        plane(), WIDTH, HEIGHT);
     }
 
     function describe() {
@@ -324,13 +180,13 @@
       state.rays = state.angles.map(angle => {
         const info = landing(angle);
         return {angle, landing: info, points: [], done: false,
-          generator: rayPoints(angle, info.periodic ? DEPTH_PERIODIC : DEPTH_PREPERIODIC)};
+          generator: kit.parameterRay(angle, info.periodic ? DEPTH_PERIODIC : DEPTH_PREPERIODIC)};
       });
       describe();
       for (const ray of state.rays) {
         for (;;) {
           let finished = false;
-          for (let k = 0; k < HALVINGS_PER_FRAME * STEPS; k++) {
+          for (let k = 0; k < HALVINGS_PER_FRAME * kit.RAY_STEPS; k++) {
             const next = ray.generator.next();
             if (next.done) {
               finished = true;

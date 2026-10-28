@@ -31,7 +31,10 @@
    usually a part of the caption, with data-choice (a key), data-name (its
    entry in the menu), data-window, data-marks and data-frame. A menu, labelled by the
    figure's data-menu (default "Window"), chooses one: it is drawn, its
-   element is shown and the others are hidden. */
+   element is shown and the others are hidden. A window may also have
+   data-rays, the angles of parameter rays as fractions separated by commas;
+   a button then shows and hides them. Each ray is traced (AtlasKit.parameterRay)
+   until it comes within half a pixel of a marked point, where it lands. */
 (() => {
   'use strict';
   const kit = window.AtlasKit;
@@ -45,6 +48,8 @@
   const BADGE_RADIUS = 10;
   const RING_RADIUS = 28;
   const JULIA_WINDOW = [0, 0, 4.2];  // 4.2 × 3.15, as the Julia gallery
+  const RAY_STEPS = 16;   // points per halving of the potential: near a spiral a ray turns by up to half a turn in each
+  const RAY_DEPTH = 400;  // halvings at most; the double spiral's rays need 236 to come within half a pixel
   const SUPERSCRIPTS = {'−': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'};
 
   function element(name, className, text) {
@@ -67,6 +72,14 @@
     return `${formatNumber(Number(mantissa), 1)} × 10${power}`;
   }
 
+  // "9/56, 11/56" as [{p: 9, q: 56}, {p: 11, q: 56}], reduced; angles that are not fractions from 0 to 1 are left out.
+  function parseAngles(text) {
+    const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+    return (text || '').split(',').map(part => part.trim().match(/^(\d+)\/(\d+)$/)).filter(Boolean)
+      .map(([, p, q]) => [Number(p), Number(q)]).filter(([p, q]) => q > 0 && p < q)
+      .map(([p, q]) => ({p: p / gcd(p, q), q: q / gcd(p, q)}));
+  }
+
   function parseMarks(text) {
     return (text || '').split(';').map(part => part.split(',').map(item => item.trim()))
       .filter(([re, im, label, side]) => Number.isFinite(Number(re)) && Number.isFinite(Number(im))
@@ -78,8 +91,9 @@
   // One picture of the parameter plane, or of the dynamical plane of `julia`, with `frame`, another
   // window as re, im and width, outlined if given:
   // the canvas (inside a link to the zoom viewer if `linked`), its marks, its
-  // status line, and draw(), which computes it.
-  function picture([re, im, width], julia, marks, linked, frame = null) {
+  // status line, draw(), which computes it, and, with `angles`, showRays(shown), which
+  // traces the parameter rays at those angles once and shows or hides them.
+  function picture([re, im, width], julia, marks, linked, frame = null, angles = []) {
     const height = width * HEIGHT / WIDTH;
     const view = {left: re - width / 2, top: im + height / 2, width, height};
     const budget = kit.iterationBudget(width);
@@ -106,9 +120,11 @@
     }
     holder.append(canvas);
 
-    if (marks.length || frame) {
+    const plane = new kit.Plane(view, WIDTH, HEIGHT);
+    let rayLayer = null;
+    if (marks.length || frame || angles.length) {
       const overlay = kit.svg('svg', {viewBox: `0 0 ${WIDTH} ${HEIGHT}`, class: 'plate-overlay place-marks', 'aria-hidden': 'true'});
-      const plane = new kit.Plane(view, WIDTH, HEIGHT);
+      if (angles.length) rayLayer = kit.svg('g', {class: 'place-rays'}, overlay);  // under the marks
       if (frame) {
         const [frameRe, frameIm, frameWidth] = frame;
         const frameHeight = frameWidth * HEIGHT / WIDTH;
@@ -140,7 +156,32 @@
     }
 
     const status = element('p', 'plate-caption place-status');
-    status.textContent = `Center ${centre} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
+    const statusText = `Center ${centre} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
+    status.textContent = statusText;
+
+    // The rays, traced when first shown, each until it comes within half a pixel of a marked point.
+    let rays = null;
+    const fraction = ({p, q}) => `${p}/${q}`;
+    function traceRays() {
+      const close = width / WIDTH / 2;
+      return angles.map(angle => {
+        const points = [];
+        for (const point of kit.parameterRay(angle, RAY_DEPTH, RAY_STEPS)) {
+          points.push(point);
+          if (marks.some(({c}) => Math.hypot(point.re - c.re, point.im - c.im) < close)) break;
+        }
+        return {points, text: fraction(angle)};
+      });
+    }
+    function showRays(shown) {
+      if (!rayLayer) return;
+      if (shown && !rays) rays = traceRays();
+      rayLayer.replaceChildren();
+      if (shown) kit.drawRays(rayLayer, rays, plane, WIDTH, HEIGHT, {halo: true, shrink: true});
+      const list = angles.map(fraction);
+      const named = list.length > 1 ? `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}` : list[0];
+      status.textContent = shown ? `${statusText} Parameter ray${list.length > 1 ? 's' : ''} at ${named}.` : statusText;
+    }
 
     // At the size the screen calls for (AtlasKit.fitCanvas), a preview at a quarter of the
     // resolution, scaled up, then the full picture; resolves to the image, or to null if
@@ -156,7 +197,7 @@
       context.drawImage(preview, 0, 0, canvas.width, canvas.height);
       return kit.renderEscapeTime(context, view, julia, budget, isCurrent, {repeats: true});
     }
-    return {parts: [holder, status], draw, fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
+    return {parts: [holder, status], draw, showRays, rays: angles.length > 0, fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
   }
 
   // A figure with several windows: the menu, and the chosen window's picture and caption part.
@@ -172,6 +213,24 @@
     }
     menu.append(select);
     controls.append(menu);
+    // Shows and hides the parameter rays of the windows that have them; the choice is kept for the next window.
+    let raysShown = false;
+    const raysButton = element('button', null, 'Show the parameter rays');
+    raysButton.type = 'button';
+    if (choices.some(choice => choice.dataset.rays)) {
+      const buttons = element('div', 'plate-buttons');
+      buttons.append(raysButton);
+      controls.append(buttons);
+    }
+    function showRays() {
+      raysButton.textContent = raysShown ? 'Hide the parameter rays' : 'Show the parameter rays';
+      raysButton.disabled = !shown || !shown.rays;
+      if (shown) shown.showRays(raysShown);
+    }
+    raysButton.addEventListener('click', () => {
+      raysShown = !raysShown;
+      showRays();
+    });
     figure.insertBefore(controls, caption);
 
     let shown = null;
@@ -191,10 +250,12 @@
       const area = parseNumbers(choice.dataset.window, 3);
       const frame = parseNumbers(choice.dataset.frame, 3);
       const next = area && area[2] > 0
-        ? picture(area, null, parseMarks(choice.dataset.marks), linked, frame && frame[2] > 0 ? frame : null) : null;
+        ? picture(area, null, parseMarks(choice.dataset.marks), linked, frame && frame[2] > 0 ? frame : null,
+          parseAngles(choice.dataset.rays)) : null;
       for (const part of shown ? shown.parts : []) part.remove();
       shown = next;
       for (const part of shown ? shown.parts : []) figure.insertBefore(part, caption);
+      showRays();
       delete figure.dataset.drawn;
       generation++;  // a drawing of the window before stops
       draw();
@@ -207,6 +268,7 @@
     });
     kit.whenResized(() => {
       if (shown && !shown.fits()) draw();
+      if (shown && raysShown) shown.showRays(true);  // labels keep their size on screen
     });
   }
 
