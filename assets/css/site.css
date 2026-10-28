@@ -971,6 +971,16 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .chapter .rays-readout p { max-width: none; margin: 0 0 .35rem; overflow-wrap: anywhere; }
 /* Shapes of Julia sets (julia-shapes.js): rows of two pictures, each row titled. */
 .shapes-row + .shapes-row { margin-top: 1.5rem; }
+/* Local similarity (similarity.js): nine round pictures, three by three, each turned by CSS
+   inside its circle; a ring marks the point at the centre. */
+.similarity-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 1.25rem; margin-top: 1rem; }
+.similarity-disc { position: relative; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: #091320; }
+.widget-plate .similarity-disc canvas { border-radius: 0; transition: transform .6s ease; }
+.similarity-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.similarity-ring { fill: none; stroke: #f2b35e; stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.chapter .similarity-label { text-align: center; white-space: pre-line; }
+@media (max-width: 30rem) { .similarity-grid { gap: .7rem .5rem; } }
+@media (prefers-reduced-motion: reduce) { .widget-plate .similarity-disc canvas { transition: none; } }
 /* Centers of Julia sets (julia-centers.js): rings at 0, ±α and ±β over the picture. */
 .centers-overlay { cursor: default; }
 .centers-halo { fill: none; stroke: #091320; stroke-width: 7.5; vector-effect: non-scaling-stroke; }
@@ -1147,8 +1157,9 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
+  .chapter .similarity-grid { max-width: 120mm; margin-inline: auto; }
 }
