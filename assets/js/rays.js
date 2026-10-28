@@ -40,7 +40,7 @@
     ['5/12, 7/12', 'Two rays at a Misiurewicz point · 5/12, 7/12'],
     ['9/56, 11/56, 15/56', 'Three rays at a branch point · 9/56, 11/56, 15/56'],
     ['9/31, 10/31', 'Root of the 2/5 bulb · 9/31, 10/31'],
-    ['7/15, 8/15', 'Real period-four copy · 7/15, 8/15', {width: CLOSE / 2}],  // a small copy, twice as close
+    ['7/15, 8/15', 'Real period-four copy · 7/15, 8/15', {width: CLOSE / 8}],  // a small copy, eight times as close
     ['1/5, 4/15', 'A period-four copy · 1/5, 4/15'],
     // All four landing points, from −3/4 to near the Feigenbaum point −1.4012.
     ['1/3, 2/5, 7/17, 106/257', 'Toward the Feigenbaum point · 1/3, 2/5, 7/17, 106/257',
@@ -241,22 +241,57 @@
         if (ray.done) kit.svg('circle', {class: 'rays-end', cx: end.x, cy: end.y, r: 4 * unit}, overlay);
         const entry = first > 0 ? edgeCrossing(screen[first - 1], screen[first]) : screen[first];
         labels.push({x: Math.min(WIDTH - 24 * unit, Math.max(24 * unit, entry.x)),
-          y: Math.min(HEIGHT - 10 * unit, Math.max(22 * unit, entry.y)), text: name(ray.angle)});
+          y: Math.min(HEIGHT - 10 * unit, Math.max(22 * unit, entry.y)), text: name(ray.angle), path: shown});
       }
       // A label that would overlap one placed before it moves inward, past that
       // label, and so stays where its ray enters: down along the left and right
-      // edges and the top, up along the bottom.
+      // edges and the top, up along the bottom. Two labels whose rays enter the
+      // top or the bottom close together go on either side of the two rays
+      // instead, moved inward until they fit.
       const halfWidth = label => (4.5 * label.text.length + 4) * unit;
       const placed = [];
+      const free = (label, x, y, others) => !others.some(other => Math.abs(other.y - y) < 18 * unit
+        && Math.abs(other.x - x) < halfWidth(other) + halfWidth(label));
+      // Where a ray's path first comes to the height y, or null.
+      const xAt = (path, y) => {
+        for (let i = 1; i < path.length; i++) {
+          const [a, b] = [path[i - 1], path[i]];
+          if (a.y !== b.y && (a.y - y) * (b.y - y) <= 0) return a.x + (y - a.y) / (b.y - a.y) * (b.x - a.x);
+        }
+        return null;
+      };
+      // Rows from the edge inward, the labels' middles 5 units above their baselines.
+      function besideEachOther(first, second, step) {
+        const others = placed.filter(other => other !== first);
+        for (let row = 0, y = first.y; row < 20; row++, y += step) {
+          const one = xAt(first.path, y - 5 * unit), two = xAt(second.path, y - 5 * unit);
+          if (one === null || two === null) return false;
+          const [left, right] = one < two ? [first, second] : [second, first];
+          const leftX = Math.min(one, two) - 2 * unit - halfWidth(left);
+          const rightX = Math.max(one, two) + 2 * unit + halfWidth(right);
+          if (leftX - halfWidth(left) >= 0 && rightX + halfWidth(right) <= WIDTH
+              && free(left, leftX, y, others) && free(right, rightX, y, others)) {
+            Object.assign(left, {x: leftX, y});
+            Object.assign(right, {x: rightX, y});
+            return true;
+          }
+        }
+        return false;
+      }
       for (const label of labels) {
-        const onSide = label.x <= 24 * unit || label.x >= WIDTH - 24 * unit;
-        if (onSide) label.x = label.x <= 24 * unit ? halfWidth(label) + 4 * unit : WIDTH - halfWidth(label) - 4 * unit;
-        const step = !onSide && label.y > HEIGHT / 2 ? -18 * unit : 18 * unit;
-        for (let tries = 0; tries < 20; tries++) {
-          const clash = placed.find(other => Math.abs(other.y - label.y) < 18 * unit
-            && Math.abs(other.x - label.x) < halfWidth(other) + halfWidth(label));
-          if (!clash) break;
-          label.y = clash.y + step;
+        label.onSide = label.x <= 24 * unit || label.x >= WIDTH - 24 * unit;
+        if (label.onSide) label.x = label.x <= 24 * unit ? halfWidth(label) + 4 * unit : WIDTH - halfWidth(label) - 4 * unit;
+        const step = !label.onSide && label.y > HEIGHT / 2 ? -18 * unit : 18 * unit;
+        const partner = placed.find(other => !free(label, label.x, label.y, [other]));
+        if (partner && !label.onSide && !partner.onSide && !partner.paired && partner.y === label.y
+            && besideEachOther(partner, label, step)) {
+          partner.paired = label.paired = true;
+        } else {
+          for (let tries = 0; tries < 20; tries++) {
+            const clash = placed.find(other => !free(label, label.x, label.y, [other]));
+            if (!clash) break;
+            label.y = clash.y + step;
+          }
         }
         placed.push(label);
       }
