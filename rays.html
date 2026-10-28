@@ -279,8 +279,83 @@
 </figure>
 <p>The angles in the table can be checked by doubling. The angle 1/6 is preperiodic, 1/6 → 1/3 → 2/3 → 1/3, with preperiod 1 and period 2, exactly like the orbit of 0 for <var>c</var> = <var>i</var> after its first step. The angles 9/56, 11/56 and 15/56 reach the angles 1/7, 2/7 and 4/7 after three doublings, which land at the fixed point α of every Julia set in the 1/3 wake.</p>
 <h2 id="bulb-angles">The angles of the bulbs</h2>
-<p>Which two rays land at the root of the <var>p</var>/<var>q</var> bulb on the main cardioid? Both angles have period <var>q</var>, so in binary they repeat a block of <var>q</var> digits. A short rule produces the block. For <var>k</var> = 1, 2, …, <var>q</var>, take the fractional part of <var>k</var><var>p</var>/<var>q</var>; the <var>k</var>-th digit of the larger angle θ<sub>+</sub> is 1 when this fractional part is at least 1 − <var>p</var>/<var>q</var>, and 0 otherwise. The smaller angle θ<sub>−</sub> has the same first <var>q</var> − 2 digits and ends in 01 where θ<sub>+</sub> ends in 10. These blocks are the rotation words of the slope <var>p</var>/<var>q</var>. Douady and Hubbard stated an equivalent formula in their <a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">1982 note</a> (§6), and Milnor’s theorems on orbit portraits (<a href="https://arxiv.org/abs/math/9905169">Milnor</a>, Theorems 1.1 and 1.2), described in the next section, explain why these two rays bound the bulb’s wake.</p>
-<p>For the 2/5 bulb the fractional parts are 2/5, 4/5, 1/5, 3/5 and 0, and the threshold is 3/5. The digits of θ<sub>+</sub> are 0, 1, 0, 1, 0, so θ<sub>+</sub> = .⁠(01010) = 10/31, and θ<sub>−</sub> = .⁠(01001) = 9/31. Doubling 9/31 gives 18/31, 5/31, 10/31, 20/31 and then 9/31 again. In increasing order these five angles are 5, 9, 10, 18 and 20 thirty-firsts, and each doubling moves an angle two places on in this order: a rotation by 2/5.</p>
+<p>Which two rays land at the root of the <var>p</var>/<var>q</var> bulb on the main cardioid? Their angles can be read off a wheel of dynamical rays. For every <var>c</var> in the bulb, <var>q</var> rays land at the fixed point α, and the map turns them like a wheel, as the <a href="periodicity.html#rotation-numbers">periodicity chapter</a> describes. In terms of angles: list the <var>q</var> angles in increasing order; doubling moves each of them <var>p</var> places on in this list, going round from the end to the beginning. The <var>p</var>-th and the (<var>p</var>&nbsp;+&nbsp;1)-th angle of the list, θ<sub>−</sub> and θ<sub>+</sub>, bound the narrowest gap between the rays at α, and they are the angles of the two parameter rays at the root. Milnor’s theorems on orbit portraits (<a href="https://arxiv.org/abs/math/9905169">Milnor</a>, Theorems 1.1 and 1.2), described in the next section, explain why.</p>
+<p>The binary digits of all <var>q</var> angles follow from the wheel alone. The first digit of an angle is 0 in the upper half of the circle, from 0 to 1/2, and 1 in the lower half, from 1/2 to 1. Doubling shifts the digits one place to the left, so the <var>k</var>-th digit tells in which half the angle lies after <var>k</var> − 1 doublings. The lower half holds exactly the last <var>p</var> angles of the list. Doubling makes an angle in the upper half larger, since 2θ &gt; θ, and an angle in the lower half smaller, since 2θ − 1 &lt; θ. Moving <var>p</var> places on makes the first <var>q</var> − <var>p</var> angles larger and the last <var>p</var> smaller, because these go round to the beginning.</p>
+<p>So the digits depend only on the order of the angles, not on where exactly they lie, and <var>q</var> evenly spaced points give the same digits. Walk around the points 0, 1⁠/⁠<var>q</var>, …, (<var>q</var> − 1)⁠/⁠<var>q</var> in steps of <var>p</var>⁠/⁠<var>q</var>, and write 1 at each of the last <var>p</var> points, those from 1 − <var>p</var>/<var>q</var> on, and 0 at the others. The point <var>k</var>/<var>q</var> stands for the (<var>k</var>&nbsp;+&nbsp;1)-th angle of the list, so starting at <var>p</var>/<var>q</var> gives the repeating block of θ<sub>+</sub>, and starting one point earlier, at (<var>p</var> − 1)⁠/⁠<var>q</var>, the block of θ<sub>−</sub>. As a formula: for <var>k</var> = 1, 2, …, <var>q</var>, the <var>k</var>-th digit of θ<sub>+</sub> is 1 when the fractional part of <var>k</var><var>p</var>/<var>q</var> is at least 1 − <var>p</var>/<var>q</var>, and 0 otherwise. The two blocks differ only at the end, where θ<sub>+</sub> has 10 and θ<sub>−</sub> has 01. They are the rotation words of the slope <var>p</var>/<var>q</var>, and Douady and Hubbard stated an equivalent formula in their <a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">1982 note</a> (§6).</p>
+<p>For the 2/5 bulb, the five angles are 5, 9, 10, 18 and 20 thirty-firsts, and doubling moves each two places on: 10/31 → 20/31 → 9/31 → 18/31 → 5/31 → 10/31. The last two, 18/31 and 20/31, lie in the lower half. On the evenly spaced points, the walk from 2/5 visits 2/5, 4/5, 1/5, 3/5 and 0, and the last two points are 3/5 and 4/5. Both walks give the digits 0, 1, 0, 1, 0, so θ<sub>+</sub> = .⁠(01010) = 10/31, and starting one place earlier gives θ<sub>−</sub> = .⁠(01001) = 9/31. The narrowest gap, between them, is 1/31 of a turn.</p>
+<figure>
+<svg aria-labelledby="bulb-angles-title bulb-angles-desc" role="img" viewBox="0 0 900 566" xmlns="http://www.w3.org/2000/svg">
+<title id="bulb-angles-title">The two rays at the root of the 2/5 bulb, read off two wheels</title>
+<desc id="bulb-angles-desc">Two circles side by side, with numbered badges and arrows from each badge to the next. Left: 5 points at fifths of a turn, visited in steps of 2/5 of a turn: 1 at 2/5, 2 at 4/5, 3 at 1/5, 4 at 3/5 and 5 at 0. The part of the circle around the last two points, 3/5 and 4/5, is gold and marked digit 1; the rest is teal and marked digit 0. Right: the angles of the five rays that land at the fixed point alpha for c in the 2/5 bulb, with doubling as the arrows: 1 at 10/31, 2 at 20/31, 3 at 9/31, 4 at 18/31 and 5 at 5/31. The lower half of the circle, from 1/2 to 1, is gold and marked digit 1. On both circles the numbers come in the same order counterclockwise from 0, 5, 3, 1, 4, 2, and the same two badges, 2 and 4, are gold. Below: reading the colors from badge 1 gives the digits 0 1 0 1 0, so theta plus is 10/31; from badge 3, 0 1 0 0 1, so theta minus is 9/31.</desc>
+<rect fill="#eef5f7" height="566" rx="18" width="900"></rect>
+<defs><marker id="bulb-angles-arrow" markerHeight="7" markerWidth="7" orient="auto" refX="7" refY="4" viewBox="0 0 8 8"><path d="M0 0 L8 4 L0 8Z" fill="#526a78"></path></marker></defs>
+<path d="M225 272L354.4 366A160 160 0 1 0 65 272Z" fill="#fbfdfd" fill-opacity=".55"></path>
+<path d="M354.4 366A160 160 0 1 0 65 272" fill="none" stroke="#17657b" stroke-width="6"></path>
+<path d="M225 272L65 272A160 160 0 0 0 354.4 366Z" fill="#f5d59e" fill-opacity=".55"></path>
+<path d="M65 272A160 160 0 0 0 354.4 366" fill="none" stroke="#bd7d20" stroke-width="6"></path>
+<path d="M65 272L225 272L354.4 366" fill="none" stroke="#bd7d20" stroke-dasharray="5 4" stroke-width="1.5"></path>
+<path d="M106.1 192.5L263.3 408.8" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M274.4 406.2L274.4 138.8" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M263.9 134.4L106.7 350.7" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M112.7 360.5L366.9 277.9" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M367.9 266.4L113.6 183.8" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<circle cx="95.6" cy="178" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<circle cx="274.4" cy="424.2" fill="#f5d59e" r="15" stroke="#bd7d20" stroke-width="2.5"></circle>
+<circle cx="274.4" cy="119.8" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<circle cx="95.6" cy="366" fill="#f5d59e" r="15" stroke="#bd7d20" stroke-width="2.5"></circle>
+<circle cx="385" cy="272" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<g fill="#162e40" font-family="system-ui, sans-serif">
+<text x="225" y="44" font-size="21" text-anchor="middle" font-weight="700">5 points, steps of 2/5</text>
+<text x="95.6" y="184" font-size="17" text-anchor="middle" font-weight="700">1</text>
+<text x="274.4" y="430.2" font-size="17" text-anchor="middle" font-weight="700">2</text>
+<text x="274.4" y="125.8" font-size="17" text-anchor="middle" font-weight="700">3</text>
+<text x="95.6" y="372" font-size="17" text-anchor="middle" font-weight="700">4</text>
+<text x="385" y="278" font-size="17" text-anchor="middle" font-weight="700">5</text>
+<text x="64.8" y="162.6" font-size="19" text-anchor="middle">2/5</text>
+<text x="286.2" y="467.3" font-size="19" text-anchor="middle">4/5</text>
+<text x="286.2" y="90.7" font-size="19" text-anchor="middle">1/5</text>
+<text x="64.8" y="395.4" font-size="19" text-anchor="middle">3/5</text>
+<text x="423" y="279" font-size="19" text-anchor="middle">0</text>
+<text x="334.1" y="211.1" font-size="18" text-anchor="middle" fill="#17657b" font-weight="700">digit 0</text>
+<text x="166.9" y="392" font-size="18" text-anchor="middle" fill="#bd7d20" font-weight="700">digit 1</text>
+</g>
+<path d="M675 272L835 272A160 160 0 0 0 515 272Z" fill="#fbfdfd" fill-opacity=".55"></path>
+<path d="M835 272A160 160 0 0 0 515 272" fill="none" stroke="#17657b" stroke-width="6"></path>
+<path d="M675 272L515 272A160 160 0 0 0 835 272Z" fill="#f5d59e" fill-opacity=".55"></path>
+<path d="M515 272A160 160 0 0 0 835 272" fill="none" stroke="#bd7d20" stroke-width="6"></path>
+<path d="M515 272L675 272L835 272" fill="none" stroke="#bd7d20" stroke-dasharray="5 4" stroke-width="1.5"></path>
+<path d="M602.7 146.3L579 379.6" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M580.7 380.9L631.1 135.7" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M627.8 133.6L542.6 332.2" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M548.2 337.2L745.9 149.3" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<path d="M741.7 135.3L623.5 129.3" fill="none" marker-end="url(#bulb-angles-arrow)" stroke="#526a78" stroke-width="1.6"></path>
+<circle cx="604.5" cy="128.4" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<circle cx="577.1" cy="398.5" fill="#f5d59e" r="15" stroke="#bd7d20" stroke-width="2.5"></circle>
+<circle cx="634.9" cy="117.1" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<circle cx="535.1" cy="349.6" fill="#f5d59e" r="15" stroke="#bd7d20" stroke-width="2.5"></circle>
+<circle cx="759.6" cy="136.2" fill="#a2d9da" r="15" stroke="#17657b" stroke-width="2.5"></circle>
+<g fill="#162e40" font-family="system-ui, sans-serif">
+<text x="675" y="44" font-size="21" text-anchor="middle" font-weight="700">5 rays at α, doubled</text>
+<text x="604.5" y="134.4" font-size="17" text-anchor="middle" font-weight="700">1</text>
+<text x="577.1" y="404.5" font-size="17" text-anchor="middle" font-weight="700">2</text>
+<text x="634.9" y="123.1" font-size="17" text-anchor="middle" font-weight="700">3</text>
+<text x="535.1" y="355.6" font-size="17" text-anchor="middle" font-weight="700">4</text>
+<text x="759.6" y="142.2" font-size="17" text-anchor="middle" font-weight="700">5</text>
+<text x="571.3" y="110.3" font-size="19" text-anchor="middle">10/31</text>
+<text x="553.8" y="435.6" font-size="19" text-anchor="middle">20/31</text>
+<text x="643.8" y="83.5" font-size="19" text-anchor="middle">9/31</text>
+<text x="501.9" y="375.1" font-size="19" text-anchor="middle">18/31</text>
+<text x="779.7" y="111" font-size="19" text-anchor="middle">5/31</text>
+<text x="800.5" y="253" font-size="18" text-anchor="middle" fill="#17657b" font-weight="700">digit 0</text>
+<text x="765.5" y="368.5" font-size="18" text-anchor="middle" fill="#bd7d20" font-weight="700">digit 1</text>
+</g>
+<g fill="#162e40" font-family="system-ui, sans-serif">
+<text font-size="20" text-anchor="middle" x="450" y="506">From 1: digits <tspan fill="#17657b" font-weight="700">0</tspan> <tspan fill="#bd7d20" font-weight="700">1</tspan> <tspan fill="#17657b" font-weight="700">0</tspan> <tspan fill="#bd7d20" font-weight="700">1</tspan> <tspan fill="#17657b" font-weight="700">0</tspan>, so θ<tspan baseline-shift="sub" font-size="14">+</tspan> = .(01010) = 10/31</text>
+<text font-size="20" text-anchor="middle" x="450" y="538">From 3: digits <tspan fill="#17657b" font-weight="700">0</tspan> <tspan fill="#bd7d20" font-weight="700">1</tspan> <tspan fill="#17657b" font-weight="700">0</tspan> <tspan fill="#17657b" font-weight="700">0</tspan> <tspan fill="#bd7d20" font-weight="700">1</tspan>, so θ<tspan baseline-shift="sub" font-size="14">−</tspan> = .(01001) = 9/31</text>
+</g>
+</svg>
+<figcaption>The rays at the root of the 2/5 bulb, read off two wheels. Left: five evenly spaced points, visited in steps of 2/5 of a turn; the last two points, 3/5 and 4/5, are gold. Right: the five rays that land at α for every <var>c</var> in the 2/5 bulb, with doubling as arrows; the lower half of the circle, from 1/2 to 1, is gold. The numbers count the steps from θ<sub>+</sub>. The angles on the right are not evenly spaced, but the numbers come in the same order around both circles, and the same two are gold. Reading the colors from 1, teal for 0 and gold for 1, gives the digits of θ<sub>+</sub>; reading them from 3 gives those of θ<sub>−</sub>.</figcaption>
+</figure>
 <div class="table-wrap">
 <table>
 <thead>
@@ -326,7 +401,7 @@
 <h2 id="check-yourself">Check yourself</h2>
 <ol class="exercises">
 <li><details><summary>For <var>c</var> = −2, which rays land at 0? Where do their images land?</summary><div class="answer"><p>The ray at θ lands at 2&nbsp;cos&nbsp;2πθ, which is 0 for θ = 1/4 and 3/4. Doubling takes both to 1/2, and the ray at 1/2 lands at −2 = <var>f</var>(0), as it must.</p></div></details></li>
-<li><details><summary>Use the rule to find the two rays at the root of the 1/4 bulb.</summary><div class="answer"><p>The fractional parts of <var>k</var>/4 are 1/4, 1/2, 3/4 and 0, and the threshold is 3/4. So θ<sub>+</sub> = .⁠(0010) = 2/15, and θ<sub>−</sub> = .⁠(0001) = 1/15. Their difference is 1/15 = 1/(2<sup>4</sup> − 1).</p></div></details></li>
+<li><details><summary>Use the rule to find the two rays at the root of the 1/4 bulb.</summary><div class="answer"><p>Here <var>p</var> = 1, so only the last of the points 0, 1/4, 1/2 and 3/4 gives a 1. The walk from 1/4 in steps of 1/4 visits 1/4, 1/2, 3/4 and 0, so θ<sub>+</sub> = .⁠(0010) = 2/15. The walk from 0 visits 0, 1/4, 1/2 and 3/4, so θ<sub>−</sub> = .⁠(0001) = 1/15. Their difference is 1/15 = 1/(2<sup>4</sup> − 1).</p></div></details></li>
 <li><details><summary>The rays at 7/15 and 8/15 land at the same point. Why must that point be real?</summary><div class="answer"><p>The Mandelbrot set is symmetric under complex conjugation, which takes the ray at angle θ to the ray at angle 1 − θ. So the landing point of the ray at 8/15 is the conjugate of the landing point of the ray at 7/15. If the two points are the same, it equals its own conjugate and is real: it is the root of the real period-four copy near −1.94.</p></div></details></li>
 <li><details><summary>For <var>c</var> = −1, the basilica, which rays land at the fixed point α = (1 − √5)/2?</summary><div class="answer"><p>The rays at 1/3 and 2/3. The basilica lies in the wake of the 1/2 bulb, where the two rays of the rotation cycle 1/3 → 2/3 → 1/3 land at α and are swapped by the map, a rotation by one half.</p></div></details></li>
 <li><details><summary>Is the angle 5/12 periodic or preperiodic under doubling? What does that say about where its parameter ray lands?</summary><div class="answer"><p>5/12 → 5/6 → 2/3 → 1/3 → 2/3: preperiod 2, period 2. A strictly preperiodic angle lands at a Misiurewicz point, here ≈ −1.5437.</p></div></details></li>
