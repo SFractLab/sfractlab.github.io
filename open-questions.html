@@ -97,7 +97,30 @@
 </table>
 </div>
 <h2 id="mlc">Local connectivity</h2>
-<p>A set is <strong>locally connected</strong> if every point has arbitrarily small connected neighborhoods within the set. A comb whose teeth crowd towards one tooth is connected but not locally connected: near a point of the limiting tooth, every small neighborhood also catches pieces of nearby teeth that are joined to it only far away. Douady and Hubbard’s note of January 1982 already called it likely that the map Ψ below extends continuously to the circle, which by Carathéodory’s theorem is the same question (<a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">Douady and Hubbard, 1982</a>, §4). In November 1982 Douady asked it outright, « L’ensemble <var>M</var> est-il localement connexe ? », as the fourth of the open questions of his Bourbaki seminar (<a href="https://www.numdam.org/item/SB_1982-1983__25__39_0/">Douady, Séminaire Bourbaki</a>, p. 48; <a href="history.html#frontier">the history chapter</a>).</p>
+<p>The Mandelbrot set is connected, as Douady and Hubbard proved in 1982 (<a href="mandelbrot.html#connected">why it is connected</a>). A set is <strong>locally connected</strong> if it is connected also on the smallest scales. Zoom in on a point <var>x</var> of the set, as far as you like. The set is locally connected at <var>x</var> if the parts of it near the center of the view are always joined to <var>x</var> inside the view, not only by way of parts outside it, and it is locally connected if this holds at each of its points; equivalently, every point has arbitrarily small connected neighborhoods within the set. A comb whose teeth crowd toward one tooth is connected, but not locally connected at the points of that tooth above the base: however far one zooms in on such a point, other teeth pass close to it, and they are joined to it only through the base, far outside the view. Pictures cannot settle the question for <var>M</var>, because at every magnification some of its parts are thinner than a pixel.</p>
+<figure>
+<svg aria-labelledby="comb-title comb-desc" role="img" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+<title id="comb-title">A comb: locally connected at y, but not at x</title>
+<desc id="comb-desc">A comb drawn in teal: a horizontal base with vertical teeth that crowd toward the tooth at its left end, each 0.72 times as far from it as the one before. Two equal circles are small views: one around a point x of the tooth at the left end, one around a point y of the second tooth from the right. The circle around y holds only the piece of the tooth through y. The circle around x also holds pieces of all the teeth after the sixth, drawn gold; they are joined to x only by a way round, shaded, that runs down one of these teeth to the base, along the base to the left end and up the tooth there, outside the circle.</desc>
+<rect fill="#eef5f7" height="360" rx="18" width="900"></rect>
+<circle cx="185" cy="164" fill="#fbfdfd" r="110"></circle>
+<circle cx="645.8" cy="164" fill="#fbfdfd" r="110"></circle>
+<path d="M274.2 228.4l0 101.6-89.2 0 0-56" fill="none" stroke="#f5d59e" stroke-linecap="round" stroke-linejoin="round" stroke-width="14"></path>
+<path d="M185 330H825M185 330V24M825 330V24M645.8 330V24M516.8 330V24M423.9 330V24M357 330V24M308.8 330V24M274.2 330V24M249.2 330V24M231.2 330V24M218.3 330V24M209 330V24M202.3 330V24M197.4 330V24M193.9 330V24M191.4 330V24M189.6 330V24M188.3 330V24M187.4 330V24M186.7 330V24M186.2 330V24" fill="none" stroke="#17657b" stroke-width="2.5"></path>
+<path d="M274.2 99.6V228.4M249.2 74.7V253.3M231.2 64.2V263.8M218.3 59.2V268.8M209 56.6V271.4M202.3 55.4V272.6M197.4 54.7V273.3M193.9 54.4V273.6M191.4 54.2V273.8M189.6 54.1V273.9M188.3 54.1V273.9M187.4 54V274M186.7 54V274M186.2 54V274" fill="none" stroke="#bd7d20" stroke-width="3.5"></path>
+<path d="M185 54V274M645.8 54V274" fill="none" stroke="#17657b" stroke-width="4.5"></path>
+<circle cx="185" cy="164" fill="none" r="110" stroke="#526a78" stroke-width="2"></circle>
+<circle cx="645.8" cy="164" fill="none" r="110" stroke="#526a78" stroke-width="2"></circle>
+<circle cx="185" cy="164" fill="#162e40" r="6.5" stroke="#fbfdfd" stroke-width="2"></circle>
+<circle cx="645.8" cy="164" fill="#162e40" r="6.5" stroke="#fbfdfd" stroke-width="2"></circle>
+<g fill="#162e40" font-family="system-ui, sans-serif" font-size="32" font-style="italic" text-anchor="middle">
+<text x="157" y="174">x</text>
+<text x="617.8" y="174">y</text>
+</g>
+</svg>
+<figcaption>A comb: a base with teeth that crowd toward the tooth at its left end. The circles are small views around a point <var>x</var> of that tooth and a point <var>y</var> of another one. Around <var>y</var> the view holds a single piece of the comb, the one through <var>y</var>. Around <var>x</var> it also holds pieces of other teeth, gold, however small the circle is taken. They come arbitrarily close to <var>x</var>, but are joined to it only by the way round through the base, outside the view (shaded). So the comb is locally connected at <var>y</var>, but not at <var>x</var>.</figcaption>
+</figure>
+<p>Douady and Hubbard’s note of January 1982 already called it likely that the map Ψ below extends continuously to the circle, which by Carathéodory’s theorem is the same question (<a href="https://pi.math.cornell.edu/~hubbard/CR.pdf">Douady and Hubbard, 1982</a>, §4). In November 1982 Douady asked it outright, « L’ensemble <var>M</var> est-il localement connexe ? », as the fourth of the open questions of his Bourbaki seminar (<a href="https://www.numdam.org/item/SB_1982-1983__25__39_0/">Douady, Séminaire Bourbaki</a>, p. 48; <a href="history.html#frontier">the history chapter</a>).</p>
 <p>MLC matters because it has several equivalent forms, each of which would complete a part of the theory (<a href="https://arxiv.org/abs/math/9902155">Schleicher, fibers and local connectivity</a>; <a href="https://arxiv.org/abs/math/0210382">Zakeri</a>, §2):</p>
 <ul>
 <li>the map Ψ from the outside of the unit disk onto the outside of <var>M</var> extends continuously to the unit circle (Carathéodory’s theorem), so that every parameter ray lands and its landing point depends continuously on the angle (<a href="rays.html#irrational">irrational angles</a>);</li>
