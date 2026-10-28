@@ -29,6 +29,8 @@
   const MAX_DENOMINATOR = 100000;
   const MAX_ANGLES = 6;
 
+  // An example may set the window of "Zoom to the landing point": its width,
+  // and its centre when that is not where the first ray ends.
   const EXAMPLES = [
     ['1/7, 2/7', 'Root of the 1/3 bulb · 1/7, 2/7'],
     ['1/3, 2/3', 'Root of the period-two disk · 1/3, 2/3'],
@@ -38,9 +40,11 @@
     ['5/12, 7/12', 'Two rays at a Misiurewicz point · 5/12, 7/12'],
     ['9/56, 11/56, 15/56', 'Three rays at a branch point · 9/56, 11/56, 15/56'],
     ['9/31, 10/31', 'Root of the 2/5 bulb · 9/31, 10/31'],
-    ['7/15, 8/15', 'Real period-four copy · 7/15, 8/15'],
+    ['7/15, 8/15', 'Real period-four copy · 7/15, 8/15', {width: CLOSE / 2}],  // a small copy, twice as close
     ['1/5, 4/15', 'A period-four copy · 1/5, 4/15'],
-    ['1/3, 2/5, 7/17, 106/257', 'Toward the Feigenbaum point · 1/3, 2/5, 7/17, 106/257'],
+    // All four landing points, from −3/4 to near the Feigenbaum point −1.4012.
+    ['1/3, 2/5, 7/17, 106/257', 'Toward the Feigenbaum point · 1/3, 2/5, 7/17, 106/257',
+      {width: 1.25, centre: {re: -1.225, im: 0}}],
   ];
 
   const gcd = (a, b) => (b ? gcd(b, a % b) : a);
@@ -154,7 +158,7 @@
   kit.setUp('rays', (figure) => {
     figure.classList.add('widget-plate');
     const state = {angles: parseAngles(figure.dataset.angles || '1/7, 2/7') || parseAngles('1/7, 2/7'),
-      rays: [], view: WHOLE, close: false};
+      rays: [], view: WHOLE, close: false, zoom: {}};
     let generation = 0;
     const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -239,19 +243,20 @@
         labels.push({x: Math.min(WIDTH - 24 * unit, Math.max(24 * unit, entry.x)),
           y: Math.min(HEIGHT - 10 * unit, Math.max(22 * unit, entry.y)), text: name(ray.angle)});
       }
-      // A label that would overlap one placed before it moves on: down along
-      // the left and right edges, sideways along the top and bottom.
+      // A label that would overlap one placed before it moves inward, past that
+      // label, and so stays where its ray enters: down along the left and right
+      // edges and the top, up along the bottom.
       const halfWidth = label => (4.5 * label.text.length + 4) * unit;
       const placed = [];
       for (const label of labels) {
         const onSide = label.x <= 24 * unit || label.x >= WIDTH - 24 * unit;
         if (onSide) label.x = label.x <= 24 * unit ? halfWidth(label) + 4 * unit : WIDTH - halfWidth(label) - 4 * unit;
+        const step = !onSide && label.y > HEIGHT / 2 ? -18 * unit : 18 * unit;
         for (let tries = 0; tries < 20; tries++) {
           const clash = placed.find(other => Math.abs(other.y - label.y) < 18 * unit
             && Math.abs(other.x - label.x) < halfWidth(other) + halfWidth(label));
           if (!clash) break;
-          if (onSide) label.y = clash.y + 18 * unit;
-          else label.x = clash.x + halfWidth(clash) + halfWidth(label);
+          label.y = clash.y + step;
         }
         placed.push(label);
       }
@@ -315,6 +320,7 @@
       input.value = angles.map(name).join(', ');
       const example = EXAMPLES.find(([text]) => text === input.value);
       select.value = example ? example[0] : 'custom';
+      state.zoom = (example && example[2]) || {};
       input.removeAttribute('aria-invalid');
       const picture = renderPicture();
       await trace();
@@ -324,9 +330,10 @@
     async function setView(close) {
       state.close = close;
       if (close) {
-        const end = state.rays[0].points[state.rays[0].points.length - 1];
-        state.view = {left: end.re - CLOSE / 2, top: end.im + CLOSE * HEIGHT / WIDTH / 2, width: CLOSE,
-          height: CLOSE * HEIGHT / WIDTH};
+        const centre = state.zoom.centre || state.rays[0].points[state.rays[0].points.length - 1];
+        const width = state.zoom.width || CLOSE;
+        state.view = {left: centre.re - width / 2, top: centre.im + width * HEIGHT / WIDTH / 2, width,
+          height: width * HEIGHT / WIDTH};
       } else {
         state.view = WHOLE;
       }
