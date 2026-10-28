@@ -196,15 +196,13 @@
     return `0.${digits.slice(0, preperiod).join('')}(${digits.slice(preperiod).join('')})₂`;
   }
 
-  // --- Parameter rays (the ray explorer, the menu of Misiurewicz points) -------
+  // --- Parameter and dynamical rays (the ray explorer, the menu of Misiurewicz points)
 
   const RAY_START = 256;  // rays are followed inward from |Φ(c)| = RAY_START
   const RAY_STEPS = 4;    // points per halving of the potential, unless asked for more
 
-  // Whether n steps of z ↦ z² + c from the critical value c stay below 10³⁰.
-  function settles(cr, ci, n) {
-    let zr = cr;
-    let zi = ci;
+  // Whether n steps of z ↦ z² + c from z stay below 10³⁰.
+  function settles(zr, zi, cr, ci, n) {
     for (let k = 0; k < n; k++) {
       const next = zr * zr - zi * zi + cr;
       zi = 2 * zr * zi + ci;
@@ -235,7 +233,7 @@
     let sr = (er * dr + ei * di) / size;
     let si = (ei * dr - er * di) / size;
     for (let halvings = 0; halvings < 40; halvings++) {
-      if (Number.isFinite(sr) && Number.isFinite(si) && settles(c.re - sr, c.im - si, n)) {
+      if (Number.isFinite(sr) && Number.isFinite(si) && settles(c.re - sr, c.im - si, c.re - sr, c.im - si, n)) {
         return {re: c.re - sr, im: c.im - si};
       }
       sr /= 2;
@@ -244,12 +242,52 @@
     return c;
   }
 
+  // One Newton step towards f_c^n(z) = target for a fixed c, with the derivative
+  // of f_c^n(z) with respect to z; a step so long that the orbit runs away is halved.
+  function dynamicalStep(z, c, n, target) {
+    let zr = z.re;
+    let zi = z.im;
+    let dr = 1;
+    let di = 0;
+    for (let k = 0; k < n; k++) {
+      const ndr = 2 * (zr * dr - zi * di);
+      di = 2 * (zr * di + zi * dr);
+      dr = ndr;
+      const next = zr * zr - zi * zi + c.re;
+      zi = 2 * zr * zi + c.im;
+      zr = next;
+    }
+    const er = zr - target.re;
+    const ei = zi - target.im;
+    const size = dr * dr + di * di;
+    let sr = (er * dr + ei * di) / size;
+    let si = (ei * dr - er * di) / size;
+    for (let halvings = 0; halvings < 40; halvings++) {
+      if (Number.isFinite(sr) && Number.isFinite(si) && settles(z.re - sr, z.im - si, c.re, c.im, n)) {
+        return {re: z.re - sr, im: z.im - si};
+      }
+      sr /= 2;
+      si /= 2;
+    }
+    return z;
+  }
+
   // The parameter ray at angle p/q (reduced) as a generator of its points, `steps` per halving
   // of the potential, for `depth` halvings: the point of the ray at radius r satisfies
   // f_c^n(c) ≈ (r e^(2πiθ))^(2^n) once that is large, so the radius is lowered a little at a
   // time and c corrected by three Newton steps.
-  function* parameterRay({p, q}, depth, steps = RAY_STEPS) {
-    let c = {re: RAY_START * Math.cos(2 * Math.PI * p / q), im: RAY_START * Math.sin(2 * Math.PI * p / q)};
+  function parameterRay(angle, depth, steps = RAY_STEPS) {
+    return followRay(angle, depth, steps, newtonStep);
+  }
+
+  // The dynamical ray at angle p/q (reduced) in the plane of c, in the same way: its point at
+  // radius r satisfies f_c^n(z) ≈ (r e^(2πiθ))^(2^n), and z is corrected for the fixed c.
+  function dynamicalRay(angle, c, depth, steps = RAY_STEPS) {
+    return followRay(angle, depth, steps, (z, n, target) => dynamicalStep(z, c, n, target));
+  }
+
+  function* followRay({p, q}, depth, steps, correct) {
+    let point = {re: RAY_START * Math.cos(2 * Math.PI * p / q), im: RAY_START * Math.sin(2 * Math.PI * p / q)};
     let n = 0;
     let numerator = p;  // 2ⁿθ mod 1 = numerator / q, kept exact
     for (let step = 1; step <= depth * steps; step++) {
@@ -260,8 +298,8 @@
       const size = RAY_START ** (2 ** (n - step / steps));
       const angle = 2 * Math.PI * numerator / q;
       const target = {re: size * Math.cos(angle), im: size * Math.sin(angle)};
-      for (let k = 0; k < 3; k++) c = newtonStep(c, n, target);
-      yield c;
+      for (let k = 0; k < 3; k++) point = correct(point, n, target);
+      yield point;
     }
   }
 
@@ -1127,7 +1165,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, parameterRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,

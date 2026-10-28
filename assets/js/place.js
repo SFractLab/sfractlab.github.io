@@ -34,7 +34,12 @@
    element is shown and the others are hidden. A window may also have
    data-rays, the angles of parameter rays as fractions separated by commas;
    a button then shows and hides them. Each ray is traced (AtlasKit.parameterRay)
-   until it comes within half a pixel of a marked point, where it lands. */
+   until it comes within half a pixel of a marked point, where it lands. A window
+   may also have data-julia, "re,im", a parameter c: a second button then switches
+   it between the Mandelbrot set and the filled Julia set of c in the same window,
+   with the same marks, and the rays become the dynamical rays of c at the same
+   angles (AtlasKit.dynamicalRay). Both buttons keep their choice for the next
+   window. */
 (() => {
   'use strict';
   const kit = window.AtlasKit;
@@ -92,8 +97,9 @@
   // window as re, im and width, outlined if given:
   // the canvas (inside a link to the zoom viewer if `linked`), its marks, its
   // status line, draw(), which computes it, and, with `angles`, showRays(shown), which
-  // traces the parameter rays at those angles once and shows or hides them.
-  function picture([re, im, width], julia, marks, linked, frame = null, angles = []) {
+  // traces the rays at those angles once, parameter rays or the dynamical rays of `julia`,
+  // and shows or hides them. With `titled`, the status line first names the Julia set.
+  function picture([re, im, width], julia, marks, linked, frame = null, angles = [], titled = false) {
     const height = width * HEIGHT / WIDTH;
     const view = {left: re - width / 2, top: im + height / 2, width, height};
     const budget = kit.iterationBudget(width);
@@ -156,7 +162,10 @@
     }
 
     const status = element('p', 'plate-caption place-status');
-    const statusText = `Center ${centre} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
+    // With `titled`, "Julia set of c = i · center c", when the picture is centred on c.
+    const parameter = titled ? format(julia, decimals) : '';
+    const where = titled ? `Julia set of c = ${parameter} · center ${parameter === centre ? 'c' : centre}` : `Center ${centre}`;
+    const statusText = `${where} · width ${shownWidth} · ${budget.toLocaleString('en')} iterations per pixel.`;
     status.textContent = statusText;
 
     // The rays, traced when first shown, each until it comes within half a pixel of a marked point.
@@ -166,7 +175,8 @@
       const close = width / WIDTH / 2;
       return angles.map(angle => {
         const points = [];
-        for (const point of kit.parameterRay(angle, RAY_DEPTH, RAY_STEPS)) {
+        const ray = julia ? kit.dynamicalRay(angle, julia, RAY_DEPTH, RAY_STEPS) : kit.parameterRay(angle, RAY_DEPTH, RAY_STEPS);
+        for (const point of ray) {
           points.push(point);
           if (marks.some(({c}) => Math.hypot(point.re - c.re, point.im - c.im) < close)) break;
         }
@@ -180,7 +190,8 @@
       if (shown) kit.drawRays(rayLayer, rays, plane, WIDTH, HEIGHT, {halo: true, shrink: true});
       const list = angles.map(fraction);
       const named = list.length > 1 ? `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}` : list[0];
-      status.textContent = shown ? `${statusText} Parameter ray${list.length > 1 ? 's' : ''} at ${named}.` : statusText;
+      const kind = julia ? 'Dynamical' : 'Parameter';
+      status.textContent = shown ? `${statusText} ${kind} ray${list.length > 1 ? 's' : ''} at ${named}.` : statusText;
     }
 
     // At the size the screen calls for (AtlasKit.fitCanvas), a preview at a quarter of the
@@ -197,7 +208,8 @@
       context.drawImage(preview, 0, 0, canvas.width, canvas.height);
       return kit.renderEscapeTime(context, view, julia, budget, isCurrent, {repeats: true});
     }
-    return {parts: [holder, status], draw, showRays, rays: angles.length > 0, fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
+    return {parts: [holder, status], draw, showRays, rays: angles.length > 0, julia: Boolean(julia),
+      fits: () => kit.fitsScreen(canvas, WIDTH, HEIGHT)};
   }
 
   // A figure with several windows: the menu, and the chosen window's picture and caption part.
@@ -213,23 +225,36 @@
     }
     menu.append(select);
     controls.append(menu);
-    // Shows and hides the parameter rays of the windows that have them; the choice is kept for the next window.
+    // Shows and hides the rays of the windows that have them, and switches the windows with a
+    // parameter c between the Mandelbrot set and the Julia set of c; both choices are kept for the next window.
     let raysShown = false;
+    let juliaShown = false;
     const raysButton = element('button', null, 'Show the parameter rays');
     raysButton.type = 'button';
-    if (choices.some(choice => choice.dataset.rays)) {
+    const juliaButton = element('button', null, 'Show the Julia set');
+    juliaButton.type = 'button';
+    const juliaOf = choice => parseNumbers(choice.dataset.julia, 2);
+    const withRays = choices.some(choice => choice.dataset.rays);
+    const withJulia = choices.some(juliaOf);
+    if (withRays || withJulia) {
       const buttons = element('div', 'plate-buttons');
-      buttons.append(raysButton);
+      if (withRays) buttons.append(raysButton);
+      if (withJulia) buttons.append(juliaButton);
       controls.append(buttons);
     }
     function showRays() {
-      raysButton.textContent = raysShown ? 'Hide the parameter rays' : 'Show the parameter rays';
+      const kind = shown && shown.julia ? 'dynamical' : 'parameter';
+      raysButton.textContent = `${raysShown ? 'Hide' : 'Show'} the ${kind} rays`;
       raysButton.disabled = !shown || !shown.rays;
       if (shown) shown.showRays(raysShown);
     }
     raysButton.addEventListener('click', () => {
       raysShown = !raysShown;
       showRays();
+    });
+    juliaButton.addEventListener('click', () => {
+      juliaShown = !juliaShown;
+      choose();
     });
     figure.insertBefore(controls, caption);
 
@@ -249,9 +274,13 @@
       for (const item of choices) item.hidden = item !== choice;
       const area = parseNumbers(choice.dataset.window, 3);
       const frame = parseNumbers(choice.dataset.frame, 3);
+      const parameter = juliaOf(choice);
+      const julia = juliaShown && parameter ? {re: parameter[0], im: parameter[1]} : null;
+      juliaButton.textContent = juliaShown ? 'Show the Mandelbrot set' : 'Show the Julia set';
+      juliaButton.disabled = !parameter;
       const next = area && area[2] > 0
-        ? picture(area, null, parseMarks(choice.dataset.marks), linked, frame && frame[2] > 0 ? frame : null,
-          parseAngles(choice.dataset.rays)) : null;
+        ? picture(area, julia, parseMarks(choice.dataset.marks), linked && !julia, frame && frame[2] > 0 ? frame : null,
+          parseAngles(choice.dataset.rays), Boolean(julia)) : null;
       for (const part of shown ? shown.parts : []) part.remove();
       shown = next;
       for (const part of shown ? shown.parts : []) figure.insertBefore(part, caption);
