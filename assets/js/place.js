@@ -64,6 +64,7 @@
   const PREVIEW = 4;  // a quick preview is drawn first, at a quarter of the resolution
   const LABEL_OFFSET = {n: [0, -12], e: [10, 5], s: [0, 20], w: [-10, 5]};
   const BADGE_RADIUS = 10;
+  const PAIRED_BADGE_RADIUS = 15;  // one of two pictures side by side is shown about half as wide
   const RING_RADIUS = 28;
   const JULIA_WINDOW = [0, 0, 4.2];  // 4.2 × 3.15, as the Julia gallery
   const RAY_STEPS = 16;   // points per halving of the potential: near a spiral a ray turns by up to half a turn in each
@@ -111,8 +112,9 @@
   // the canvas (inside a link to the zoom viewer if `linked`), its marks, its
   // status line, draw(), which computes it, and, with `angles`, showRays(shown), which
   // traces the rays at those angles once, parameter rays or the dynamical rays of `julia`,
-  // and shows or hides them. With `titled`, the status line first names the Julia set.
-  function picture([re, im, width], julia, marks, linked, frame = null, angles = [], titled = false) {
+  // and shows or hides them. With `titled`, the status line first names the Julia set. With `paired`, the
+  // picture is one of two side by side, and its badges are larger (their labels, too: site.css).
+  function picture([re, im, width], julia, marks, linked, frame = null, angles = [], titled = false, paired = false) {
     const height = width * HEIGHT / WIDTH;
     const view = {left: re - width / 2, top: im + height / 2, width, height};
     const budget = kit.iterationBudget(width);
@@ -164,7 +166,7 @@
           continue;
         }
         if (side === 'in') {
-          kit.svg('circle', {cx: x, cy: y, r: BADGE_RADIUS, class: 'place-badge'}, overlay);
+          kit.svg('circle', {cx: x, cy: y, r: paired ? PAIRED_BADGE_RADIUS : BADGE_RADIUS, class: 'place-badge'}, overlay);
           kit.svg('text', {x, y, class: 'place-badge-label', 'text-anchor': 'middle',
             'dominant-baseline': 'central'}, overlay).textContent = label;
           continue;
@@ -341,14 +343,14 @@
     if (julia) {
       const c = {re: julia[0], im: julia[1]};
       panes = [
-        [{html: 'Parameter plane · vary <var>c</var>'}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
+        [{html: 'Parameter plane · vary <var>c</var>'}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null, [], false, true)],
         [{html: `Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`}, picture(juliaWindow && juliaWindow[2] > 0 ? juliaWindow : JULIA_WINDOW, c, [], false)],
       ];
     } else if (beside && beside[2] > 0) {
       const titles = (figure.dataset.titles || '').split('|').map(title => title.trim());
       panes = [
-        [{text: titles[0] || ''}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
-        [{text: titles[1] || ''}, picture(beside, null, parseMarks(figure.dataset.besideMarks), linked)],
+        [{text: titles[0] || ''}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null, [], false, true)],
+        [{text: titles[1] || ''}, picture(beside, null, parseMarks(figure.dataset.besideMarks), linked, null, [], false, true)],
       ];
       const split = text => (text || '').split('|');
       const julias = split(figure.dataset.julias).map(text => parseNumbers(text, 2));

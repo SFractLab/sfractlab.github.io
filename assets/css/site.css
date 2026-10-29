@@ -935,6 +935,8 @@ html.plate-dialog-open { overflow: hidden; }
 .place-label { font: 700 18px var(--font-ui); fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-width: 4px; stroke-linejoin: round; }
 .place-badge { fill: #f2b35e; stroke: #2b1904; stroke-width: 1.5; }
 .place-badge-label { font: 700 13px var(--font-ui); fill: #2b1904; }
+/* One of two pictures side by side is shown about half as wide: badges half as large again (place.js). */
+.plate-panel .place-badge-label { font-size: 19.5px; }
 .place-ring { fill: none; stroke: #fff1c8; stroke-width: 3; }
 .place-ring-halo { fill: none; stroke: #091320; stroke-opacity: .65; stroke-width: 7.5; }
 .place-frame { fill: none; stroke: #fff1c8; stroke-width: 2; }
