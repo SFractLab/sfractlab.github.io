@@ -1,6 +1,6 @@
 /* Interactive figure: one window of the Mandelbrot set, as the guided tour
    shows each of its stops, optionally beside the filled Julia set of one
-   parameter.
+   parameter or beside another window of the Mandelbrot set.
 
    The pictures are computed in the browser when the figure first comes into
    view, at the size AtlasKit.fitCanvas chooses for the screen (640 × 480 or
@@ -15,7 +15,8 @@
                   for a dot with the label beside it, "in" for a round
                   badge centred on the point, to label a component from
                   inside, or "ring" for an unfilled circle centred on the
-                  point, which leaves it visible (its label may be empty),
+                  point, which leaves it visible (its label may be empty;
+                  if given, it stands at the ring's upper right),
                   or "small-ring" for one of half the size
      data-frame   optional "re,im,width": another window, outlined in the
                   picture as a rectangle, such as the next one of a zoom
@@ -26,6 +27,18 @@
                   its plane
      data-julia-window optional "re,im,width": another window for the Julia
                   picture
+     data-beside  optional "re,im,width": another window of the Mandelbrot
+                  set, drawn beside the first, to compare two places
+     data-beside-marks optional marks for that window, as data-marks
+     data-titles  with data-beside: the titles of the two pictures,
+                  separated by "|"
+     data-julias  with data-beside: two parameters c, "re,im|re,im". A
+                  button then switches both pictures to the filled Julia
+                  sets of these parameters and back
+     data-julia-windows with data-julias: their windows, "re,im,width|re,im,width"
+                  (default the window of the gallery's Julia pictures)
+     data-julia-marks with data-julias: their marks, as data-marks,
+                  separated by "|"
 
    A figure can instead offer several windows. Each is an element inside it,
    usually a part of the caption, with data-choice (a key), data-name (its
@@ -145,6 +158,9 @@
           const r = side === 'ring' ? RING_RADIUS : RING_RADIUS / 2;
           kit.svg('circle', {cx: x, cy: y, r, class: 'place-ring-halo'}, overlay);
           kit.svg('circle', {cx: x, cy: y, r, class: 'place-ring'}, overlay);
+          if (label) {
+            kit.svg('text', {x: x + r * .75 + 2, y: y - r * .75 - 2, class: 'place-label'}, overlay).textContent = label;
+          }
           continue;
         }
         if (side === 'in') {
@@ -316,24 +332,73 @@
     const frame = parseNumbers(figure.dataset.frame, 3);
     const julia = parseNumbers(figure.dataset.julia, 2);
     const juliaWindow = parseNumbers(figure.dataset.juliaWindow, 3);
+    const beside = parseNumbers(figure.dataset.beside, 3);
 
-    const pictures = [];
+    // Two titled pictures side by side: the Mandelbrot set and the Julia set of c, titled with their
+    // planes (fixed markup with <var>), or two windows of the Mandelbrot set, titled from data-titles (text).
+    let panes = null;
+    let alternatives = null;  // with data-julias: the Julia pictures that the button puts in place of the panes
     if (julia) {
       const c = {re: julia[0], im: julia[1]};
+      panes = [
+        [{html: 'Parameter plane · vary <var>c</var>'}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
+        [{html: `Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`}, picture(juliaWindow && juliaWindow[2] > 0 ? juliaWindow : JULIA_WINDOW, c, [], false)],
+      ];
+    } else if (beside && beside[2] > 0) {
+      const titles = (figure.dataset.titles || '').split('|').map(title => title.trim());
+      panes = [
+        [{text: titles[0] || ''}, picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
+        [{text: titles[1] || ''}, picture(beside, null, parseMarks(figure.dataset.besideMarks), linked)],
+      ];
+      const split = text => (text || '').split('|');
+      const julias = split(figure.dataset.julias).map(text => parseNumbers(text, 2));
+      if (julias.length === 2 && julias.every(Boolean)) {
+        const windows = split(figure.dataset.juliaWindows).map(text => parseNumbers(text, 3));
+        const juliaMarks = split(figure.dataset.juliaMarks).map(parseMarks);
+        alternatives = julias.map(([re, im], index) => picture(windows[index] && windows[index][2] > 0 ? windows[index] : JULIA_WINDOW,
+          {re, im}, juliaMarks[index] || [], false, null, [], true));
+        if (!alternatives.every(Boolean)) alternatives = null;
+      }
+    }
+
+    let pictures = [];
+    if (panes) {
       const panels = element('div', 'plate-grid');
-      for (const [title, shown] of [
-        ['Parameter plane · vary <var>c</var>', picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null)],
-        [`Dynamical plane of <var>c</var> = ${format(c, 4)} · vary <var>z</var><sub>0</sub>`, picture(juliaWindow && juliaWindow[2] > 0 ? juliaWindow : JULIA_WINDOW, c, [], false)],
-      ]) {
+      const boxes = [];
+      for (const [title, shown] of panes) {
         if (!shown) return;
         const box = element('div', 'plate-panel');
         const heading = element('h3');
-        heading.innerHTML = title;  // fixed markup with <var>
+        if (title.html) heading.innerHTML = title.html;
+        else heading.textContent = title.text;
         box.append(heading, ...shown.parts);
         panels.append(box);
+        boxes.push(box);
         pictures.push(shown);
       }
       figure.insertBefore(panels, caption);
+      if (alternatives) {
+        // One button switches both panes between their windows of the Mandelbrot set and the Julia pictures.
+        figure.classList.add('place-switch');
+        const controls = element('div', 'plate-controls');
+        const buttons = element('div', 'plate-buttons');
+        const button = element('button', null, 'Show the Julia sets');
+        button.type = 'button';
+        buttons.append(button);
+        controls.append(buttons);
+        figure.insertBefore(controls, panels);
+        let others = alternatives;
+        button.addEventListener('click', () => {
+          boxes.forEach((box, index) => {
+            for (const part of pictures[index].parts) part.remove();
+            box.append(...others[index].parts);
+          });
+          [pictures, others] = [others, pictures];
+          button.textContent = pictures === alternatives ? 'Show the Mandelbrot sets' : 'Show the Julia sets';
+          delete figure.dataset.drawn;
+          if (near) draw();
+        });
+      }
     } else {
       const shown = picture(area, null, marks, linked, frame && frame[2] > 0 ? frame : null);
       if (!shown) return;
@@ -343,10 +408,20 @@
 
     // The pictures are computed when the figure first comes near the screen, and again when a
     // change of the window's size or zoom calls for another size.
+    // A picture already drawn at the size it needs is kept, as when the button switches back to it;
+    // a newer drawing stops an older one.
     let near = false;
+    let generation = 0;
+    const done = new Set();
     async function draw() {
-      const images = await Promise.all(pictures.map(shown => shown.draw()));
-      if (images.every(Boolean)) figure.dataset.drawn = '';
+      const request = ++generation;
+      const isCurrent = () => request === generation;
+      const images = await Promise.all(pictures.map(shown => (done.has(shown) && shown.fits() ? true
+        : shown.draw(isCurrent).then(image => {
+          if (image) done.add(shown);
+          return image;
+        }))));
+      if (images.every(Boolean) && isCurrent()) figure.dataset.drawn = '';
     }
     kit.whenNear(figure, () => {
       near = true;

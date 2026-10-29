@@ -675,8 +675,9 @@ figcaption var { font-size: 1.05em; }
   font-family: var(--font-ui);
 }
 /* Every figure the reader can change, on either panel, is outlined in coral; the pictures of the
-   set (place.js) are not, unless they offer a menu of windows, and nor are the shapes of Julia sets. */
-:is(.widget:not([data-widget="place"], [data-widget="julia-shapes"]), .place-choices, .explorer) { border: 1.5px solid var(--interactive); }
+   set (place.js) are not, unless they offer a menu of windows or a button that switches to Julia sets,
+   and nor are the shapes of Julia sets. */
+:is(.widget:not([data-widget="place"], [data-widget="julia-shapes"]), .place-choices, .place-switch, .explorer) { border: 1.5px solid var(--interactive); }
 .widget-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; margin-bottom: .9rem; font-size: .85rem; }
 .widget-modes { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
 .widget-modes label { position: relative; cursor: pointer; }
