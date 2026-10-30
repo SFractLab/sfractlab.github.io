@@ -1014,6 +1014,19 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .wheel-label { font-family: var(--font-ui); font-weight: 650; fill: #f2b35e; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
 .wheel-badge { fill: #fff1c8; stroke: #2b1904; }
 .wheel-number { font-family: var(--font-ui); font-weight: 700; fill: #2b1904; }
+/* The Leau–Fatou flower (flower.js): arrows along the directions, a ring at the fixed point, the orbit of 0. */
+.flower-steps span { display: flex; align-items: center; gap: .6rem; }
+.widget-plate .flower-steps input[type="range"] { width: 11rem; min-height: 2.4rem; padding: 0; border: 0; background: none; accent-color: var(--plate-accent); }
+.flower-steps output { min-width: 2.6rem; font-size: .9rem; font-variant-numeric: tabular-nums; color: var(--plate-ink); }
+.flower-overlay { cursor: default; }
+.flower-halo { fill: #091320; stroke: #091320; stroke-linecap: round; stroke-linejoin: round; }
+.flower-line { stroke: #ffffff; stroke-linecap: round; }
+.flower-head { fill: #ffffff; }
+.flower-ring-halo { fill: none; stroke: #091320; }
+.flower-ring { fill: none; stroke: #f2b35e; }
+.flower-badge, .flower-dot { fill: #fff1c8; stroke: #2b1904; }
+.flower-number { font-family: var(--font-ui); font-weight: 700; fill: #2b1904; }
+.flower-now { fill: #f2b35e; stroke: #091320; }
 /* Attracting and repelling fixed points (attract-repel.js): α, β and three orbits over the dimmed picture. */
 .stability-view canvas { filter: brightness(.55) saturate(.8); }
 .stability-overlay { cursor: default; }
@@ -1168,7 +1181,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
