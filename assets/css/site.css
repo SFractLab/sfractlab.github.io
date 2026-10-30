@@ -824,6 +824,34 @@ figcaption var { font-size: 1.05em; }
 .shadow-toggle input { accent-color: var(--gold); }
 .chapter .widget-readout > p { margin: 0 0 .5em; }
 
+/* The straightening series term by term (small-divisors.js): the angle chosen in teal, the others in
+   gray, the dots at the terms after a near return in gold. The drawing shrinks on a phone; the script
+   sets --unit, its drawing units per pixel, so that text and lines keep their size. */
+.small-divisors-angle { min-width: 0; max-width: 100%; white-space: nowrap; }
+.small-divisors-angle select { min-width: 0; flex: 1 1 auto; text-overflow: ellipsis; }
+.small-divisors-terms input[type="range"] { width: 11rem; accent-color: var(--accent); }
+.small-divisors-terms output { min-width: 2.6rem; font-variant-numeric: tabular-nums; }
+.small-divisors-buttons { display: flex; gap: .4rem; }
+.small-divisors-buttons .widget-button { padding: .2rem .65rem; }
+.small-divisors-plot .plane-tick {
+  font-size: calc(13px * var(--unit, 1));
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: calc(3px * var(--unit, 1));
+  stroke-linejoin: round;
+}
+.small-divisors-plot :is(line, polyline, circle) { vector-effect: non-scaling-stroke; }
+.small-divisors-other { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.small-divisors-curve, .small-divisors-rest { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.small-divisors-rest { opacity: .3; }
+.small-divisors-disk { stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.small-divisors-plot :is(.small-divisors-disk-label, .small-divisors-next) { fill: var(--gold); font-weight: 600; }
+.small-divisors-guide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.small-divisors-drops circle { fill: var(--gold); stroke: var(--surface); }
+.small-divisors-now { fill: none; stroke: var(--ink); }
+.small-divisors-arrow { stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.small-divisors-arrowhead { fill: var(--gold); }
+
 /* ---- Dark panels: the explorer and the orbit figures --------------------- */
 
 /* Tools that draw fractals sit on an always-dark instrument panel, in both
@@ -1188,7 +1216,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="siegel"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
