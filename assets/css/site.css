@@ -1062,6 +1062,10 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .siegel-nearer .flower-number { fill: #fff1c8; }
 .siegel-current { fill: none; stroke: #f2b35e; }
 .siegel-critical circle { fill: #ffffff; stroke: #091320; }
+/* Parabolic implosion (implosion.js) uses the flower's rings and badges; the orbit of 0 is white dots
+   on dark halos. */
+.implosion-orbit-halo circle { fill: #091320; }
+.implosion-orbit circle { fill: #ffffff; }
 /* Attracting and repelling fixed points (attract-repel.js): α, β and three orbits over the dimmed picture. */
 .stability-view canvas { filter: brightness(.55) saturate(.8); }
 .stability-overlay { cursor: default; }
@@ -1216,7 +1220,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
