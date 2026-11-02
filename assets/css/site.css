@@ -1000,6 +1000,9 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .passages-3 { background: rgb(30 135 151); }
 .passages-4 { background: rgb(27 75 119); box-shadow: 0 0 0 1px var(--plate-line); }
 .passages-5 { background: rgb(125 132 140); }
+/* Where the orbit lands (landing.js): the legend's filled Julia set of −3/4 and its edge. */
+.landing-julia { background: rgb(200 207 217); }
+.landing-edge { background: rgb(255 92 112); }
 /* Parameter rays (rays.js), drawn over the Mandelbrot set. */
 .rays-overlay { cursor: default; }
 .widget-plate .rays-angles { width: 15rem; }
@@ -1220,7 +1223,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="landing"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }
