@@ -16,7 +16,7 @@
   const WIDTH = 640;
   const HEIGHT = 480;
   const RADIUS = 2;
-  const BUDGET = 3000;  // six passages at these heights, where one takes about 494 steps
+  const BUDGET = 6000;  // twelve passages at these heights, where one takes about 494 steps
   // Key, name, center, width and the width as the status line writes it.
   const WINDOWS = [
     ['both', 'Both sides of the valley', -0.7500234, 0.00635796, 0.000139, '1.39 × 10⁻⁴'],
