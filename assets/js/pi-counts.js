@@ -137,7 +137,7 @@
       } else if (firstWorse === null) {
         readout.innerHTML = `${PLACES[key]}, ${rescaled} approaches ${limitName}: at <var>${name}</var> = `
           + `${power(lastBetter)} the difference is ${small(previous)}.`
-          + (key === 'parabola' ? ' Not for every <var>t</var>, though: for a few percent of the other small values, '
+          + (key === 'parabola' ? ' Not for every <var>t</var>, though: for about 7 percent of the other small values, '
             + '<var>N</var>·<var>t</var> lands near a larger multiple of π/2.' : '');
       } else {
         readout.innerHTML = `${PLACES[key]}, ${rescaled} approaches ${limitName} until <var>${name}</var> = `
