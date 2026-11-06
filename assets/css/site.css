@@ -629,6 +629,9 @@ figcaption var { font-size: 1.05em; }
 }
 .chapter :is(td, tbody th) { padding: .65rem .9rem .65rem 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .chapter tbody th { font-weight: 600; white-space: nowrap; }
+/* On a phone a long row heading on one line would take most of the width and squeeze the other
+   columns into tall, narrow strips, so there row headings wrap. */
+@media (max-width: 40rem) { .chapter tbody th { white-space: normal; } }
 .chapter tr:last-child :is(td, th) { border-bottom: 0; }
 .catalog td:first-child { min-width: 8rem; font-weight: 700; }
 
