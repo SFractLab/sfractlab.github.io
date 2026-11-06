@@ -196,6 +196,21 @@
     return `0.${digits.slice(0, preperiod).join('')}(${digits.slice(preperiod).join('')})₂`;
   }
 
+  // The first `length` symbols of the kneading sequence of p/q (Schleicher,
+  // Definition 2.4): for each angle 2^(k−1)θ = n/q, 1 if it lies strictly
+  // between the cuts θ/2 = p/2q and (θ + 1)/2 = (p + q)/2q, the half that
+  // contains θ, ⋆ if it is one of them, and 0 otherwise.
+  function kneading({p, q}, length) {
+    const symbols = [];
+    let n = p;
+    for (let k = 0; k < length; k++) {
+      const x = 2 * n;
+      symbols.push(x === p || x === p + q ? '⋆' : (x > p && x < p + q ? '1' : '0'));
+      n = (2 * n) % q;
+    }
+    return symbols;
+  }
+
   // --- Parameter and dynamical rays (the ray explorer, the menu of Misiurewicz points)
 
   const RAY_START = 256;  // rays are followed inward from |Φ(c)| = RAY_START
@@ -1165,7 +1180,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, kneading, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,

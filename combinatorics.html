@@ -14,6 +14,7 @@
 <script src="assets/js/search-index.js" defer></script>
 <script src="assets/js/search.js" defer></script>
 <script src="assets/js/atlas-kit.js" defer></script>
+<script src="assets/js/kneading.js" defer></script>
 <script src="assets/js/angle-explorer.js" defer></script>
 </head>
 <body data-page="combinatorics">
@@ -131,6 +132,9 @@
 <h2 id="kneading">Kneading sequences</h2>
 <p>An angle also records a route. Cut the circle at the two angles θ/2 and (θ + 1)/2, the two angles that doubling sends to θ. Call the open half that contains θ the 1-side and the other the 0-side. Then follow θ under doubling and write down, at each step, the side on which the angle lies, or ⋆ when it lands exactly on a cut. The result ν<sub>1</sub>ν<sub>2</sub>ν<sub>3</sub>… is the <strong>kneading sequence</strong> of θ (<a href="https://arxiv.org/abs/math/9411238">Schleicher, <cite>Internal addresses in the Mandelbrot set</cite></a>, Definition 2.4).</p>
 <p>For θ = 1/7 the cuts are at 1/14 and 4/7, and 1/7 lies between them. Doubling gives 1/7, 2/7 and 4/7: the first two lie on the 1-side, and the third is a cut. The kneading sequence is 11⋆. An angle of period <var>n</var> always meets a cut at step <var>n</var>, because 2<sup><var>n</var>−1</sup>θ is one of the two angles that doubling sends to θ. If <var>c</var> lies on the parameter ray at angle θ, the dynamical rays at θ/2 and (θ + 1)/2 both run into the critical point 0 and cut the plane in two; the kneading sequence then says on which side of this cut each point of the critical orbit lies. For a real center or Misiurewicz point it is the classical kneading sequence of the interval map: the sides of 0 visited by <var>c</var>, <var>c</var><sup>2</sup> + <var>c</var>, …, with 1 for the side that contains <var>c</var>, and ⋆ when the orbit returns to 0. For the airplane this gives 10⋆, the kneading sequence of 3/7.</p>
+<figure class="widget" data-widget="kneading" data-angle="1/7" hidden>
+<figcaption>Try it: the two cuts <var>θ</var>/2 and (<var>θ</var> + 1)/2 differ by half a turn, so together they cut the circle along a diameter. The half that contains <var>θ</var>, the 1-side, is gold, and the 0-side teal. Each step doubles the angle once and writes the symbol of the side where it lands, or ⋆, with a ring, when it lands on a cut. The figure starts with 1/7, the example above; 3/7 gives 10⋆, the airplane’s kneading sequence, and 7/15 gives 100⋆, the example of the next section. A strictly preperiodic angle such as 1/6 never lands on a cut.</figcaption>
+</figure>
 <h2 id="internal-addresses">Internal addresses: a road map</h2>
 <p>Walk from the main cardioid towards the component where the ray at θ lands. At each stage, move to the component of smallest period among those that still separate you from the goal. The periods met in this way form the component’s <strong>internal address</strong>, introduced by Eike Lau and Dierk Schleicher. It can be read off the kneading sequence (Schleicher, Definition 3.4): start with 1; then each next entry is the first position at which the kneading sequence differs from the periodic repetition of its first <var>S</var> entries, where <var>S</var> is the last entry so far.</p>
 <p>For θ = 7/15 the kneading sequence is 100⋆. It differs from 111… at position 2, from 1010… at position 3, and from 100100… at position 4, so the address is 1&nbsp;→ 2&nbsp;→ 3&nbsp;→ 4. Along the real axis this is the route from the main cardioid through the period-two disk and the period-three window of the airplane to a period-four copy near −1.94.</p>

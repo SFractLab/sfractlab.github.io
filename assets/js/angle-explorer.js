@@ -17,7 +17,7 @@
   'use strict';
   const kit = window.AtlasKit;
   if (!kit) return;
-  const {format, formatNumber} = kit;
+  const {format, formatNumber, kneading} = kit;
 
   const SIZE = 360;
   const MAX_DENOMINATOR = 100000;
@@ -47,19 +47,6 @@
     return {p: p / d, q: q / d};
   }
   const fraction = ({p, q}) => (p === 0 ? '0' : `${p}/${q}`);
-
-  // The kneading sequence: for each angle 2^(k−1)θ = n/q, which side of the
-  // cuts θ/2 = p/2q and (θ + 1)/2 = (p + q)/2q it lies on, or ⋆ on a cut.
-  function kneading({p, q}, length) {
-    const symbols = [];
-    let n = p;
-    for (let k = 0; k < length; k++) {
-      const x = 2 * n;
-      symbols.push(x === p || x === p + q ? '⋆' : (x > p && x < p + q ? '1' : '0'));
-      n = (2 * n) % q;
-    }
-    return symbols;
-  }
 
   // The internal address from the kneading sequence (Schleicher, Definition
   // 3.4): each next period is the first position where the sequence differs
