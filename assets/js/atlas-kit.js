@@ -211,6 +211,43 @@
     return symbols;
   }
 
+  // Lavaurs' chords up to `period`, as [period, a, b, k1, k2, q] with angles a = k1/q < b = k2/q,
+  // q = 2^period − 1 (Lavaurs' algorithm: within each period, from the smallest angle up, join each
+  // angle to the next one that crosses no chord drawn before). Built period by period on first use
+  // and kept; distinct periodic angles of periods up to 12 differ by far more than rounding. Used by
+  // the angle explorer and the squeeze figure.
+  const chords = [];
+  let chordsUpTo = 1;
+  function lavaursChords(period) {
+    for (let n = chordsUpTo + 1; n <= period; n++) {
+      const q = 2 ** n - 1;
+      const angles = [];
+      for (let k = 1; k < q; k++) {
+        let r = (2 * k) % q, step = 1;
+        while (r !== k) {
+          r = (2 * r) % q;
+          step++;
+        }
+        if (step === n) angles.push(k);
+      }
+      const joined = new Set();
+      for (const a of angles) {
+        if (joined.has(a)) continue;
+        for (const b of angles) {
+          if (b <= a || joined.has(b)) continue;
+          const x = a / q, y = b / q;
+          if (chords.some(([, c, d]) => (x < c && c < y) !== (x < d && d < y))) continue;
+          chords.push([n, x, y, a, b, q]);
+          joined.add(a);
+          joined.add(b);
+          break;
+        }
+      }
+      chordsUpTo = n;
+    }
+    return chords.filter(([n]) => n <= period);
+  }
+
   // --- The spider algorithm (Hubbard and Schleicher; the angle explorer, the spider figure)
 
   // A spider for the angles θ, 2θ, 4θ, … (in turns) has one leg per angle: a
@@ -1237,7 +1274,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, kneading, spiderLegs, spiderStep, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, kneading, lavaursChords, spiderLegs, spiderStep, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,

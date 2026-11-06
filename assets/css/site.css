@@ -850,6 +850,20 @@ figcaption var { font-size: 1.05em; }
 .spider-label.spider-other { color: var(--accent); }
 .spider-c { color: var(--gold); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
 
+/* The circle squeezed onto M (squeeze.js): the regions of the Lavaurs figure in the same teal and
+   gold, Lavaurs' chords drawn straight, the chord from 1/3 to 2/3 in gold, and M as a silhouette. */
+.squeeze-plane { max-width: 32rem; margin-inline: auto; }
+.squeeze-level input[type="range"] { width: 11rem; accent-color: var(--accent); }
+.squeeze-level output { min-width: 5.5rem; font-variant-numeric: tabular-nums; }
+.squeeze-silhouette { fill: var(--line-strong); opacity: .6; }
+.squeeze-middle { fill: var(--accent); fill-opacity: .16; }
+.squeeze-disk { fill: var(--gold); fill-opacity: .26; }
+.squeeze-curve { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+.squeeze-chord { stroke: var(--ink-soft); stroke-width: 1; opacity: .75; }
+.squeeze-chord.squeeze-gold { stroke: var(--gold); stroke-width: 2.4; opacity: 1; }
+.squeeze-label { font: 600 15px var(--font-ui); color: var(--ink-soft); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+.squeeze-label.squeeze-gold-label { color: var(--gold); }
+
 /* The orbit on the interval (angle-shadow.js): the point on the circle, its
    shadow on the line and the earlier values in teal; the second start in gold,
    as rings, with its dots on a rail below the line. */
@@ -1271,7 +1285,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="rational-zoo"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="landing"], [data-widget="siegel"], [data-widget="small-divisors"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="rational-zoo"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="landing"], [data-widget="siegel"], [data-widget="small-divisors"], [data-widget="squeeze"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }

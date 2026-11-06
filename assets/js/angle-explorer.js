@@ -69,43 +69,9 @@
     }
   }
 
-  // Lavaurs' chords, period by period, as [period, a, b] with a < b (angles
-  // as numbers; distinct periodic angles of periods up to 12 differ by far
-  // more than rounding).
-  const chords = [];
-  let chordsUpTo = 1;
-  function lavaurs(period) {
-    for (let n = chordsUpTo + 1; n <= period; n++) {
-      const q = 2 ** n - 1;
-      const angles = [];
-      for (let k = 1; k < q; k++) {
-        let r = (2 * k) % q, step = 1;
-        while (r !== k) {
-          r = (2 * r) % q;
-          step++;
-        }
-        if (step === n) angles.push(k);
-      }
-      const joined = new Set();
-      for (const a of angles) {
-        if (joined.has(a)) continue;
-        for (const b of angles) {
-          if (b <= a || joined.has(b)) continue;
-          const x = a / q, y = b / q;
-          if (chords.some(([, c, d]) => (x < c && c < y) !== (x < d && d < y))) continue;
-          chords.push([n, x, y, a, b, q]);
-          joined.add(a);
-          joined.add(b);
-          break;
-        }
-      }
-      chordsUpTo = n;
-    }
-  }
   function partner({p, q}, period) {
-    lavaurs(period);
     const x = p / q;
-    const chord = chords.find(([n, a, b]) => n === period && (Math.abs(a - x) < 1e-12 || Math.abs(b - x) < 1e-12));
+    const chord = kit.lavaursChords(period).find(([n, a, b]) => n === period && (Math.abs(a - x) < 1e-12 || Math.abs(b - x) < 1e-12));
     if (!chord) return null;
     const [, a, , k1, k2, d] = chord;
     const k = Math.abs(a - x) < 1e-12 ? k2 : k1;
@@ -182,8 +148,7 @@
         + `${x2.toFixed(2)} ${y2.toFixed(2)}`;
     }
     kit.svg('circle', {cx: CENTER, cy: CENTER, r: RADIUS, class: 'angle-disk'}, disk.drawing);
-    lavaurs(DISK_PERIODS);
-    kit.svg('path', {d: chords.filter(([n]) => n <= DISK_PERIODS).map(([, a, b]) => arc(a, b)).join(''),
+    kit.svg('path', {d: kit.lavaursChords(DISK_PERIODS).map(([, a, b]) => arc(a, b)).join(''),
       class: 'angle-chords'}, disk.drawing);
     const diskLayer = kit.svg('g', {}, disk.drawing);
 
