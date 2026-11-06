@@ -115,50 +115,15 @@
 
   // --- the spider algorithm ------------------------------------------------
 
-  const mul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
-  const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
-  function sqrt([x, y]) {
-    const size = Math.hypot(x, y);
-    const im = Math.sqrt(Math.max(0, (size - x) / 2));
-    return [Math.sqrt((size + x) / 2), y < 0 ? -im : im];
-  }
-  const turn = a => [Math.cos(2 * Math.PI * a), Math.sin(2 * Math.PI * a)];
 
-  // The legs are polygons of POINTS points from the foot out to radius FAR at
-  // the angles θ, 2θ, 4θ, …. Each step replaces leg j by the preimage of leg
-  // j + 1 under z ↦ z² + c, with c the foot of the first leg, choosing the
-  // square root continuously from the far end, where the angle fixes it.
+  // Steps of AtlasKit.spiderStep until the foot of the first leg, the guess
+  // for c, stops moving.
   function spider(angles, cycleStart) {
-    const POINTS = 64, FAR = 1000;
-    const count = angles.length;
-    const ray = (a, r0) => Array.from({length: POINTS}, (_, i) => {
-      const r = r0 * (FAR / r0) ** (i / (POINTS - 1));
-      const [x, y] = turn(a);
-      return [r * x, r * y];
-    });
-    let legs = angles.map(a => ray(a, 1));
-    let c = legs[0][0];
+    let legs = kit.spiderLegs(angles);
     for (let step = 0; step < 2000; step++) {
-      c = legs[0][0];
-      legs = angles.map((a, j) => {
-        const source = legs[j + 1 < count ? j + 1 : cycleStart];
-        const target = turn(a);
-        const out = new Array(POINTS);
-        let w = sqrt(sub(source[POINTS - 1], c));
-        if (w[0] * target[0] + w[1] * target[1] < 0) w = [-w[0], -w[1]];
-        out[POINTS - 1] = w;
-        for (let i = POINTS - 2; i >= 0; i--) {
-          const v = sqrt(sub(source[i], c));
-          out[i] = dist(v, out[i + 1]) <= dist([-v[0], -v[1]], out[i + 1]) ? v : [-v[0], -v[1]];
-        }
-        const end = Math.hypot(...out[POINTS - 1]);
-        const extended = out.concat(Array.from({length: 8}, (_, i) => {
-          const r = end * (FAR / end) ** ((i + 1) / 8);
-          return [r * target[0], r * target[1]];
-        }));
-        return Array.from({length: POINTS}, (_, i) => extended[Math.round(i * (extended.length - 1) / (POINTS - 1))]);
-      });
+      const c = legs[0][0];
+      legs = kit.spiderStep(legs, angles, cycleStart);
       if (step > 50 && dist(legs[0][0], c) < 1e-15) break;
     }
     return legs[0][0];

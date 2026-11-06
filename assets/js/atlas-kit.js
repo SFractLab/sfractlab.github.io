@@ -211,6 +211,63 @@
     return symbols;
   }
 
+  // --- The spider algorithm (Hubbard and Schleicher; the angle explorer, the spider figure)
+
+  // A spider for the angles θ, 2θ, 4θ, … (in turns) has one leg per angle: a
+  // polygon of `points` points [x, y] from its foot out to radius SPIDER_FAR,
+  // where it comes in at its angle. The first spider has straight legs from
+  // the unit circle, spaced evenly in log |z|.
+  const SPIDER_FAR = 1000;
+  const turnPoint = a => [Math.cos(2 * Math.PI * a), Math.sin(2 * Math.PI * a)];
+  function spiderLegs(angles, points = 64) {
+    return angles.map(a => {
+      const [x, y] = turnPoint(a);
+      return Array.from({length: points}, (_, i) => {
+        const r = SPIDER_FAR ** (i / (points - 1));
+        return [r * x, r * y];
+      });
+    });
+  }
+
+  // One step of the spider: leg j becomes the preimage under z ↦ z² + c, with
+  // c the foot of the first leg, of leg j + 1, and the last leg the preimage
+  // of leg `cycleStart`, the angle that doubling takes the last one back to.
+  // The square root is chosen at the far end, where the angle fixes it, and
+  // continuously from there to the foot; the preimage reaches out to radius
+  // √SPIDER_FAR only, so eight points on the straight ray carry it on.
+  function spiderStep(legs, angles, cycleStart) {
+    const count = angles.length;
+    const points = legs[0].length;
+    const [cx, cy] = legs[0][0];
+    // The principal square root of z − c; subtracting c first keeps size ± x from going below 0.
+    const root = ([zx, zy]) => {
+      const x = zx - cx;
+      const y = zy - cy;
+      const size = Math.hypot(x, y);
+      const im = Math.sqrt(Math.max(0, (size - x) / 2));
+      return [Math.sqrt((size + x) / 2), y < 0 ? -im : im];
+    };
+    const apart = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+    return angles.map((a, j) => {
+      const source = legs[j + 1 < count ? j + 1 : cycleStart];
+      const target = turnPoint(a);
+      const out = new Array(points);
+      let w = root(source[points - 1]);
+      if (w[0] * target[0] + w[1] * target[1] < 0) w = [-w[0], -w[1]];
+      out[points - 1] = w;
+      for (let i = points - 2; i >= 0; i--) {
+        const v = root(source[i]);
+        out[i] = apart(v, out[i + 1]) <= apart([-v[0], -v[1]], out[i + 1]) ? v : [-v[0], -v[1]];
+      }
+      const end = Math.hypot(...out[points - 1]);
+      const extended = out.concat(Array.from({length: 8}, (_, i) => {
+        const r = end * (SPIDER_FAR / end) ** ((i + 1) / 8);
+        return [r * target[0], r * target[1]];
+      }));
+      return Array.from({length: points}, (_, i) => extended[Math.round(i * (extended.length - 1) / (points - 1))]);
+    });
+  }
+
   // --- Parameter and dynamical rays (the ray explorer, the menu of Misiurewicz points)
 
   const RAY_START = 256;  // rays are followed inward from |Φ(c)| = RAY_START
@@ -1180,7 +1237,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, kneading, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, kneading, spiderLegs, spiderStep, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,

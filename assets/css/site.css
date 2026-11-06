@@ -831,6 +831,25 @@ figcaption var { font-size: 1.05em; }
 .kneading-symbol.kneading-zero { color: var(--accent); }
 .kneading-symbol.kneading-star { color: var(--ink); font-size: 1.3em; line-height: 1; }
 
+/* The spider algorithm (spider.js): the leg at θ and its foot, the guess for
+   c, in gold, the other legs in teal, the unit circle of the first spider
+   dashed, and the filled Julia set fading in once the feet have settled. */
+.spider-plane { max-width: 30rem; margin-inline: auto; }
+.spider-unit { fill: none; stroke: var(--ink-soft); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .55; }
+.spider-julia { fill: var(--line-strong); opacity: 0; transition: opacity .8s; }
+.spider-julia.spider-julia-shown { opacity: .75; }
+.spider-leg { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.spider-leg.spider-first { stroke: var(--gold); }
+.spider-leg.spider-other { stroke: var(--accent); }
+.spider-foot { stroke: var(--surface); stroke-width: 1.5; }
+.spider-foot.spider-first { fill: var(--gold); }
+.spider-foot.spider-other { fill: var(--accent); }
+.spider-trail { fill: none; stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 2 3; opacity: .8; }
+.spider-label { font: 600 15px var(--font-ui); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+.spider-label.spider-first { color: var(--gold); }
+.spider-label.spider-other { color: var(--accent); }
+.spider-c { color: var(--gold); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+
 /* The orbit on the interval (angle-shadow.js): the point on the circle, its
    shadow on the line and the earlier values in teal; the second start in gold,
    as rings, with its dots on a rail below the line. */
