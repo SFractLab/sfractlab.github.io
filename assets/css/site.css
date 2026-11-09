@@ -1072,6 +1072,18 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
 .rays-end { fill: #fff1c8; stroke: #2b1904; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .rays-label { font-family: var(--font-ui); font-weight: 650; fill: #fff1c8; paint-order: stroke; stroke: #091320; stroke-linejoin: round; }
 .chapter .rays-readout p { max-width: none; margin: 0 0 .35rem; overflow-wrap: anywhere; }
+/* Reading an angle from binary decomposition (binary-reading.js): the outlines of the cells that the
+   ray crosses, and a badge with each digit in the digit's own color. */
+.widget-plate .reading-angle { width: 9rem; }
+.reading-cell-halo { fill: none; stroke: #091320; stroke-opacity: .7; stroke-width: 5.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.reading-cell { fill: none; stroke: #f2b35e; stroke-width: 2.2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.reading-badge circle { stroke: #f2b35e; }
+.reading-badge text { font-family: var(--font-ui); font-weight: 700; }
+.reading-digit-0 circle { fill: rgb(244 236 214); }
+.reading-digit-0 text { fill: rgb(20 42 72); }
+.reading-digit-1 circle { fill: rgb(20 42 72); }
+.reading-digit-1 text { fill: rgb(244 236 214); }
+.chapter .reading-readout p { max-width: none; margin: 0 0 .35rem; overflow-wrap: anywhere; }
 /* Shapes of Julia sets (julia-shapes.js): rows of two pictures, each row titled. */
 .shapes-row + .shapes-row { margin-top: 1.5rem; }
 /* A zoo of rational Julia sets (rational-zoo.js): three square pictures in a row, on phones too. */
@@ -1288,7 +1300,7 @@ figure[data-widget="inverse-iteration"] canvas { image-rendering: pixelated; }
   .chapter :is(.widget, .explorer) a { color: inherit; }
   :is(.widget-controls, .plate-controls, .plate-fields, .plate-buttons, .explorer-controls),
   .chapter :is(.widget, .explorer) :is(button, select, input),
-  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="rational-zoo"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="landing"], [data-widget="siegel"], [data-widget="small-divisors"], [data-widget="squeeze"]):not([data-drawn]) { display: none !important; }
+  .widget[data-empty], .widget:is([data-widget="place"], [data-widget="julia-shapes"], [data-widget="rational-zoo"], [data-widget="julia-wheel"], [data-widget="similarity"], [data-widget="flower"], [data-widget="implosion"], [data-widget="landing"], [data-widget="siegel"], [data-widget="small-divisors"], [data-widget="squeeze"], [data-widget="binary-reading"]):not([data-drawn]) { display: none !important; }
   /* Browsers leave out backgrounds in print, and these swatches are the legend. */
   :is(.certified-swatch, .passages-swatch) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .chapter .place:not([data-julia]) .place-view { max-width: 147mm; margin-inline: auto; }

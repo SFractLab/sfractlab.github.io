@@ -305,7 +305,8 @@
     });
   }
 
-  // --- Parameter and dynamical rays (the ray explorer, the menu of Misiurewicz points)
+  // --- Parameter and dynamical rays (the ray explorer, the menu of Misiurewicz points, and newtonStep
+  //     for the rays and equipotentials of the binary-reading figure)
 
   const RAY_START = 256;  // rays are followed inward from |Φ(c)| = RAY_START
   const RAY_STEPS = 4;    // points per halving of the potential, unless asked for more
@@ -1274,7 +1275,7 @@
   window.AtlasKit = {
     complex, format, formatNumber, formatAngle, subscript, Plane, svg, arcPath, placeLabels,
     makeDraggable, setUp, escapeRadius, renderEscapeTime, mandelbrotMask, orbitOf, describeOrbit,
-    doublingOrbit, binary, kneading, lavaursChords, spiderLegs, spiderStep, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
+    doublingOrbit, binary, kneading, lavaursChords, spiderLegs, spiderStep, newtonStep, parameterRay, dynamicalRay, RAY_STEPS, drawRays, iterationBudget, pictureSize, fitsScreen, fitCanvas, whenResized, whenNear, enlargeable, paint,
     workerPool,
     inCardioidOrPeriodTwoDisk,
     COLORINGS, STRIPE_DENSITY, stripeAddend, stripeAverage, numbersFor, canPaint, orbitPass, paintOrbits,
