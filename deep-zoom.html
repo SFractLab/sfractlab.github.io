@@ -87,7 +87,7 @@
 <ol>
 <li><strong>A reference orbit.</strong> One orbit, usually that of the image’s center, is computed with as many digits as the depth requires.</li>
 <li><strong>Perturbation.</strong> Every pixel follows the reference as a small difference from it, computed with ordinary hardware numbers whose exponent range is extended in software.</li>
-<li><strong>Rebasing.</strong> When a pixel’s orbit comes closer to 0 than to the reference, the pixel restarts the reference from its beginning, which keeps the small differences accurate.</li>
+<li><strong>Rebasing.</strong> When a pixel’s orbit comes closer to 0 than to the reference, the pixel stops comparing itself with the current point of the reference orbit and starts over with its first point, 0. This keeps the small differences accurate, and one reference serves all pixels.</li>
 <li><strong>Skipping.</strong> Precomputed linear maps let each pixel jump over thousands or millions of iterations at once.</li>
 <li><strong>Coloring.</strong> The escape count, smoothed, and the distance estimate are computed as in the <a href="computing.html#smooth">chapter on computing the pictures</a>.</li>
 </ol>
