@@ -746,6 +746,9 @@ figcaption var { font-size: 1.05em; }
 /* Deep-zoom figures (deep-zoom.js). */
 .deep-range input[type="range"] { width: 11rem; accent-color: var(--accent); }
 .deep-range-value { min-width: 2.2rem; font-variant-numeric: tabular-nums; }
+/* The digits figure's menu of pixels: on a phone it shrinks to the figure instead of sticking out. */
+.deep-pixel { max-width: 100%; }
+.deep-pixel select { min-width: 0; }
 .deep-curve { fill: none; stroke: currentColor; stroke-width: 2; }
 .deep-legend { font-size: 14px; fill: var(--ink-soft); }
 .deep-delta-circle { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; }

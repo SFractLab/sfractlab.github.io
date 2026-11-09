@@ -1,10 +1,12 @@
 /* Interactive figures of the deep-zoom chapter.
 
-   deep-digits     One pixel near a minibrot of period 998, at width 2.5·10⁻¹⁵, iterated with
-                   P-bit fixed-point numbers (BigInt) and with 340 bits as the truth. The
-                   plot shows the error in z, which grows until the computed orbit is lost, and
-                   the same error measured in pixels of c (divided by dz/dc), which stays small:
-                   the computed orbit is the exact orbit of a slightly moved parameter.
+   deep-digits     One pixel from each of the three tests in the text (near minibrots of period 998
+                   and 8,007, at widths 2.5·10⁻¹⁵ and 3.6·10⁻³², and near the Misiurewicz point
+                   i at 10⁻¹⁰⁰), iterated with P-bit fixed-point numbers (BigInt) and with about
+                   290 bits more as the truth. The plot shows the error in z, which grows until the
+                   computed orbit is lost, and the same error measured in pixels of c (divided by
+                   dz/dc), which stays small: the computed orbit is the exact orbit of a slightly
+                   moved parameter, however long the orbit.
    deep-rebasing   One pixel followed by perturbation around a reference orbit, step by step, in
                    the z-plane: the reference value Z_m, the pixel's value z = Z_m + δ, and the
                    circle of radius |δ| around 0. With rebasing the pixel restarts the reference
@@ -71,21 +73,37 @@
   // deep-digits: the error in z and the error in pixels of c
   // ===========================================================================
 
-  // The pixel: 8 pixel widths right of and 9 above a point near the minibrot of period 998, in a
-  // picture 48 pixels wide of width 2.5·10⁻¹⁵ (window A of the research notes).
-  const DIGITS = {
-    re: '-0.743643887037158704752191506114774', im: '0.131825904205311970493132056385139',
-    width: 2.5e-15, pixels: 48, offset: [8, 9], truthBits: 340, budget: 30000,
-  };
-  const SPACING = DIGITS.width / DIGITS.pixels;
-  const NEEDED = Math.round(Math.log2(1 / SPACING));  // bits that tell neighboring pixels apart: 54
-  const PLOT = {width: 720, height: 300, left: 54, right: 12, top: 14, bottom: 42, low: -80, high: 8};
+  // The pixels, one from each window of the tests (A, B and C of the research notes), in a picture
+  // 48 pixels wide: `offset` pixel widths right of and above a point near a minibrot of period 998,
+  // a nucleus of period 8,007 (found by the ball method and Newton's method) and the Misiurewicz
+  // point i. The truth is computed with about 290 bits more than tell neighboring pixels apart.
+  const SAMPLES = [
+    {key: 'period-998', name: 'Near a minibrot of period 998, width 2.5·10⁻¹⁵, about 7,100 steps',
+      re: '-0.743643887037158704752191506114774', im: '0.131825904205311970493132056385139',
+      width: '2.5e-15', offset: [8, 9], truthBits: 340, budget: 30000},
+    {key: 'period-8007', name: 'Near a minibrot of period 8,007, width 3.6·10⁻³², about 57,000 steps',
+      re: '-0.743643887037158704752191506114779778215256207948181289816883901818560735783796478634787822762144',
+      im: '0.131825904205311970493132056385140678972952279328918966209127677465513481738298337234738964180368',
+      width: '3.6e-32', offset: [16, 9], truthBits: 400, budget: 120000},
+    {key: 'point-i', name: 'Near the Misiurewicz point i, width 10⁻¹⁰⁰, about 270 steps',
+      re: '0', im: '1', width: '1e-100', offset: [8, 9], truthBits: 624, budget: 5000},
+  ];
+  const PIXELS = 48;
+  for (const sample of SAMPLES) {
+    sample.spacing = Number(sample.width) / PIXELS;
+    sample.needed = Math.round(Math.log2(1 / sample.spacing));  // bits that tell neighboring pixels apart
+  }
+  const PLOT = {width: 720, height: 300, left: 54, right: 12, top: 14, bottom: 42, high: 8};
 
-  // A decimal string as a fixed-point BigInt with `bits` binary digits after the point.
+  // A decimal string, such as "-0.74" or "2.5e-15", as a fixed-point BigInt with `bits` binary digits
+  // after the point.
   function fixed(text, bits) {
     const negative = text.startsWith('-');
-    const [integer, fraction = ''] = text.replace(/^[-+]/, '').split('.');
-    const value = (BigInt(integer + fraction) << BigInt(bits)) / 10n ** BigInt(fraction.length);
+    const [mantissa, exponent = '0'] = text.replace(/^[-+]/, '').split('e');
+    const [integer, fraction = ''] = mantissa.split('.');
+    const scale = fraction.length - Number(exponent);
+    const digits = BigInt(integer + fraction) << BigInt(bits);
+    const value = scale >= 0 ? digits / 10n ** BigInt(scale) : digits * 10n ** BigInt(-scale);
     return negative ? -value : value;
   }
   // Round a fixed-point number to fewer binary digits.
@@ -111,44 +129,75 @@
     return {xs, ys};
   }
 
-  function digitsData(extra) {
-    const T = DIGITS.truthBits;
-    const [di, dj] = DIGITS.offset;
-    // The pixel at the truth's precision: the offset is exact at 2⁻⁶⁰, far below the spacing.
-    const step = BigInt(Math.round(SPACING * 2 ** 60)) << BigInt(T - 60);
-    const cr = fixed(DIGITS.re, T) + BigInt(di) * step;
-    const ci = fixed(DIGITS.im, T) + BigInt(dj) * step;
-    const truth = fixedOrbit(cr, ci, T, DIGITS.budget);
-    const P = NEEDED + extra;
-    const low = fixedOrbit(reduce(cr, T, P), reduce(ci, T, P), P, DIGITS.budget);
+  // The pixel's c at the truth's precision, its true orbit and |dz/dc| along it (iterated in doubles),
+  // computed once for each sample. The pixel spacing, the width over 48, is exact to the truth's
+  // precision, so that c has binary digits all the way down, as a pixel's c generally has; with a
+  // spacing of few digits, the pixel near i would be rounded hardly at all.
+  function truthOf(sample) {
+    if (sample.truth) return sample.truth;
+    const T = sample.truthBits;
+    const [di, dj] = sample.offset;
+    const step = fixed(sample.width, T) / BigInt(PIXELS);
+    const cr = fixed(sample.re, T) + BigInt(di) * step;
+    const ci = fixed(sample.im, T) + BigInt(dj) * step;
+    const orbit = fixedOrbit(cr, ci, T, sample.budget);
+    const unit = 2 ** -T;
+    const derivative = [0];
+    let dr = 0, di2 = 0;
+    for (let n = 1; n < orbit.xs.length; n++) {
+      const zr = Number(orbit.xs[n - 1]) * unit, zi = Number(orbit.ys[n - 1]) * unit;
+      [dr, di2] = [2 * (zr * dr - zi * di2) + 1, 2 * (zr * di2 + zi * dr)];
+      derivative.push(Math.hypot(dr, di2));
+    }
+    sample.truth = {cr, ci, orbit, derivative};
+    return sample.truth;
+  }
+
+  function digitsData(sample, extra) {
+    const T = sample.truthBits;
+    const {cr, ci, orbit: truth, derivative} = truthOf(sample);
+    const P = sample.needed + extra;
+    const low = fixedOrbit(reduce(cr, T, P), reduce(ci, T, P), P, sample.budget);
     const end = Math.min(truth.xs.length, low.xs.length) - 1;
     const unit = 2 ** -T;
     const lift = BigInt(T - P);
-    // log₂ of the error in z and of the same error in pixels of c, per step; the derivative
-    // D = dz/dc of the true orbit is iterated in doubles.
+    // log₂ of the error in z and of the same error in pixels of c, per step.
     const inZ = [], inPixels = [];
-    let dr = 0, dImag = 0, worstPixels = -Infinity, lostAt = null;
+    let worstPixels = -Infinity, lostAt = null;
     for (let n = 1; n <= end; n++) {
-      const zr = Number(truth.xs[n - 1]) * unit, zi = Number(truth.ys[n - 1]) * unit;
-      [dr, dImag] = [2 * (zr * dr - zi * dImag) + 1, 2 * (zr * dImag + zi * dr)];
       const er = Number((low.xs[n] << lift) - truth.xs[n]) * unit;
       const ei = Number((low.ys[n] << lift) - truth.ys[n]) * unit;
       const error = Math.hypot(er, ei);
       if (error === 0) continue;
       const a = Math.log2(error);
-      const b = Math.log2(error / (Math.hypot(dr, dImag) * SPACING));
+      const b = Math.log2(error / (derivative[n] * sample.spacing));
       inZ.push([n, a]);
       inPixels.push([n, b]);
       worstPixels = Math.max(worstPixels, b);
       if (lostAt === null && a > -1) lostAt = n;
     }
-    return {P, extra, inZ, inPixels, worstPixels, lostAt, end,
-      steps: {truth: truth.xs.length - 1, low: low.xs.length - 1, budget: DIGITS.budget}};
+    return {sample, P, extra, inZ, inPixels, worstPixels, lostAt, end,
+      steps: {truth: truth.xs.length - 1, low: low.xs.length - 1, budget: sample.budget}};
+  }
+
+  // The plot's range, in log₂: from below the smallest error in z (about 2^−(needed + m)) to 2⁸, with
+  // gridlines every 8, 16, … so that there are about eleven.
+  function rangeOf(sample) {
+    const tick = 8 * Math.ceil((sample.needed + 34) / 88);
+    return {tick, low: -tick * Math.ceil((sample.needed + 26) / tick)};
   }
 
   kit.setUp('deep-digits', (figure) => {
-    const state = {extra: 8};
+    const state = {extra: 8, sample: SAMPLES[0]};
     const controls = element('div', 'widget-controls');
+    const pixelLabel = element('label', 'widget-point deep-pixel', 'Pixel ');
+    const menu = element('select');
+    for (const sample of SAMPLES) {
+      const option = element('option', null, sample.name);
+      option.value = sample.key;
+      menu.append(option);
+    }
+    pixelLabel.append(menu);
     const label = element('label', 'widget-point deep-range');
     const slider = element('input');
     slider.type = 'range';
@@ -159,17 +208,28 @@
     slider.setAttribute('aria-label', 'Extra bits beyond those that tell neighboring pixels apart');
     const shown = element('span', 'deep-range-value');
     label.append('Extra bits ', slider, shown);
-    controls.append(label);
+    controls.append(pixelLabel, label);
 
-    const {width: W, height: H, left: L, right: R, top: TOP, bottom: B, low: LOW, high: HIGH} = PLOT;
+    const {width: W, height: H, left: L, right: R, top: TOP, bottom: B, high: HIGH} = PLOT;
     const drawing = kit.svg('svg', {viewBox: `0 0 ${W} ${H}`, class: 'widget-plane deep-plot', 'aria-hidden': 'true'});
+    let LOW = rangeOf(state.sample).low;
     const toY = v => TOP + (HIGH - Math.max(LOW, Math.min(HIGH, v))) / (HIGH - LOW) * (H - TOP - B);
     const grid = kit.svg('g', {class: 'plane-grid'}, drawing);
-    for (let v = LOW; v <= HIGH; v += 8) {
-      kit.svg('line', {x1: L, y1: toY(v), x2: W - R, y2: toY(v), class: v === 0 ? 'plane-axis' : ''}, grid);
-      kit.svg('text', {x: L - 6, y: toY(v) + 5, 'text-anchor': 'end', class: 'plane-tick'}, drawing).textContent =
-        v === 0 ? '1' : `2${String(v).replace(/[-\d]/g, ch => SUPERSCRIPT[ch])}`;
+    const ticks = kit.svg('g', {}, drawing);
+    // Gridlines and labels for the sample's range, from 1 = 2⁰ down.
+    function drawGrid() {
+      const {tick, low} = rangeOf(state.sample);
+      LOW = low;
+      grid.replaceChildren();
+      ticks.replaceChildren();
+      for (let v = 0; v >= LOW; v -= tick) {
+        kit.svg('line', {x1: L, y1: toY(v), x2: W - R, y2: toY(v), class: v === 0 ? 'plane-axis' : ''}, grid);
+        kit.svg('text', {x: L - 6, y: toY(v) + 5, 'text-anchor': 'end', class: 'plane-tick'}, ticks).textContent =
+          v === 0 ? '1' : `2${String(v).replace(/[-\d]/g, ch => SUPERSCRIPT[ch])}`;
+      }
+      if (tick === 8) kit.svg('line', {x1: L, y1: toY(8), x2: W - R, y2: toY(8)}, grid);
     }
+    drawGrid();
     const layer = kit.svg('g', {}, drawing);
     const axisLabel = kit.svg('text', {x: (L + W - R) / 2, y: H - 8, 'text-anchor': 'middle', class: 'plane-tick'}, drawing);
     const readout = element('p', 'widget-readout');
@@ -181,7 +241,7 @@
       shown.textContent = ` ${state.extra > 0 ? '+' : state.extra < 0 ? '−' : ''}${Math.abs(state.extra)}`;
       requestAnimationFrame(() => {
         if (request !== pending) return;
-        draw(digitsData(state.extra));
+        draw(digitsData(state.sample, state.extra));
       });
     }
 
@@ -202,13 +262,14 @@
       curve(data.inPixels, 'plane-z');
       const legend = [['plane-w', 'error in z'], ['plane-z', 'the same error in pixels of c']];
       legend.forEach(([className, text], k) => {
-        const y = toY(-62) + k * 22;
+        const y = toY(LOW + .2 * (HIGH - LOW)) + k * 22;
         const x = W - R - 290;
         kit.svg('line', {x1: x, y1: y - 5, x2: x + 26, y2: y - 5, class: `deep-curve ${className}`}, layer);
         kit.svg('text', {x: x + 34, y, class: 'deep-legend'}, layer).textContent = text;
       });
       axisLabel.textContent = `step n of the orbit, 0 to ${whole(data.end)}`;
-      figure.dataset.done = String(data.extra);
+      figure.dataset.done = `${data.sample.key},${data.extra}`;
+      figure.dataset.steps = String(data.steps.truth);
       figure.dataset.worst = data.worstPixels.toFixed(1);
       const verdict = data.steps.truth === data.steps.low
         ? `Both escape after ${whole(data.steps.truth)} steps.`
@@ -216,13 +277,19 @@
       const lost = data.lostAt === null
         ? 'The error in <var>z</var> stays below 1/2 until the orbit escapes.'
         : `The error in <var>z</var> reaches 1/2 at step ${whole(data.lostAt)}: from there the computed orbit has nothing in common with the true one.`;
-      const bits = data.extra === 0 ? `exactly the ${NEEDED}` : `${data.extra} more than the ${NEEDED}`;
+      const needed = data.sample.needed;
+      const bits = data.extra === 0 ? `exactly the ${needed}` : `${data.extra} more than the ${needed}`;
       readout.innerHTML = `With ${data.P} bits, ${bits} that tell neighboring pixels apart. ${lost} Measured in pixels of <var>c</var>, the error ` +
         `never exceeds 2<sup>${data.worstPixels.toFixed(1).replace('-', '−')}</sup> pixel. ${verdict}`;
     }
 
     slider.addEventListener('input', () => {
       state.extra = Number(slider.value);
+      update();
+    });
+    menu.addEventListener('change', () => {
+      state.sample = SAMPLES.find(sample => sample.key === menu.value);
+      drawGrid();
       update();
     });
     const caption = figure.querySelector('figcaption');
