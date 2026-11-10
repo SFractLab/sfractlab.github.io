@@ -28,8 +28,8 @@
   --muted: #59646f;
   --line: #dedbd2;
   --line-strong: #c4c0b4;
-  --silhouette: #c4c0b4;   /* the Mandelbrot set drawn as a flat shape behind a figure, */
-  --silhouette-soft: #c4c0b4;   /* and a softer one where marks and labels lie on it */
+  --silhouette: #9d9a8e;   /* the Mandelbrot set drawn as a flat shape behind a figure, */
+  --silhouette-soft: #afaca0;   /* and a softer one where marks and labels lie on it */
   --accent: #0b6a77;
   --accent-strong: #074f59;
   --accent-wash: #e5efee;
