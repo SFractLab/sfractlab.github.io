@@ -28,6 +28,8 @@
   --muted: #59646f;
   --line: #dedbd2;
   --line-strong: #c4c0b4;
+  --silhouette: #c4c0b4;   /* the Mandelbrot set drawn as a flat shape behind a figure, */
+  --silhouette-soft: #c4c0b4;   /* and a softer one where marks and labels lie on it */
   --accent: #0b6a77;
   --accent-strong: #074f59;
   --accent-wash: #e5efee;
@@ -67,6 +69,8 @@
   --muted: #97a7b6;
   --line: #223245;
   --line-strong: #34485f;
+  --silhouette: #5e7288;
+  --silhouette-soft: #4a5e76;
   --accent: #62c3cd;
   --accent-strong: #95dce3;
   --accent-wash: #11262e;
@@ -98,6 +102,8 @@
     --muted: #97a7b6;
     --line: #223245;
     --line-strong: #34485f;
+    --silhouette: #5e7288;
+    --silhouette-soft: #4a5e76;
     --accent: #62c3cd;
     --accent-strong: #95dce3;
     --accent-wash: #11262e;
@@ -753,17 +759,19 @@ figcaption var { font-size: 1.05em; }
 .deep-legend { font-size: 14px; fill: var(--ink-soft); }
 .deep-delta-circle { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; }
 .deep-delta-circle.deep-inside { color: var(--gold); stroke: currentColor; fill: currentColor; fill-opacity: .12; }
-.deep-disk { fill: var(--accent-wash); fill-opacity: .6; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.deep-disk { fill: var(--accent-wash); fill-opacity: .3; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .deep-newton { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .deep-newton-lost { stroke-dasharray: 4 4; opacity: .6; }
 .deep-newton-end { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .deep-outline { fill: none; stroke: var(--gold); stroke-width: 2; }
+/* The set behind the ball-method figure; in the dark theme brighter than the line colour, which was hardly visible. */
+.deep-silhouette { fill: var(--silhouette); opacity: .7; }
 .deep-zplane { max-width: 28rem; margin: 0 auto; }
 /* The rebasing figure: the plane of z and the close-up beside it, or below it on a phone. */
 .deep-views { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1rem 1.5rem; }
 .deep-views .deep-zplane { flex: 1 1 18rem; margin: 0; }
 .deep-closeup { flex: 0 1 12rem; }
-.multiplier-silhouette { fill: var(--line-strong); opacity: .7; }
+.multiplier-silhouette { fill: var(--silhouette-soft); opacity: .7; }
 .multiplier-cardioid { fill: none; stroke: var(--accent); stroke-width: 2; }
 .multiplier-two { fill: none; stroke: var(--gold); stroke-width: 2; }
 .multiplier-tick { fill: var(--gold); }
@@ -784,7 +792,7 @@ figcaption var { font-size: 1.05em; }
 /* With the Mandelbrot set (data-mandelbrot): the set below the diagram, the chosen c on
    its real axis as a ring, so that a small copy of the set there stays visible. The wide drawing shrinks on a phone; cobweb.js sets --unit, its drawing
    units per pixel, so that text and lines keep their size. */
-.cobweb-set { fill: var(--line-strong); opacity: .7; }
+.cobweb-set { fill: var(--silhouette-soft); opacity: .7; }
 .cobweb-parameter { fill: none; stroke: var(--accent); stroke-width: 2; }
 .cobweb-wide :is(.plane-tick, .cobweb-landmark-label) {
   font-size: calc(12px * var(--unit, 1));
@@ -842,7 +850,7 @@ figcaption var { font-size: 1.05em; }
    dashed, and the filled Julia set fading in once the feet have settled. */
 .spider-plane { max-width: 30rem; margin-inline: auto; }
 .spider-unit { fill: none; stroke: var(--ink-soft); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .55; }
-.spider-julia { fill: var(--line-strong); opacity: 0; transition: opacity .8s; }
+.spider-julia { fill: var(--silhouette-soft); opacity: 0; transition: opacity .8s; }
 .spider-julia.spider-julia-shown { opacity: .75; }
 .spider-leg { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
 .spider-leg.spider-first { stroke: var(--gold); }
@@ -861,7 +869,7 @@ figcaption var { font-size: 1.05em; }
 .squeeze-plane { max-width: 32rem; margin-inline: auto; }
 .squeeze-level input[type="range"] { width: 11rem; accent-color: var(--accent); }
 .squeeze-level output { min-width: 5.5rem; font-variant-numeric: tabular-nums; }
-.squeeze-silhouette { fill: var(--line-strong); opacity: .6; }
+.squeeze-silhouette { fill: var(--silhouette-soft); opacity: .6; }
 .squeeze-middle { fill: var(--accent); fill-opacity: .16; }
 .squeeze-disk { fill: var(--gold); fill-opacity: .26; }
 .squeeze-curve { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
@@ -1040,7 +1048,7 @@ html.plate-dialog-open { overflow: hidden; }
 .angle-chords { fill: none; stroke: var(--muted); stroke-width: .8; opacity: .7; }
 .angle-chord { fill: none; stroke: var(--gold); stroke-width: 3.5; }
 .angle-point { fill: var(--gold); stroke: var(--surface); stroke-width: 2; }
-.angle-silhouette { fill: var(--line-strong); opacity: .7; }
+.angle-silhouette { fill: var(--silhouette-soft); opacity: .7; }
 .angle-marker { fill: none; stroke: var(--gold); stroke-width: 3; }
 /* π in the Mandelbrot set (pi-counts.js): rows where rounding errors have taken over. */
 .pi-table :is(td, th) { font-variant-numeric: tabular-nums; }

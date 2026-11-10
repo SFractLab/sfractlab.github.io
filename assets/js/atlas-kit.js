@@ -1227,10 +1227,14 @@
 
   // The Mandelbrot set as a mask of width × height pixels over `view`: white
   // and opaque where the orbit of 0 has not escaped within `budget` steps,
-  // transparent elsewhere. Drawn at once; meant for small silhouettes that a
-  // figure colours itself (for example as an SVG mask).
-  function mandelbrotMask(view, width, height, budget) {
+  // transparent elsewhere. With `near` > 0, also where the distance estimate
+  // 2|z| log|z| / |z′| puts the pixel's centre within `near` pixels of the set,
+  // so that filaments thinner than a pixel show. Drawn at once; meant for small
+  // silhouettes that a figure colours itself (for example as an SVG mask).
+  function mandelbrotMask(view, width, height, budget, near = 0) {
     const image = new ImageData(width, height);
+    const radius = near > 0 ? 1e6 : 4;  // the estimate needs a large escape radius
+    const reach = near * view.width / width;
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const cx = view.left + (x + .5) * view.width / width;
@@ -1239,14 +1243,21 @@
         if (!inside) {
           let zx = 0;
           let zy = 0;
+          let dx = 0;
+          let dy = 0;
           let n = 0;
-          while (n < budget && zx * zx + zy * zy <= 4) {
+          while (n < budget && zx * zx + zy * zy <= radius) {
+            const ndx = 2 * (zx * dx - zy * dy) + 1;
+            dy = 2 * (zx * dy + zy * dx);
+            dx = ndx;
             const next = zx * zx - zy * zy + cx;
             zy = 2 * zx * zy + cy;
             zx = next;
             n++;
           }
-          inside = zx * zx + zy * zy <= 4;
+          const size = Math.sqrt(zx * zx + zy * zy);
+          inside = size * size <= radius
+            || (near > 0 && 2 * size * Math.log(size) < reach * Math.hypot(dx, dy));
         }
         if (inside) image.data.fill(255, (y * width + x) * 4, (y * width + x) * 4 + 4);
       }

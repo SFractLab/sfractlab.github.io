@@ -569,8 +569,12 @@
   // [key, name, center re, center im, width, starting point of the disk, its radius / width]
   const VIEWS = [
     ['whole', 'The whole set', -0.65, 0, 3.2, [-1.76, 0], .06],
-    ['seahorse', 'Seahorse valley', -0.7445, 0.115, 0.05, [-0.7445, 0.115], .03],
+    ['seahorse', 'Seahorse valley', -0.7458, 0.1102, 0.005, [-0.7458, 0.1102], .06],
     ['antenna', 'Near the antenna', -1.775, 0, 0.08, [-1.7565, .0015], .06],
+    // The minibrot of period 39 whose bulbs of periods 78 and 195 the rebasing figure uses, magnified
+    // about 10⁵ times compared with the whole set; there 4,000 steps still draw the set faithfully.
+    ['deep', 'Deep in seahorse valley', -0.743640801657886, 0.131827519812595, 3e-5,
+      [-0.743640801657886, 0.131827519812595], .08],
   ];
   const P_WIDTH = 360, P_HEIGHT = 270;
   const P_MASK_SCALE = 2;  // the silhouette is computed at twice the drawing's resolution
@@ -716,7 +720,7 @@
     const defs = kit.svg('defs', {}, drawing);
     const mask = kit.svg('mask', {id: `${id}-silhouette`}, defs);
     const maskImage = kit.svg('image', {width: P_WIDTH, height: P_HEIGHT}, mask);
-    kit.svg('rect', {width: P_WIDTH, height: P_HEIGHT, class: 'multiplier-silhouette', mask: `url(#${id}-silhouette)`}, drawing);
+    kit.svg('rect', {width: P_WIDTH, height: P_HEIGHT, class: 'deep-silhouette', mask: `url(#${id}-silhouette)`}, drawing);
     const layer = kit.svg('g', {}, drawing);
     const readout = element('p', 'widget-readout');
     readout.setAttribute('aria-live', 'polite');
@@ -729,7 +733,8 @@
       state.view = {left: center[0] - width / 2, top: center[1] + width * P_HEIGHT / P_WIDTH / 2,
         width, height: width * P_HEIGHT / P_WIDTH};
       const budget = Math.min(kit.iterationBudget(width), 4000);
-      state.mask = kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget);
+      // Filaments within half a pixel of the mask are drawn too, so that seahorse valley shows.
+      state.mask = kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget, .5);
       canvas.getContext('2d').putImageData(state.mask, 0, 0);
       maskImage.setAttribute('href', canvas.toDataURL('image/png'));
     }
@@ -747,7 +752,9 @@
           result.scale = sizeEstimate(nucleus, result.period);
           result.outside = Math.hypot(nucleus[0] - cr, nucleus[1] - ci) > r;
           result.copy = isCopy(nucleus, result.scale, result.period);
-          result.unseen = unseen(nucleus);
+          // A copy is too small to show when the size estimate makes it less than a pixel across
+          // (M is about 2.5 wide); a bulb, when the silhouette leaves its pixel empty.
+          result.unseen = result.copy ? Math.hypot(...result.scale) * 2.5 * plane().scale < 1 : unseen(nucleus);
         } else {
           result.outOfSet = escapesWithin(result.newton.path.at(-1), ball.period);
         }
@@ -851,7 +858,7 @@
         : 'This component is a bulb attached to a larger one, not a small copy of <var>M</var>: the size estimate ' +
           'describes copies, so no outline is drawn and there is no minibrot to zoom to.';
       if (result.unseen) {
-        text += ' At this magnification the component is smaller than a pixel, so the picture shows nothing there' +
+        text += ' At this magnification the component is smaller than a pixel, so the picture cannot show its shape' +
           (result.copy ? '; “Zoom to the minibrot” shows it.' : '.');
       }
       return text;
