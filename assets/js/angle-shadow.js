@@ -155,6 +155,12 @@
     const playButton = element('button', 'widget-button', 'Play');
     playButton.type = 'button';
     playButton.addEventListener('click', () => (state.timer ? stop() : play()));
+    const resetButton = element('button', 'widget-button', 'Reset');
+    resetButton.type = 'button';
+    resetButton.addEventListener('click', () => {
+      stop();
+      show(0);
+    });
     const toggle = element('label', 'shadow-toggle');
     const checkbox = element('input');
     checkbox.type = 'checkbox';
@@ -163,7 +169,7 @@
       show(state.shown);
     });
     toggle.append(checkbox, 'Second start 10⁻¹⁰ away');
-    playRow.append(stepButton, playButton, toggle);
+    playRow.append(stepButton, playButton, resetButton, toggle);
 
     // --- drawing -------------------------------------------------------------
 
@@ -250,6 +256,7 @@
     function show(steps) {
       state.shown = Math.max(0, Math.min(steps, MAX_STEPS));
       stepButton.disabled = state.shown >= MAX_STEPS;
+      resetButton.disabled = state.shown === 0;
       draw();
       describe();
     }
