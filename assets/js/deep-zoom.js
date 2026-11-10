@@ -318,6 +318,8 @@
   ];
   const STEPS = 800;  // steps followed
   const Z_SIZE = 360;
+  const Z_WIDE = 2.4;      // the plane of z shows the whole orbit (|z| ≤ 1.02 until it escapes) at this width,
+  const Z_MARGIN = 1.15;   // with this much room around the values it must show
   const CLOSE_SIZE = 200;  // the close-up around the pixel
 
   // Perturbation of one pixel around a reference orbit, with or without rebasing. A reference
@@ -454,9 +456,13 @@
       const s = run.steps[state.n];
       layer.replaceChildren();
       orbitLayer.replaceChildren();
-      // The view: centered on 0, just large enough for Z_m, z and the circle of radius |δ|.
-      const half = 1.45 * Math.max(Math.hypot(s.zr, s.zi), Math.hypot(s.Zr ?? 0, s.Zi ?? 0),
-        Math.hypot(s.dr, s.di)) || 2;
+      // The view, centered on 0: Z_WIDE wide, which holds the whole orbit; when 0, Z_m, z and the
+      // circle of radius |δ| all lie close together it zooms in, by whole factors of 10 so that its
+      // width changes rarely; a value beyond it, as an orbit escapes, widens it.
+      const extent = Math.max(Math.hypot(s.zr, s.zi), Math.hypot(s.Zr ?? 0, s.Zi ?? 0), Math.hypot(s.dr, s.di));
+      let half = Z_WIDE / 2;
+      if (Z_MARGIN * extent > half) half = Z_MARGIN * extent;
+      else if (extent > 0) half /= 10 ** Math.max(0, Math.floor(Math.log10(half / (Z_MARGIN * extent))));
       const plane = new kit.Plane({left: -half, top: half, width: 2 * half, height: 2 * half}, Z_SIZE, Z_SIZE);
       scaleLabel.textContent = `width ${scientific(2 * half).replace(/<[^>]+>/g, '')}`;
       const {Zr, Zi} = run.reference;
