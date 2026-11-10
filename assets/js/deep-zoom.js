@@ -578,6 +578,8 @@
   ];
   const P_WIDTH = 360, P_HEIGHT = 270;
   const P_MASK_SCALE = 2;  // the silhouette is computed at twice the drawing's resolution
+  const FILAMENT_REACH = .25;    // filaments: points within a quarter of a mask pixel of the set,
+  const FILAMENT_OPACITY = .45;  // drawn at this opacity
   const PERIOD_LIMIT = 20000;
   const NEWTON_LIMIT = 50;
 
@@ -733,8 +735,9 @@
       state.view = {left: center[0] - width / 2, top: center[1] + width * P_HEIGHT / P_WIDTH / 2,
         width, height: width * P_HEIGHT / P_WIDTH};
       const budget = Math.min(kit.iterationBudget(width), 4000);
-      // Filaments within half a pixel of the mask are drawn too, so that seahorse valley shows.
-      state.mask = kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget, .5);
+      // Filaments close to the set are drawn too, thin and faint, so that seahorse valley shows
+      // without hiding the small copies.
+      state.mask = kit.mandelbrotMask(state.view, canvas.width, canvas.height, budget, FILAMENT_REACH, FILAMENT_OPACITY);
       canvas.getContext('2d').putImageData(state.mask, 0, 0);
       maskImage.setAttribute('href', canvas.toDataURL('image/png'));
     }
@@ -763,14 +766,15 @@
       draw();
     }
 
-    // Whether a nucleus in the view lies on a pixel that the silhouette leaves empty: its
-    // component is too small to be drawn at this magnification.
+    // Whether a nucleus in the view lies on a pixel that the silhouette does not fill, leaving it
+    // empty or drawing only a faint filament there: its component is too small to be drawn at this
+    // magnification.
     function unseen([re, im]) {
       const {view, mask} = state;
       const x = Math.floor((re - view.left) / view.width * mask.width);
       const y = Math.floor((view.top - im) / view.height * mask.height);
       if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) return false;
-      return mask.data[(y * mask.width + x) * 4 + 3] === 0;
+      return mask.data[(y * mask.width + x) * 4 + 3] < 255;  // empty, or only a faint filament
     }
 
     function draw() {

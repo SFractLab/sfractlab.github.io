@@ -1229,9 +1229,10 @@
   // and opaque where the orbit of 0 has not escaped within `budget` steps,
   // transparent elsewhere. With `near` > 0, also where the distance estimate
   // 2|z| log|z| / |z′| puts the pixel's centre within `near` pixels of the set,
-  // so that filaments thinner than a pixel show. Drawn at once; meant for small
+  // so that filaments thinner than a pixel show, with opacity `faint` (1 unless
+  // given), so that they can stay in the background. Drawn at once; meant for small
   // silhouettes that a figure colours itself (for example as an SVG mask).
-  function mandelbrotMask(view, width, height, budget, near = 0) {
+  function mandelbrotMask(view, width, height, budget, near = 0, faint = 1) {
     const image = new ImageData(width, height);
     const radius = near > 0 ? 1e6 : 4;  // the estimate needs a large escape radius
     const reach = near * view.width / width;
@@ -1256,8 +1257,12 @@
             n++;
           }
           const size = Math.sqrt(zx * zx + zy * zy);
-          inside = size * size <= radius
-            || (near > 0 && 2 * size * Math.log(size) < reach * Math.hypot(dx, dy));
+          inside = size * size <= radius;
+          if (!inside && near > 0 && 2 * size * Math.log(size) < reach * Math.hypot(dx, dy)) {
+            const offset = (y * width + x) * 4;
+            image.data.fill(255, offset, offset + 3);
+            image.data[offset + 3] = Math.round(255 * faint);
+          }
         }
         if (inside) image.data.fill(255, (y * width + x) * 4, (y * width + x) * 4 + 4);
       }
